@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <!--<androidx.appcompat.widget.Toolbar-->
+        <!--style="@style/Toolbar"-->
+        <!--app:contentInsetStart="0dp">-->
+
+        <!--<ImageView-->
+            <!--android:id="@+id/guillotine_hamburger"-->
+            <!--style="@style/ImageView.Hamburger"-->
+            <!--android:src="@drawable/ic_menu" />-->
+    <!--</androidx.appcompat.widget.Toolbar>-->
+
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:foregroundGravity="center"
+        android:overScrollMode="never">
+    </androidx.viewpager.widget.ViewPager>
+
+
+    <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!--<androidx.appcompat.widget.Toolbar-->
+            <!--android:id="@+id/toolbar"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--style="@style/Toolbar"-->
+            <!--app:contentInsetStart="0dp">-->
+
+            <!--<ImageView-->
+                <!--android:id="@+id/content_hamburger"-->
+                <!--style="@style/ImageView.Hamburger"-->
+                <!--android:src="@drawable/ic_menu_90" />-->
+        <!--</androidx.appcompat.widget.Toolbar>-->
+
+        <io.codetail.widget.RevealFrameLayout
+            android:id="@+id/container_frame"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/content_overlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"/>
+
+            <LinearLayout
+                android:id="@+id/content_frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"/>
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:minHeight="?attr/actionBarSize"
+                android:layout_marginTop="20dp"
+                android:background="?attr/colorPrimary"/>
+                <!--<ImageView-->
+                    <!--android:id="@+id/content_hamburger"-->
+                    <!--android:layout_marginTop="20dp"-->
+                    <!--style="@style/ImageView.Hamburger"-->
+                    <!--android:src="@drawable/ic_menu_90" />-->
+        </io.codetail.widget.RevealFrameLayout>
+
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start|bottom"
+            android:scrollbarThumbVertical="@android:color/transparent">
+
+            <LinearLayout
+                android:id="@+id/left_drawer"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:divider="@android:color/transparent"
+                android:dividerHeight="0dp"
+                android:orientation="vertical">
+            </LinearLayout>
+        </ScrollView>
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+
+
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="vertical">-->
+
+        <!--<androidx.appcompat.widget.Toolbar-->
+            <!--android:id="@+id/toolbar"-->
+            <!--app:contentInsetStart="0dp"-->
+            <!--style="@style/Toolbar">-->
+
+            <!--<ImageView-->
+                <!--android:id="@+id/content_hamburger"-->
+                <!--style="@style/ImageView.Hamburger"-->
+                <!--android:src="@drawable/ic_menu_90" />-->
+
+            <!--&lt;!&ndash;<com.yalantis.guillotine.sample.widget.CanaroTextView&ndash;&gt;-->
+                <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:layout_gravity="center"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:text="@string/activity"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:textSize="@dimen/guillotine_item_text_size" />&ndash;&gt;-->
+        <!--</androidx.appcompat.widget.Toolbar>-->
+
+        <!--<ImageView-->
+            <!--style="@style/ImageView.ContentItem"-->
+            <!--android:layout_marginTop="@dimen/guillotine_medium_margin"-->
+            <!--android:src="@drawable/content_1" />-->
+
+        <!--<ImageView-->
+            <!--style="@style/ImageView.ContentItem"-->
+            <!--android:src="@drawable/content_2" />-->
+
+
+    <!--</LinearLayout>-->
+
+
+    <!--<Button-->
+        <!--android:id="@+id/btnOrder2"-->
+        <!--android:text="Group now!"-->
+        <!--android:textAllCaps="false"-->
+        <!--android:textColor="#fff"-->
+        <!--android:background="@drawable/round"-->
+        <!--android:paddingLeft="30dp"-->
+        <!--android:paddingRight="30dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_marginBottom="60dp"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <!--<com.getbase.floatingactionbutton.FloatingActionButton-->
+        <!--android:id="@+id/pink_icon"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--app:fab_icon="@drawable/ic_fingerprint_black_24dp"-->
+        <!--app:fab_colorNormal="@color/pink"-->
+        <!--app:fab_colorPressed="@color/pink_pressed"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginBottom="16dp"/>-->
+
+
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/multiple_actions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="14dp"
+        android:layout_marginRight="14dp"
+        android:layout_marginBottom="18dp"
+        app:fab_addButtonColorNormal="@color/pink"
+        app:fab_addButtonColorPressed="@color/pink_pressed"
+        app:fab_labelStyle="@style/menu_labels_style"
+        tools:ignore="RtlHardcoded">
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/join"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/white"
+            app:fab_colorPressed="@color/white_pressed"
+            app:fab_title="Join a Group" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/create"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/white"
+            app:fab_colorPressed="@color/white_pressed"
+            app:fab_title="Create My Group" />
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+</RelativeLayout>

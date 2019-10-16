@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="random_imgs">
+        <item>@drawable/brochure</item>
+        <item>@drawable/sticker</item>
+        <item>@drawable/poster</item>
+        <item>@drawable/namecard</item>
+    </integer-array>
+</resources>
