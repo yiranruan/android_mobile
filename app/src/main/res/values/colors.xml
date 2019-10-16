@@ -29,4 +29,6 @@
     <color name="divider">#CCC</color>
     <color name="icons">#FFF</color>
     <color name="item_background">#FFF</color>
+    <color name="blue">#2e60bb</color>
+    <color name="gray">#e2e6e9</color>
 </resources>
