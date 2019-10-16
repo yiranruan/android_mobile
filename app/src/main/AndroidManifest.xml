@@ -9,7 +9,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".tasks.TaskActivity"></activity>
+        <activity android:name=".tasks.HorizontalCoordinatorNtbActivity"></activity>
+        <activity android:name=".tasks.HorizontalNtbActivity" />
+        <activity android:name=".tasks.SamplesNtbActivity" />
+        <activity android:name=".tasks.TopHorizontalNtbActivity" />
+        <activity android:name=".tasks.VerticalNtbActivity" />
+        <activity android:name=".tasks.TaskActivity" />
         <activity android:name=".group.GroupJoinActivity" />
         <activity android:name=".group.GroupCreateActivity" />
         <activity android:name=".MainActivity">
