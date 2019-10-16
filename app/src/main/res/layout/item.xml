@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center_vertical">
     <androidx.cardview.widget.CardView
+        android:id="@+id/my_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardCornerRadius="20dp"
@@ -14,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="300dp">
             <ImageView
-                android:id="@+id/image"
+                android:id="@+id/image_item"
                 android:src="@drawable/brochure"
                 android:scaleType="centerCrop"
                 android:layout_width="match_parent"
@@ -22,7 +23,7 @@
             <TextView
                 android:id="@+id/title"
                 android:textColor="#262626"
-                android:layout_below="@+id/image"
+                android:layout_below="@+id/image_item"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="16dp"
                 android:text="Brochure"

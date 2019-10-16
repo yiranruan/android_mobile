@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -26,6 +27,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.example.todolist.fragments.ContentFragment;
 import com.example.todolist.group.GroupCreateActivity;
 import com.example.todolist.group.GroupJoinActivity;
+import com.example.todolist.tasks.TaskActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,8 +114,6 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
 
 
-
-
         final View joinG = findViewById(R.id.join);
         joinG.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,6 +145,20 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
 
         startDrawable("private");
+
+
+        final Button btn_task = findViewById(R.id.btnTask);
+        btn_task.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "You clicked",
+                        Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(MainActivity.this, TaskActivity.class);
+//                intent.putExtra("extra_data", "Hello world");
+                startActivityForResult(intent, 1);
+            }
+        });
 
     }
 
@@ -222,6 +236,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
             @Override
             public void onPageSelected(int position) {
+
 
             }
 

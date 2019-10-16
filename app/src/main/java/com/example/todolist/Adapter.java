@@ -42,7 +42,7 @@ public class Adapter extends PagerAdapter {
         ImageView imageView;
         TextView title, desc;
 
-        imageView = view.findViewById(R.id.image);
+        imageView = view.findViewById(R.id.image_item);
         title = view.findViewById(R.id.title);
         desc = view.findViewById(R.id.desc);
 

@@ -19,4 +19,14 @@
     <color name="guillotine_background">#444153</color>
     <color name="guillotine_background_dark">#383547</color>
     <color name="selected_item_color">#30d1d5</color>
+    <color name="background_window">#FFE5E5E5</color>
+    <color name="green">#689F38</color>
+    <color name="greenDark">#3E5F22</color>
+    <color name="banana">#FFCC00</color>
+    <color name="primary">#2d2d2d</color>
+    <color name="secondary">#FF4081</color>
+    <color name="accent">#33b5e5</color>
+    <color name="divider">#CCC</color>
+    <color name="icons">#FFF</color>
+    <color name="item_background">#FFF</color>
 </resources>
