@@ -1,5 +1,6 @@
 package com.example.todolist.tasks;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,10 +12,12 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.todolist.R;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -26,6 +29,26 @@ import java.util.Random;
 import devlight.io.library.ntb.NavigationTabBar;
 
 public class HorizontalCoordinatorNtbActivity extends Activity {
+    Task[] task_todo = new Task[]{
+            new Task(1, "todo_test1", "This is todo_test 1", 1, 1),
+            new Task(2, "todo_test2", "This is todo_test 2", 2, 1),
+            new Task(3, "todo_test3", "This is todo_test 3", 3, 1),
+            new Task(4, "todo_test4", "This is todo_test 4", 4, 1),
+    };
+    Task[] task_doing = new Task[]{
+            new Task(1, "doing_test1", "This is doing_test 1", 1, 1),
+            new Task(2, "doing_test2", "This is doing_test 2", 2, 1),
+            new Task(3, "doing_test3", "This is doing_test 3", 3, 1),
+            new Task(4, "doing_test4", "This is doing_test 4", 4, 1),
+    };
+    Task[] task_done = new Task[]{
+            new Task(1, "done_test1", "This is done_test 1", 1, 1),
+            new Task(2, "done_test2", "This is done_test 2", 2, 1),
+            new Task(3, "done_test3", "This is done_test 3", 3, 1),
+            new Task(4, "done_test4", "This is done_test 4", 4, 1),
+    };
+
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -39,7 +62,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         viewPager.setAdapter(new PagerAdapter() {
             @Override
             public int getCount() {
-                return 5;
+                return 3;
             }
 
             @Override
@@ -52,67 +75,89 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                 ((ViewPager) container).removeView((View) object);
             }
 
+//            @Override
+//            public void setPrimaryItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+//                super.setPrimaryItem(container, position, object);
+//                switch (position) {
+//                    case 0:
+//                        ;
+//                        break;
+//                    case 1:
+//                        ;
+//                        break;
+//                    case 2:
+//                        ;
+//                        break;
+////                    default:
+//                }
+//            }
+
             @SuppressLint("WrongConstant")
             @Override
             public Object instantiateItem(final ViewGroup container, final int position) {
                 final View view = LayoutInflater.from(
                         getBaseContext()).inflate(R.layout.item_vp_list, null, false);
 
-                final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.rv);
+                recyclerView = (RecyclerView) view.findViewById(R.id.rv);
                 recyclerView.setHasFixedSize(true);
                 recyclerView.setLayoutManager(new LinearLayoutManager(
                                 getBaseContext(), LinearLayoutManager.VERTICAL, false
                         )
                 );
-                recyclerView.setAdapter(new RecycleAdapter());
 
+                recyclerView.setAdapter(new RecycleAdapter(task_todo, task_doing, task_done, position));
                 container.addView(view);
                 return view;
             }
         });
 
+
+
+
+
         final String[] colors = getResources().getStringArray(R.array.default_preview);
 
         final NavigationTabBar navigationTabBar = (NavigationTabBar) findViewById(R.id.ntb_horizontal);
+
         final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
         models.add(
                 new NavigationTabBar.Model.Builder(
                         getResources().getDrawable(R.drawable.ic_first),
                         Color.parseColor(colors[0]))
-                        .title("Heart")
+                        .title("ToDoList")
                         .build()
         );
         models.add(
                 new NavigationTabBar.Model.Builder(
                         getResources().getDrawable(R.drawable.ic_second),
-                        Color.parseColor(colors[1]))
-                        .title("Cup")
+                        Color.parseColor(colors[3]))
+                        .title("DoingList")
                         .build()
         );
         models.add(
                 new NavigationTabBar.Model.Builder(
                         getResources().getDrawable(R.drawable.ic_third),
-                        Color.parseColor(colors[2]))
-                        .title("Diploma")
+                        Color.parseColor(colors[1]))
+                        .title("DoneList")
                         .build()
         );
-        models.add(
-                new NavigationTabBar.Model.Builder(
-                        getResources().getDrawable(R.drawable.ic_fourth),
-                        Color.parseColor(colors[3]))
-                        .title("Flag")
-                        .build()
-        );
-        models.add(
-                new NavigationTabBar.Model.Builder(
-                        getResources().getDrawable(R.drawable.ic_fifth),
-                        Color.parseColor(colors[4]))
-                        .title("Medal")
-                        .build()
-        );
+//        models.add(
+//                new NavigationTabBar.Model.Builder(
+//                        getResources().getDrawable(R.drawable.ic_fourth),
+//                        Color.parseColor(colors[2]))
+//                        .title("Diploma")
+//                        .build()
+//        );
+//        models.add(
+//                new NavigationTabBar.Model.Builder(
+//                        getResources().getDrawable(R.drawable.ic_fifth),
+//                        Color.parseColor(colors[4]))
+//                        .title("Medal")
+//                        .build()
+//        );
 
         navigationTabBar.setModels(models);
-        navigationTabBar.setViewPager(viewPager, 2);
+        navigationTabBar.setViewPager(viewPager, 0);
 
         //IMPORTANT: ENABLE SCROLL BEHAVIOUR IN COORDINATOR LAYOUT
         navigationTabBar.setBehaviorEnabled(true);
@@ -127,15 +172,23 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                 model.hideBadge();
             }
         });
+
+
         navigationTabBar.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
 
             }
 
+            @SuppressLint("WrongConstant")
             @Override
             public void onPageSelected(final int position) {
-
+                findViewById(R.id.txt_vp_item_list).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(final View v) {
+                        Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Click", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
@@ -179,31 +232,93 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                 (CollapsingToolbarLayout) findViewById(R.id.toolbar);
         collapsingToolbarLayout.setExpandedTitleColor(Color.parseColor("#009F90AF"));
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.parseColor("#9f90af"));
+
     }
 
-    public class RecycleAdapter extends RecyclerView.Adapter<RecycleAdapter.ViewHolder> {
+    public void myItemClick(View view){
+        int position = recyclerView.getChildAdapterPosition(view);
+        Toast.makeText(HorizontalCoordinatorNtbActivity.this, "hahah",
+                Toast.LENGTH_SHORT).show();
+    }
 
-        @Override
-        public ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-            final View view = LayoutInflater.from(getBaseContext()).inflate(R.layout.item_list, parent, false);
-            return new ViewHolder(view);
+
+    public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private Task[] todo;
+        private Task[] doing;
+        private Task[] done;
+        private int position;
+
+        public RecycleAdapter(Task[] todo, Task[] doing, Task[] done, int position) {
+            super();
+            this.todo = todo;
+            this.doing = doing;
+            this.done = done;
+            this.position = position;
         }
 
         @Override
-        public void onBindViewHolder(final ViewHolder holder, final int position) {
-            holder.txt.setText(String.format("Navigation Item #%d", position));
+        public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
+            switch (viewType) {
+                case 0:
+                    return new TodoHolder(LayoutInflater.from(getBaseContext()).inflate(R.layout.item_list, parent, false));
+                case 1:
+                    return new DoingHolder(LayoutInflater.from(getBaseContext()).inflate(R.layout.item_list, parent, false));
+                default:
+                    return new DoneHolder(LayoutInflater.from(getBaseContext()).inflate(R.layout.item_list, parent, false));
+            }
+
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+            if (holder instanceof TodoHolder) {
+                ((TodoHolder) holder).txt.setText(todo[position].getText());
+            } else if (holder instanceof DoingHolder) {
+                ((DoingHolder) holder).txt.setText(doing[position].getText());
+            } else {
+                ((DoneHolder) holder).txt.setText(done[position].getText());
+            }
+        }
+
+        @Override
+        public int getItemViewType(int pos) {
+            return this.position;
         }
 
         @Override
         public int getItemCount() {
-            return 20;
+            switch (this.position) {
+                case 0: return todo.length;
+                case 1: return doing.length;
+                default: return done.length;
+            }
         }
 
-        public class ViewHolder extends RecyclerView.ViewHolder {
+        public class TodoHolder extends RecyclerView.ViewHolder {
 
             public TextView txt;
 
-            public ViewHolder(final View itemView) {
+            public TodoHolder(final View itemView) {
+                super(itemView);
+                txt = (TextView) itemView.findViewById(R.id.txt_vp_item_list);
+            }
+        }
+
+        public class DoingHolder extends RecyclerView.ViewHolder {
+
+            public TextView txt;
+
+            public DoingHolder(final View itemView) {
+                super(itemView);
+                txt = (TextView) itemView.findViewById(R.id.txt_vp_item_list);
+            }
+        }
+
+        public class DoneHolder extends RecyclerView.ViewHolder {
+
+            public TextView txt;
+
+            public DoneHolder(final View itemView) {
                 super(itemView);
                 txt = (TextView) itemView.findViewById(R.id.txt_vp_item_list);
             }

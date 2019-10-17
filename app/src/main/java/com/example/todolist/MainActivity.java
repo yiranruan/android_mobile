@@ -27,6 +27,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.example.todolist.fragments.ContentFragment;
 import com.example.todolist.group.GroupCreateActivity;
 import com.example.todolist.group.GroupJoinActivity;
+import com.example.todolist.tasks.HorizontalCoordinatorNtbActivity;
 import com.example.todolist.tasks.TaskActivity;
 
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
     private LinearLayout linearLayout;
 //    private LinearLayout linearLayout;
     private int res = R.drawable.content_music;
+    private int page_position = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,17 +148,16 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
         startDrawable("private");
 
-
         final Button btn_task = findViewById(R.id.btnTask);
         btn_task.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(MainActivity.this, "You clicked",
                         Toast.LENGTH_SHORT).show();
+                Log.d("page_pos", "onClick: "+page_position);
 
-                Intent intent = new Intent(MainActivity.this, TaskActivity.class);
-//                intent.putExtra("extra_data", "Hello world");
-                startActivityForResult(intent, 1);
+                Intent intent = new Intent(MainActivity.this, HorizontalCoordinatorNtbActivity.class);
+                startActivityForResult(intent, 1); // 获得position 得到特定页面
             }
         });
 
@@ -236,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
             @Override
             public void onPageSelected(int position) {
-
+                page_position = position;
 
             }
 

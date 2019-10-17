@@ -76,7 +76,6 @@
         android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp"
         android:tint="#9f90af"
-        android:src="@drawable/ic_first"
         app:backgroundTint="#605271"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
