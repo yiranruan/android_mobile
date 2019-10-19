@@ -41,10 +41,12 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
     List<Task> task_todo = new ArrayList<>();
     List<Task> task_doing = new ArrayList<>();
     List<Task> task_done = new ArrayList<>();
+    List<Task> tasks = new ArrayList<>();
+    List<RecycleAdapter> rec_adapters = new ArrayList<>();
 
     private RecyclerView recyclerView;
-    private RecycleAdapter rec_adapter;
     private int task_position;
+    private RecycleAdapter.TaskHolder current_holder;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -57,46 +59,41 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         Log.d("item", "onContextItemSelected: "+item.getItemId());
+        int position;
         switch (item.getItemId()) {//根据子菜单ID进行菜单选择判断
             case 1:
-//                removeTask(pos, task_todo);
-                Log.d("task_process", "b4: task_doing.size(): "+task_doing.size());
-                Log.d("task_process", "b4: task_done.size(): "+task_todo.size());
-//                addTask(task_position, task_todo.get(task_position), task_doing);
-                removeTask(task_position, task_todo);
-                Log.d("task_process", "after: task_doing.size(): "+task_doing.size());
-                Log.d("task_process", "after: task_done.size(): "+task_todo.size());
+                position = current_holder.getAdapterPosition();
+//                addTask(position, task_todo.get(position), task_doing, rec_adapters.get(1));
+//                removeTask(position, task_todo, rec_adapters.get(0));
+                task_doing.add(0, task_todo.get(position));
+                rec_adapters.get(1).notifyItemInserted(-1);
+                task_todo.remove(position);
+                rec_adapters.get(0).notifyItemRemoved(position);
                 break;
             case 2:
-//                addTask(task_position, task_doing.get(task_position), task_todo);
-                removeTask(task_position, task_doing);
-                Log.d("task_process", "onContextItemSelected: "+task_position);
+                position = current_holder.getAdapterPosition();
+                task_todo.add(0, task_doing.get(position));
+                rec_adapters.get(0).notifyItemInserted(-1);
+                task_doing.remove(position);
+                rec_adapters.get(1).notifyItemRemoved(position);
                 break;
             case 3:
-                addTask(task_position, task_doing.get(task_position), task_todo);
-                removeTask(task_position, task_doing);
-                Log.d("task_process", "onContextItemSelected: "+task_position);
+                position = current_holder.getAdapterPosition();
+                task_done.add(0, task_doing.get(position));
+                rec_adapters.get(2).notifyItemInserted(-1);
+                task_doing.remove(position);
+                rec_adapters.get(1).notifyItemRemoved(position);
                 break;
             default:
-                addTask(task_position, task_done.get(task_position), task_doing);
-                removeTask(task_position, task_done);
-                Log.d("task_process", "onContextItemSelected: "+task_position);
+                position = current_holder.getAdapterPosition();
+                task_doing.add(0, task_done.get(position));
+                rec_adapters.get(1).notifyItemInserted(-1);
+                task_done.remove(position);
+                rec_adapters.get(2).notifyItemRemoved(position);
         }
         return super.onContextItemSelected(item);
     }
 
-    private void removeTask(int pos, List<Task> tasks) {
-        tasks.remove(pos);
-//        rec_adapter.notifyItemRangeChanged(pos, rec_adapter.getItemCount()-1);
-//        rec_adapter.notifyDataSetChanged();
-        rec_adapter.notifyItemRemoved(pos);
-//        rec_adapter.notifyItemRangeChanged(pos, tasks.size()-pos);
-    }
-
-    private void addTask(int pos, Task task, List<Task> tasks) {
-        tasks.add(task);
-        rec_adapter.notifyItemInserted(pos);
-    }
 
     private void initUI() {
         populate();
@@ -126,23 +123,6 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                 ((ViewPager) container).removeView((View) object);
             }
 
-//            @Override
-//            public void setPrimaryItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-//                super.setPrimaryItem(container, position, object);
-//                switch (position) {
-//                    case 0:
-//                        ;
-//                        break;
-//                    case 1:
-//                        ;
-//                        break;
-//                    case 2:
-//                        ;
-//                        break;
-////                    default:
-//                }
-//            }
-
             @SuppressLint("WrongConstant")
             @Override
             public Object instantiateItem(final ViewGroup container, final int page_position) {
@@ -155,56 +135,42 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                                 getBaseContext(), LinearLayoutManager.VERTICAL, false
                         )
                 );
-//                recyclerView.setItemAnimator(new DefaultItemAnimator());
+                RecycleAdapter rec_adapter;
+
+                switch (page_position) {
+                    case 0: rec_adapter = new RecycleAdapter(task_todo, page_position, getBaseContext());
+                            break;
+                    case 1: rec_adapter = new RecycleAdapter(task_doing, page_position, getBaseContext());
+                            break;
+                    default: rec_adapter = new RecycleAdapter(task_done, page_position, getBaseContext());
+                            break;
+                }
 
 
-
-//                recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-
-
-//                RecycleAdapter rec_adapter = new RecycleAdapter(task_todo, task_doing, task_done, position, getBaseContext(), recyclerView);
-//
-//                rec_adapter.setOnItemClickListener(new RecycleAdapter.OnItemClickListener() {
-//                    @Override
-//                    public void onItemClick(RecyclerView parent, View view, int position, String data) {
-//                        Toast.makeText(HorizontalCoordinatorNtbActivity.this, data, Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-
-                rec_adapter = new RecycleAdapter(task_todo, task_doing, task_done, page_position, getBaseContext());
                 rec_adapter.setOnItemClickLitener(new RecycleAdapter.OnItemClickLitener() {
                     @Override
                     public void onItemClick(View view, int position) {
                         Log.d("page", "hahahah");
                         Toast.makeText(HorizontalCoordinatorNtbActivity.this,"postion"+position,Toast.LENGTH_SHORT).show();
-//                        switch (page_position) {
-//                            case 0:
-//                                Log.d("page_pos", "onItemClick: "+0);
-//                                break;
-//                            case 1:
-//                                Log.d("page_pos", "onItemClick: "+1);
-//                                break;
-//                            case 2:
-//                                Log.d("page_pos", "onItemClick: "+2);
-//                                break;
-//                        }
                     }
                 });
 
                 rec_adapter.setOnItemLongClickListener(new RecycleAdapter.OnItemLongClickListener() {
                     @Override
-                    public void onItemLongClick(View view, int position) {
+                    public void onItemLongClick(View view, int position, @NonNull RecycleAdapter.TaskHolder holder) {
                         Log.d("task", "this is tasks"+position);
                         task_position = position;
+                        current_holder = holder;
                     }
                 });
+                rec_adapters.add(rec_adapter);
 
                 recyclerView.setAdapter(rec_adapter);
                 registerForContextMenu(recyclerView);
 
                 DefaultItemAnimator defaultItemAnimator = new DefaultItemAnimator();
-//                defaultItemAnimator.setAddDuration(1000);
-//                defaultItemAnimator.setRemoveDuration(1000);
+                defaultItemAnimator.setAddDuration(1000);
+                defaultItemAnimator.setRemoveDuration(1000);
                 recyclerView.setItemAnimator(defaultItemAnimator);
 
 
@@ -331,20 +297,22 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 
 
     private void populate() {
-        this.task_todo.add(new Task(1, "todo_test1", "This is todo_test 1", 1, 1));
-        this.task_todo.add(new Task(2, "todo_test2", "This is todo_test 2", 2, 1));
-        this.task_todo.add(new Task(3, "todo_test3", "This is todo_test 3", 3, 1));
-        this.task_todo.add(new Task(4, "todo_test4", "This is todo_test 4", 4, 1));
+        this.task_todo.add(new Task(1, "todo_test1", "This is todo_test 1", 1, 1, "ToDo"));
+        this.task_todo.add(new Task(2, "todo_test2", "This is todo_test 2", 2, 1, "ToDo"));
+        this.task_todo.add(new Task(3, "todo_test3", "This is todo_test 3", 3, 1, "ToDo"));
+        this.task_todo.add(new Task(4, "todo_test4", "This is todo_test 4", 4, 1, "ToDo"));
 
-        this.task_doing.add(new Task(1, "doing_test1", "This is doing_test 1", 1, 1));
-        this.task_doing.add(new Task(2, "doing_test2", "This is doing_test 2", 2, 1));
-        this.task_doing.add(new Task(3, "doing_test3", "This is doing_test 3", 3, 1));
-        this.task_doing.add(new Task(4, "doing_test4", "This is doing_test 4", 4, 1));
+        this.task_doing.add(new Task(1, "doing_test1", "This is doing_test 1", 1, 1, "Doing"));
+        this.task_doing.add(new Task(2, "doing_test2", "This is doing_test 2", 2, 1, "Doing"));
+        this.task_doing.add(new Task(3, "doing_test3", "This is doing_test 3", 3, 1, "Doing"));
+        this.task_doing.add(new Task(4, "doing_test4", "This is doing_test 4", 4, 1, "Doing"));
 
-        this.task_done.add(new Task(1, "done_test1", "This is done_test 1", 1, 1));
-        this.task_done.add(new Task(2, "done_test2", "This is done_test 2", 2, 1));
-        this.task_done.add(new Task(3, "done_test3", "This is done_test 3", 3, 1));
-        this.task_done.add(new Task(4, "done_test4", "This is done_test 4", 4, 1));
+        this.task_done.add(new Task(1, "done_test1", "This is done_test 1", 1, 1, "Done"));
+        this.task_done.add(new Task(2, "done_test2", "This is done_test 2", 2, 1, "Done"));
+        this.task_done.add(new Task(3, "done_test3", "This is done_test 3", 3, 1, "Done"));
+        this.task_done.add(new Task(4, "done_test4", "This is done_test 4", 4, 1, "Done"));
+
+
 
     }
 
@@ -361,9 +329,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
     }
 
     static class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private List<Task> todo;
-        private List<Task> doing;
-        private List<Task> done;
+        public List<Task> tasks;
         private int page_position;
         private Context context;
         private OnItemClickLitener mOnItemClickLitener;
@@ -374,10 +340,10 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         }
 
         public interface OnItemLongClickListener {
-            void onItemLongClick(View view, int position);
+            void onItemLongClick(View view, int position, @NonNull RecycleAdapter.TaskHolder holder);
         }
 
-        public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener){
+        public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
             this.mOnItemClickLitener = mOnItemClickLitener;
         }
 
@@ -385,13 +351,11 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
             this.mOnItemLongClickListener = mOnItemLongClickListener;
         }
 
-        public RecycleAdapter(List<Task> todo, List<Task> doing, List<Task> done, int page_position, Context context) {
+        public RecycleAdapter(List<Task> tasks,int page_position, Context context) {
             super();
-            this.todo = todo;
-            this.doing = doing;
-            this.done = done;
-            this.page_position = page_position;
+            this.tasks = tasks;
             this.context = context;
+            this.page_position = page_position;
         }
 
         @Override
@@ -400,87 +364,32 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 //        view.setLayoutParams(new ViewGroup.LayoutParams(
 //                ViewGroup.LayoutParams.MATCH_PARENT,
 //                ViewGroup.LayoutParams.WRAP_CONTENT));
-            switch (viewType) {
-                case 0:
-                    View view1;
-                    view1 = LayoutInflater.from(this.context).inflate(R.layout.item_list, parent, false);
-//                view1.setOnClickListener(this);
-                    final TodoHolder todo_hold = new TodoHolder(view1);
-                    return todo_hold;
-                case 1:
-                    View view2;
-                    view2 = LayoutInflater.from(this.context).inflate(R.layout.item_list, parent, false);
-                    final DoingHolder doing_hold = new DoingHolder(view2);
-                    return doing_hold;
-                default:
-                    View view3;
-                    view3 = LayoutInflater.from(this.context).inflate(R.layout.item_list, parent, false);
-                    final DoneHolder done_hold = new DoneHolder(view3);
-                    return done_hold;
-            }
-
+            View view = LayoutInflater.from(this.context).inflate(R.layout.item_list, parent, false);
+            return new TaskHolder(view, viewType);
         }
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            if (holder instanceof TodoHolder) {
-                ((TodoHolder) holder).txt.setText(todo.get(position).getText());
+            if (holder instanceof TaskHolder) {
+                ((TaskHolder) holder).txt.setText(tasks.get(position).getText());
+
                 if (mOnItemClickLitener != null) {
-                    ((TodoHolder) holder).txt.setOnClickListener(new View.OnClickListener() {
+                    ((TaskHolder) holder).txt.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            Log.d("task", "onClick: " + position);
                             mOnItemClickLitener.onItemClick(view, position);
                         }
                     });
 
                 }
                 if (mOnItemLongClickListener != null) {
-                    int pos = ((TodoHolder) holder).getLayoutPosition();
-                    ((TodoHolder) holder).txt.setOnLongClickListener(new View.OnLongClickListener() {
+                    int pos = ((TaskHolder) holder).getAdapterPosition();
+                    ((TaskHolder) holder).txt.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View view) {
-                            mOnItemLongClickListener.onItemLongClick(view, pos);
-                            return false;
-                        }
-                    });
-                }
-            } else if (holder instanceof DoingHolder) {
-                ((DoingHolder) holder).txt.setText(doing.get(position).getText());
-                if (mOnItemClickLitener != null) {
-                    ((DoingHolder) holder).txt.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            mOnItemClickLitener.onItemClick(view, position);
-                        }
-                    });
-                }
-                if (mOnItemLongClickListener != null) {
-                    int pos = ((DoingHolder) holder).getLayoutPosition();
-                    ((DoingHolder) holder).txt.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View view) {
-                            mOnItemLongClickListener.onItemLongClick(view, pos);
-                            return false;
-                        }
-                    });
-                }
-            } else if (holder instanceof DoneHolder){
-                ((DoneHolder) holder).txt.setText(done.get(position).getText());
-                if (mOnItemClickLitener != null) {
-                    ((DoneHolder) holder).txt.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            mOnItemClickLitener.onItemClick(view, position);
-                        }
-                    });
-                }
-
-                if (mOnItemLongClickListener != null) {
-                    int pos = ((DoneHolder) holder).getLayoutPosition();
-                    ((DoneHolder) holder).txt.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View view) {
-                            mOnItemLongClickListener.onItemLongClick(view, pos);
+                            Log.d("task", "onClick: " + pos);
+                            mOnItemLongClickListener.onItemLongClick(view, pos, ((TaskHolder) holder));
                             return false;
                         }
                     });
@@ -492,92 +401,61 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 
         @Override
         public int getItemViewType(int pos) {
-            Log.d("holder", "getItemViewType: "+pos);
+            Log.d("holder", "getItemViewType: " + pos);
             return this.page_position;
         }
 
         @Override
         public int getItemCount() {
-            switch (this.page_position) {
-                case 0: return todo.size();
-                case 1: return doing.size();
-                default: return done.size();
-            }
+            return tasks.size();
         }
 
 
-
-        public class TodoHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
+        public class TaskHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
             public TextView txt;
             FrameLayout itemLayout;
+            int viewType;
 
             @SuppressLint("WrongViewCast")
-            public TodoHolder(View itemView) {
+            public TaskHolder(View itemView, int viewType) {
                 super(itemView);
                 txt = (TextView) itemView.findViewById(R.id.txt_vp_item_list);
                 itemLayout = (FrameLayout) itemView.findViewById(R.id.txt_f_list);
                 itemView.setOnCreateContextMenuListener(this);
+                this.viewType = viewType;
             }
 
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-//                super.onCreateContextMenu(menu, v, menuInfo);
+                switch (viewType) {
+                    case 0:
+                        menu.setHeaderTitle("Menu");//上下文菜单的标题
+//                      menu.setHeaderIcon(android.R.drawable.ic_btn_speak_now); //上下文菜单图标
+                        menu.add(Menu.NONE, 1, 1, "I want to do it");
+//                      menu.add(Menu.NONE, 2, 2, "Done");
+                        break;
+                    case 1:
+                        menu.setHeaderTitle("Menu");//上下文菜单的标题
+//                      menu.setHeaderIcon(android.R.drawable.ic_btn_speak_now); //上下文菜单图标
+                        menu.add(Menu.NONE, 2, 2, "I don't want to do it");
+                        menu.add(Menu.NONE, 3, 3, "Done");
+                        break;
+                    case 2:
+                        menu.setHeaderTitle("Menu");//上下文菜单的标题
+//                      menu.setHeaderIcon(android.R.drawable.ic_btn_speak_now); //上下文菜单图标
+                        menu.add(Menu.NONE, 4, 4, "Do it again");
+//                      menu.add(Menu.NONE, 2, 2, "Done");
+                        break;
+                }
 
-                menu.setHeaderTitle("Menu");//上下文菜单的标题
-//                menu.setHeaderIcon(android.R.drawable.ic_btn_speak_now); //上下文菜单图标
-                menu.add(Menu.NONE, 1, 1, "I want to do it");
-//                menu.add(Menu.NONE, 2, 2, "Done");
             }
 
 
         }
 
-        public class DoingHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
-            public TextView txt;
-            FrameLayout itemLayout;
-
-            @SuppressLint("WrongViewCast")
-            public DoingHolder(View itemView) {
-                super(itemView);
-                txt = (TextView) itemView.findViewById(R.id.txt_vp_item_list);
-                itemLayout = (FrameLayout) itemView.findViewById(R.id.txt_f_list);
-                itemView.setOnCreateContextMenuListener(this);
-            }
-
-            @Override
-            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-                menu.setHeaderTitle("Menu");//上下文菜单的标题
-//                menu.setHeaderIcon(android.R.drawable.ic_btn_speak_now); //上下文菜单图标
-                menu.add(Menu.NONE, 2, 2, "I don't want to do it");
-                menu.add(Menu.NONE, 3, 3, "Done");
-            }
-        }
-
-        public class DoneHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
-
-            public TextView txt;
-            FrameLayout itemLayout;
-
-            @SuppressLint("WrongViewCast")
-            public DoneHolder(View itemView) {
-                super(itemView);
-                txt = (TextView) itemView.findViewById(R.id.txt_vp_item_list);
-                itemLayout = (FrameLayout) itemView.findViewById(R.id.txt_f_list);
-                itemView.setOnCreateContextMenuListener(this);
-            }
-
-            @Override
-            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-                menu.setHeaderTitle("Menu");//上下文菜单的标题
-//                menu.setHeaderIcon(android.R.drawable.ic_btn_speak_now); //上下文菜单图标
-                menu.add(Menu.NONE, 4, 4, "Do it again");
-//                menu.add(Menu.NONE, 2, 2, "Done");
-            }
-        }
     }
-
 }
 
 
