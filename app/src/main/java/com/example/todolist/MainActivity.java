@@ -122,7 +122,6 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
             public void onClick(View view) {
                 Toast.makeText(MainActivity.this, "You clicked",
                         Toast.LENGTH_SHORT).show();
-
                 Intent intent = new Intent(MainActivity.this, GroupJoinActivity.class);
                 startActivityForResult(intent, 1);
             }
@@ -157,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
                 Log.d("page_pos", "onClick: "+page_position);
 
                 Intent intent = new Intent(MainActivity.this, HorizontalCoordinatorNtbActivity.class);
+                intent.putExtra("GroupName", models.get(page_position).getTitle());
                 startActivityForResult(intent, 1); // 获得position 得到特定页面
             }
         });
