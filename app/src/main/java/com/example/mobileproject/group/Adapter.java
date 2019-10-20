@@ -41,16 +41,20 @@ public class Adapter extends PagerAdapter {
         layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(R.layout.item, container, false);
 
-        ImageView imageView;
-        TextView title, desc;
+        TextView groupName, countMembers, subjectName, deadline, description;
 
-        imageView = view.findViewById(R.id.image_item);
-        title = view.findViewById(R.id.title);
-        desc = view.findViewById(R.id.desc);
+        groupName = view.findViewById(R.id.group_name);
+        countMembers = view.findViewById(R.id.count_member);
+        subjectName = view.findViewById(R.id.subject_name);
+        deadline = view.findViewById(R.id.deadline);
+        description = view.findViewById(R.id.desc);
 
-        imageView.setImageResource(models.get(position).getImage());
-        title.setText(models.get(position).getTitle());
-        desc.setText(models.get(position).getDesc());
+        groupName.setText(models.get(position).getGroupName());
+        countMembers.setText(models.get(position).getUserCount());
+        subjectName.setText((models.get(position).getSubjectName()));
+        deadline.setText("Deadline: " + models.get(position).getDeadline());
+        description.setText(models.get(position).getDescription());
+
 
         container.addView(view, 0);
         return view;

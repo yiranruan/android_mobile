@@ -30,6 +30,9 @@ import com.example.mobileproject.fragment.ContentFragment;
 import com.example.mobileproject.tasks.HorizontalCoordinatorNtbActivity;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -108,7 +111,19 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseData = response.body().string();
+                try {
+                    JSONObject jsonData = new JSONObject(responseData);
+                    List remoteList = new ArrayList();
+                    JSONArray jsonArray = jsonData.getJSONArray("list");
+                    Log.d("group list", "onResponse: ");
 
+
+                    // Need to handle group list here !!!
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -185,10 +200,12 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                 getResources().getColor(R.color.color4)
         };
 
-        models.add(new Model(R.drawable.brochure, "Brochure","Brochure is xxxxx"));
-        models.add(new Model(R.drawable.sticker, "Sticker","Sticker is xxxxx"));
-        models.add(new Model(R.drawable.poster, "Poster","Poster is xxxxx"));
-        models.add(new Model(R.drawable.namecard, "NameCard","NameCard is xxxxx"));
+        models.add(new Model(Integer.valueOf(userID), "deadline", 1, "Personal Tasks", " ", "This is a personal task"));
+
+//        models.add(new Model(1, R.drawable.brochure, "Brochure","Brochure is xxxxx"));
+//        models.add(new Model(2,R.drawable.sticker, "Sticker","Sticker is xxxxx"));
+//        models.add(new Model(3,R.drawable.poster, "Poster","Poster is xxxxx"));
+//        models.add(new Model(4,R.drawable.namecard, "NameCard","NameCard is xxxxx"));
 
 
         startDrawable("private");
@@ -202,7 +219,8 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                 Log.d("page_pos", "onClick: "+page_position);
 
                 Intent intent = new Intent(ShowGroupActivity.this, HorizontalCoordinatorNtbActivity.class);
-                intent.putExtra("GroupName", models.get(page_position).getTitle());
+                intent.putExtra("GroupName", models.get(page_position).getGroupName());
+                intent.putExtra("groupID",models.get(page_position).getGroupID());
                 startActivityForResult(intent, 1); // 获得position 得到特定页面
             }
         });
@@ -235,25 +253,25 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
     protected void startDrawable(String returnName){
 //        drawables = getResources().obtainTypedArray(R.array.random_imgs);
 
-        if (returnName != "private") {
-            int count = adapter.getCount();
-            switch (count%4){
-                case 0:
-                    models.add(new Model(R.drawable.brochure, returnName,"This is "+returnName));
-                    break;
-                case 1:
-                    models.add(new Model(R.drawable.sticker, returnName,"This is "+returnName));
-                    break;
-                case 2:
-                    models.add(new Model(R.drawable.poster, returnName,"This is "+returnName));
-                    break;
-                case 3:
-                    models.add(new Model(R.drawable.namecard, returnName,"This is "+returnName));
-                    break;
-                default:
-                    break;
-            }
-        }
+//        if (returnName != "private") {
+//            int count = adapter.getCount();
+//            switch (count%4){
+//                case 0:
+//                    models.add(new Model(1,R.drawable.brochure, returnName,"This is "+returnName));
+//                    break;
+//                case 1:
+//                    models.add(new Model(2,R.drawable.sticker, returnName,"This is "+returnName));
+//                    break;
+//                case 2:
+//                    models.add(new Model(3,R.drawable.poster, returnName,"This is "+returnName));
+//                    break;
+//                case 3:
+//                    models.add(new Model(4,R.drawable.namecard, returnName,"This is "+returnName));
+//                    break;
+//                default:
+//                    break;
+//            }
+//        }
         adapter = new Adapter(models, this);
         Log.d("adapter", "This is a adp");
         viewPager = findViewById(R.id.viewPager);
