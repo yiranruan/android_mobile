@@ -29,9 +29,19 @@ import com.example.mobileproject.R;
 import com.example.mobileproject.fragment.ContentFragment;
 import com.example.mobileproject.tasks.HorizontalCoordinatorNtbActivity;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import yalantis.com.sidemenu.interfaces.Resourceble;
 import yalantis.com.sidemenu.interfaces.ScreenShotable;
 import yalantis.com.sidemenu.model.SlideMenuItem;
@@ -59,13 +69,49 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
     //    private LinearLayout linearLayout;
     private int res = R.drawable.content_music;
     private int page_position = 0;
+    private String userID;
+    private String token;
+    private OkHttpClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_group);
-
         models = new ArrayList<>();
+
+        /*
+
+            get group information from server
+
+         */
+
+        Intent intent = getIntent();
+        userID = intent.getStringExtra("userID");
+        token = intent.getStringExtra("token");
+
+        RequestBody requestBody = new FormBody.Builder()
+                .add("userID", userID)
+                .add("token", token)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(getString(R.string.get_group_list))
+                .post(requestBody)
+                .build();
+
+        client = new OkHttpClient();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+
+            }
+        });
+
         final View createG = findViewById(R.id.create);
         createG.setOnClickListener(new View.OnClickListener() {
             @Override
