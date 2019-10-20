@@ -7,16 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-
-    <!--<androidx.viewpager.widget.ViewPager-->
-        <!--android:id="@+id/viewPager"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:clipToPadding="false"-->
-        <!--android:foregroundGravity="center"-->
-        <!--android:overScrollMode="never">-->
-    <!--</androidx.viewpager.widget.ViewPager>-->
-
     <Button
         android:id="@+id/btnOrder"
         android:text="Group now!"
@@ -31,16 +21,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <!--<com.getbase.floatingactionbutton.FloatingActionButton-->
-    <!--android:id="@+id/pink_icon"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--app:fab_icon="@drawable/ic_fingerprint_black_24dp"-->
-    <!--app:fab_colorNormal="@color/pink"-->
-    <!--app:fab_colorPressed="@color/pink_pressed"-->
-    <!--android:layout_alignParentBottom="true"-->
-    <!--android:layout_centerHorizontal="true"-->
-    <!--android:layout_marginBottom="16dp"/>-->
 
     <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/multiple_actions"
