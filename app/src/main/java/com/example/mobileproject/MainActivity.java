@@ -2,13 +2,15 @@ package com.example.mobileproject;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.TextView;
+
 import android.widget.Toast;
 
+import com.example.mobileproject.group.ShowGroupActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -38,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private TextInputEditText verifyCodeTextInput;
     private OkHttpClient client;
     private String email;
-    private TextView textView;
 
 
     @Override
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("useremail", "onClick: "+ email);
 
                 Request request = new Request.Builder()
-                        .url("https://groupmonster.herokuapp.com/new/email")
+                        .url(getString(R.string.request_verify_code))
                         .post(requestBody)
                         .build();
 
@@ -158,13 +159,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String code = verifyCodeTextInput.getText().toString();
+                Log.d("login", "onClick: " + code);
                 RequestBody requestBody = new FormBody.Builder()
                         .add("userEmail", email)
                         .add("userCode", code)
                         .build();
 
                 Request request = new Request.Builder()
-                        .url("https://groupmonster.herokuapp.com/user/login")
+                        .url(getString(R.string.log_in))
                         .post(requestBody)
                         .build();
 
@@ -181,24 +183,25 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+//
                         String responseData =response.body().string();
                         Log.d("response", "login response: "+ responseData);
                         try {
                             final JSONObject jsonData = new JSONObject(responseData);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(MainActivity.this, "Successed!!!", Toast.LENGTH_SHORT).show();
-                                    try {
-                                        String userID = jsonData.getString("userID");
-                                        String token = jsonData.getString("token");
-                                        textView.setText(userID + " "+ token);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-//
-                                }
-                            });
+                            String userID = jsonData.getString("userID");
+                            String token = jsonData.getString("token");
+                            Boolean result = jsonData.getBoolean("result");
+
+                            Intent intent = new Intent(MainActivity.this, ShowGroupActivity.class);
+                            intent.putExtra("userID",userID);
+                            intent.putExtra("token", token);
+
+                            if (result){
+                                startActivity(intent);
+                                finish();
+                            }else{
+                                Toast.makeText(MainActivity.this, "Failed, please your verify code", Toast.LENGTH_SHORT).show();
+                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();

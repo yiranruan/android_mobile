@@ -17,14 +17,14 @@ public class Task extends Object{
     private String description;
     private String createDate;
     private String dueDate;
-    private int usersID;
+    private String usersID;
     private int groupID;
     private String path;
     private String location;
     private String status = "To-Do";
 
 
-    public Task(String username, String title, String description, int usersID, int groupID,
+    public Task(String username, String title, String description, String usersID, int groupID,
                 String createDate, String dueDate, String path, String location, String status) {
         this.username = username;
         this.title = title;
@@ -68,7 +68,7 @@ public class Task extends Object{
         return this.username;
     }
     ;
-    public int getUsersID() {
+    public String getUsersID() {
         return this.usersID;
     }
     ;

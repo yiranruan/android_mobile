@@ -193,7 +193,7 @@ public class CreateButton extends AppCompatActivity {
         // 接收小组ID 和 USERID 的数据
         Intent intent_reci = getIntent();
         int groupID = Integer.parseInt(intent_reci.getStringExtra("groupid"));
-        int userID = Integer.parseInt(intent_reci.getStringExtra("userid"));
+        String userID = intent_reci.getStringExtra("userid");
 
 
         /// 这三个是 EDITTEXT 绑定ID即可

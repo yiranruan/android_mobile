@@ -2,37 +2,67 @@ package com.example.mobileproject.group;
 
 public class Model {
 
-    private int image;
-    private String name;
-    private String desc;
+    private int groupID;
+    private int userCount;
+    private String groupName;
+    private String subjectName;
+    private String inviteCode;
+    private String description;
 
-    public Model(int image, String name, String desc) {
-        this.image = image;
-        this.name = name;
-        this.desc = desc;
+    public Model(int groupID, int userCount, String groupName, String subjectName,String inviteCode, String description) {
+        this.groupID = groupID;
+        this.userCount = userCount;
+        this.groupName = groupName;
+        this.subjectName = subjectName;
+        this.inviteCode = inviteCode;
+        this.description = description;
     }
 
-    public int getImage() {
-        return image;
+
+    public int getGroupID() {
+        return groupID;
     }
 
-    public void setImage(int image) {
-        this.image = image;
+    public void setGroupID(int groupID) {
+        this.groupID = groupID;
     }
 
-    public String getTitle() {
-        return name;
+
+    public int getUserCount() {
+        return userCount;
     }
 
-    public void setTitle(String name) {
-        this.name = name;
+    public void setUserCount(int userCount) {
+        this.userCount = userCount;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getGroupName() {
+        return groupName;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
+
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
+    }
+
+    public String getInviteCode(){return inviteCode;}
+
+    public void setInviteCode(String inviteCode){
+        this.inviteCode = inviteCode;
+    }
+
+    public String getDescription(){return description;}
+
+    public void setDescription(String description){
+        this.description = description;
+    }
+
+
 }

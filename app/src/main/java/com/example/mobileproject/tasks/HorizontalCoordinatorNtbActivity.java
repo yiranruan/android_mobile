@@ -33,11 +33,24 @@ import com.example.mobileproject.R;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import devlight.io.library.ntb.NavigationTabBar;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 
 
@@ -53,15 +66,61 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
     private RecyclerView recyclerView;
     private int task_position;
     private RecycleAdapter.TaskHolder current_holder;
+    private String userID;
+    private String token;
+    private int groupID;
+    private String groupName;
+    Intent intent;
 
-    private int userID = 1;
-    private int groupID = 1;
+    OkHttpClient client;
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        intent = getIntent();
 //        Fresco.initialize(this);
         setContentView(R.layout.activity_horizontal_coordinator_ntb);
+        userID = intent.getStringExtra("userID");
+        token = intent.getStringExtra("token");
+        groupID = intent.getIntExtra("groupID", Integer.valueOf(userID));
+        groupName = intent.getStringExtra("groupName");
+        /*
+
+            fetch task data from server
+
+         */
+        RequestBody requestBody = new FormBody.Builder()
+                .add("userID", userID)
+                .add("token", token)
+                .add("groupID", String.valueOf(groupID))
+                .build();
+
+        Request request = new Request.Builder()
+                .url(getString(R.string.group_tasks))
+                .post(requestBody)
+                .build();
+
+        client = new OkHttpClient();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseData = response.body().string();
+                try {
+                    JSONObject jsonResponse = new JSONObject(responseData);
+                    JSONArray tasks = jsonResponse.getJSONArray("tasks");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
         initUI();
 
     }
@@ -143,12 +202,10 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         populate();
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.vp_horizontal_ntb);
-        Intent intent = getIntent();
-        String group_name = intent.getStringExtra("GroupName");
         @SuppressLint("ResourceType")
         CollapsingToolbarLayout tb = findViewById(R.id.toolbar);
-        Log.d("nameg", "initUI: "+group_name);
-        tb.setTitle(group_name);
+        Log.d("nameg", "initUI: "+groupName);
+        tb.setTitle(groupName);
 
         viewPager.setOffscreenPageLimit(2);
         viewPager.setAdapter(new PagerAdapter() {
@@ -232,7 +289,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                         intent.putExtra("dueDate", eduDate);
                         intent.putExtra("path", path);
                         intent.putExtra("location", location);
-                        intent.putExtra("userID", Integer.toString(userID));
+                        intent.putExtra("userID", userID);
                         intent.putExtra("groupID", Integer.toString(groupID));
 
                         startActivityForResult(intent, RequestCode);
@@ -338,8 +395,8 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
             public void onClick(final View v) {
 
                 Intent intent = new Intent(HorizontalCoordinatorNtbActivity.this, CreateButton.class);
-                intent.putExtra("userid", Integer.toString(userID));
-                intent.putExtra("groupid",Integer.toString(groupID));
+                intent.putExtra("userid", userID);
+                intent.putExtra("groupid", Integer.toString(groupID));
                 startActivityForResult(intent, 1);
 
 
@@ -392,9 +449,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 
 
     private void populate() {
-        String n = "a";
-        Task newtask = new Task(n, "todo1", n, 1,1, n, n, n, n, "To-Do");
-        this.task_todo.add(newtask);
+
 
 //        this.task_todo.add(new Task(1, "todo_test1", "This is todo_test 1", 1, 1, "ToDo"));
 //        this.task_todo.add(new Task(2, "todo_test2", "This is todo_test 2", 2, 1, "ToDo"));

@@ -82,7 +82,7 @@ public class ShowTaskActivity extends AppCompatActivity {
     private String filepath;
     private String iamge;
     private String path;
-    private int userID;
+    private String userID;
     private int groupID;
     private String title;
     private String description;
@@ -173,7 +173,7 @@ public class ShowTaskActivity extends AppCompatActivity {
         startDate = intent.getStringExtra("strDate");
         dueDate = intent.getStringExtra("dueDate");
         status = intent.getStringExtra("status");
-        userID= Integer.parseInt(intent.getStringExtra("userID"));
+        userID= intent.getStringExtra("userID");
         groupID = Integer.parseInt(intent.getStringExtra("groupID"));
         location = intent.getStringExtra("location");
         //path = intent.getParcelableExtra("path");

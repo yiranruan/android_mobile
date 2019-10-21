@@ -29,9 +29,22 @@ import com.example.mobileproject.R;
 import com.example.mobileproject.fragment.ContentFragment;
 import com.example.mobileproject.tasks.HorizontalCoordinatorNtbActivity;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import yalantis.com.sidemenu.interfaces.Resourceble;
 import yalantis.com.sidemenu.interfaces.ScreenShotable;
 import yalantis.com.sidemenu.model.SlideMenuItem;
@@ -59,13 +72,83 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
     //    private LinearLayout linearLayout;
     private int res = R.drawable.content_music;
     private int page_position = 0;
+    private String userID = "6";
+    private String token = "umeuuuufae";
+    private OkHttpClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_group);
-
         models = new ArrayList<>();
+
+        /*
+
+            get group information from server
+
+         */
+
+        Intent intent = getIntent();
+//        userID = intent.getStringExtra("userID");
+//        token = intent.getStringExtra("token");
+
+        RequestBody requestBody = new FormBody.Builder()
+                .add("userID", userID)
+                .add("token", token)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(getString(R.string.get_group_list))
+                .post(requestBody)
+                .build();
+
+        client = new OkHttpClient();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseData = response.body().string();
+                try {
+                    JSONObject jsonData = new JSONObject(responseData);
+                    JSONArray jsonArray = jsonData.getJSONArray("list");
+                    Log.d("group list", "onResponse: " + jsonArray.length());
+                    for (int i = 0 ; i < jsonArray.length(); i++) {
+                        JSONObject element = jsonArray.getJSONObject(i);
+                        Log.d("group", "group " + i + ": " + element.toString());
+                        int groupID = element.getInt("groupID");
+                        String groupName = element.getString("groupName");
+                        String description = element.getString("description");
+                        int memberCount = element.getInt("memberCount");
+                        String inviteCode = element.getString("groupCode");
+                        String subjectName = element.getString("subjectName");
+                        Log.d("TEST", "onResponse: 1111");
+                        models.add(new Model(groupID, memberCount, groupName, subjectName, inviteCode, description));
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+
+                    }
+                    models.add(new Model(Integer.valueOf(userID),  1, "Personal Tasks", " ","", "This is a personal task"));
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
         final View createG = findViewById(R.id.create);
         createG.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,8 +157,9 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                         Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(ShowGroupActivity.this, GroupCreateActivity.class);
-//                intent.putExtra("extra_data", "Hello world");
-                startActivityForResult(intent, 1);
+                intent.putExtra("userID", userID);
+                intent.putExtra("token", token);
+                startActivityForResult(intent, 2);
             }
         });
 
@@ -123,6 +207,8 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                 Toast.makeText(ShowGroupActivity.this, "You clicked",
                         Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(ShowGroupActivity.this, GroupJoinActivity.class);
+                intent.putExtra("userID", userID);
+                intent.putExtra("token", token);
                 startActivityForResult(intent, 1);
             }
         });
@@ -139,13 +225,18 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                 getResources().getColor(R.color.color4)
         };
 
-        models.add(new Model(R.drawable.brochure, "Brochure","Brochure is xxxxx"));
-        models.add(new Model(R.drawable.sticker, "Sticker","Sticker is xxxxx"));
-        models.add(new Model(R.drawable.poster, "Poster","Poster is xxxxx"));
-        models.add(new Model(R.drawable.namecard, "NameCard","NameCard is xxxxx"));
+
+        Log.d("TEST", "onResponse: 2222");
+        startDrawable();
 
 
-        startDrawable("private");
+//        models.add(new Model(1, R.drawable.brochure, "Brochure","Brochure is xxxxx"));
+//        models.add(new Model(2,R.drawable.sticker, "Sticker","Sticker is xxxxx"));
+//        models.add(new Model(3,R.drawable.poster, "Poster","Poster is xxxxx"));
+//        models.add(new Model(4,R.drawable.namecard, "NameCard","NameCard is xxxxx"));
+
+
+
 
         final Button btn_task = findViewById(R.id.btnTask);
         btn_task.setOnClickListener(new View.OnClickListener() {
@@ -156,8 +247,12 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                 Log.d("page_pos", "onClick: "+page_position);
 
                 Intent intent = new Intent(ShowGroupActivity.this, HorizontalCoordinatorNtbActivity.class);
-                intent.putExtra("GroupName", models.get(page_position).getTitle());
-                startActivityForResult(intent, 1); // 获得position 得到特定页面
+                int groupID = models.get(page_position).getGroupID();
+                intent.putExtra("groupName", models.get(page_position).getGroupName());
+                intent.putExtra("groupID",groupID);
+                intent.putExtra("userID", userID);
+                intent.putExtra("token", token);
+                startActivity(intent); // 获得position 得到特定页面
             }
         });
 
@@ -167,54 +262,92 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case 1:
-                if (resultCode == RESULT_OK) {
-                    String returnName = data.getStringExtra("group_name");
-                    String returnPw = data.getStringExtra("password");
-                    Toast.makeText(ShowGroupActivity.this, returnName,
-                            Toast.LENGTH_SHORT).show();
-//                    models.add(new Model(R.drawable.namecard, returnName,"This is "+returnName));
 
-//                    adapter = new Adapter(models, this);
-//                    startActivity(new Intent(MainActivity.this, GroupCreateActivity.class));
-                    startDrawable(returnName);
+            // Join a new group
+            case 1:
+                if (resultCode == RESULT_OK){
+                    String groupInfo = data.getStringExtra("groupInfo");
+                    try {
+                        JSONObject jsonGroupInfo = new JSONObject(groupInfo);
+                        models.add(new Model(
+                                jsonGroupInfo.getInt("groupID"),
+                                jsonGroupInfo.getInt("memberCount"),
+                                jsonGroupInfo.getString("groupName"),
+                                jsonGroupInfo.getString("subjectName"),
+                                jsonGroupInfo.getString("groupCode"),
+                                jsonGroupInfo.getString("description")
+                                ));
+                        adapter.notifyDataSetChanged();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-                // send msg to server!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                else{
+                    Toast.makeText(ShowGroupActivity.this, "You are in this group", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            // Create a new group
+            case 2:
+                Log.d("create group", "onActivityResult: 3");
+                if(resultCode == RESULT_OK){
+                    String group = data.getStringExtra("groupInfo");
+                    Log.d("created group", "onActivityResult: " + group);
+                    try {
+                        JSONObject groupJson = new JSONObject(group);
+                        models.add(new Model(
+                                groupJson.getInt("groupID"),
+                                groupJson.getInt("memberCount"),
+                                groupJson.getString("groupName"),
+                                groupJson.getString("subjectName"),
+                                groupJson.getString("groupCode"),
+                                groupJson.getString("description")
+                        ));
+                        adapter.notifyDataSetChanged();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    Toast.makeText(ShowGroupActivity.this, "Fail to create a new group, try it later", Toast.LENGTH_SHORT).show();
+                }
                 break;
             default:
                 break;
         }
     }
 
-    protected void startDrawable(String returnName){
+    protected void startDrawable(){
+        Log.d("TEST", "onResponse: 3333");
 //        drawables = getResources().obtainTypedArray(R.array.random_imgs);
 
-        if (returnName != "private") {
-            int count = adapter.getCount();
-            switch (count%4){
-                case 0:
-                    models.add(new Model(R.drawable.brochure, returnName,"This is "+returnName));
-                    break;
-                case 1:
-                    models.add(new Model(R.drawable.sticker, returnName,"This is "+returnName));
-                    break;
-                case 2:
-                    models.add(new Model(R.drawable.poster, returnName,"This is "+returnName));
-                    break;
-                case 3:
-                    models.add(new Model(R.drawable.namecard, returnName,"This is "+returnName));
-                    break;
-                default:
-                    break;
-            }
-        }
+//        if (returnName != "private") {
+//            int count = adapter.getCount();
+//            switch (count%4){
+//                case 0:
+//                    models.add(new Model(1,R.drawable.brochure, returnName,"This is "+returnName));
+//                    break;
+//                case 1:
+//                    models.add(new Model(2,R.drawable.sticker, returnName,"This is "+returnName));
+//                    break;
+//                case 2:
+//                    models.add(new Model(3,R.drawable.poster, returnName,"This is "+returnName));
+//                    break;
+//                case 3:
+//                    models.add(new Model(4,R.drawable.namecard, returnName,"This is "+returnName));
+//                    break;
+//                default:
+//                    break;
+//            }
+//        }
+        Log.d("run", "startDrawable: ");
+
         adapter = new Adapter(models, this);
         Log.d("adapter", "This is a adp");
         viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(adapter);
         viewPager.setPadding(130, 0,130,0);
 
-//        colors = color_temp;
 
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
