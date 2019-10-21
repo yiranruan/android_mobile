@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="tasks.ShowTaskActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/L_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/btn_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancel"
+                android:textSize="16sp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text=""
+                    android:textSize="16sp"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_ok"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="confirm"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/et_Title"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="60dp"
+            android:hint="Task Title"
+            android:textSize="16sp"/>
+
+
+
+        <TextView
+            android:id="@+id/tv_Location"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@+id/et_Title"
+            android:layout_marginTop="15dp"
+            android:hint="Location"
+            android:textSize="16sp"/>
+
+
+
+        <LinearLayout
+            android:id="@+id/ll_startdate"
+            android:layout_below="@+id/tv_Location"
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:text="Select Start Date:"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_startdate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#ededed"
+                android:padding="8dp"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_enddate"
+            android:layout_below="@+id/ll_startdate"
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:text="Select End Date:"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_enddate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#ededed"
+                android:padding="8dp"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/ll_enddate"
+            android:layout_marginTop="15dp"
+            android:background="#aa000000">
+        </View>
+
+        <EditText
+            android:id="@+id/et_note"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_below="@+id/ll_enddate"
+            android:layout_marginTop="15dp"
+            android:hint="Notes"
+            android:scrollbars="vertical"
+            android:textSize="16sp"/>
+
+        <View
+            android:id="@+id/view3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/et_note"
+            android:background="#aa000000">
+        </View>
+
+        <!--Image view in which image will be set-->
+
+        <ImageView
+            android:id="@+id/image_view"
+            android:layout_below="@+id/view3"
+            android:src="@drawable/ic_image_black_24dp"
+            android:scaleType="centerCrop"
+            android:layout_width="match_parent"
+            android:layout_height="300dp" />
+
+        <Button
+            android:id="@+id/capture_image_btn"
+            android:layout_below="@+id/image_view"
+            android:text="Capture Image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/tv_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="The status of the task: "
+            android:textSize="16sp"
+            android:layout_below="@+id/member"
+            android:layout_marginTop="15dp"/>
+
+        <TextView
+            android:id="@+id/member"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/capture_image_btn"
+            android:layout_marginTop="15dp"
+            android:hint="Member"
+            android:textSize="16sp"/>
+
+
+
+        <RadioGroup
+            android:id="@+id/rg_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/tv_status"
+            android:layout_marginTop="5dp">
+
+            <RadioButton
+                android:id="@+id/rb_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="To do"
+                android:textSize="16sp" />
+
+            <RadioButton
+                android:id="@+id/rb_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Doing"
+                android:textSize="16sp" />
+
+            <RadioButton
+                android:id="@+id/rb_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Done"
+                android:textSize="16sp" />
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/btn_addCalender"
+            android:text="Add to the Calendar"
+            android:textSize="18sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rg_1"
+            android:layout_marginTop="15dp"
+            />
+
+        <Button
+            android:id="@+id/btn_deleteCalendar"
+            android:text="Delete from the Calendar"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btn_addCalender"
+            />
+
+
+
+    </RelativeLayout>
+
+
+
+
+</ScrollView>

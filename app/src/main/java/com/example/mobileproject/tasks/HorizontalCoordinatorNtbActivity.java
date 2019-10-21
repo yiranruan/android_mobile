@@ -1,10 +1,14 @@
 package com.example.mobileproject.tasks;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -35,16 +39,23 @@ import java.util.Random;
 
 import devlight.io.library.ntb.NavigationTabBar;
 
+
+
+
 public class HorizontalCoordinatorNtbActivity extends Activity {
+
     List<Task> task_todo = new ArrayList<>();
     List<Task> task_doing = new ArrayList<>();
     List<Task> task_done = new ArrayList<>();
-    List<Task> tasks = new ArrayList<>();
     List<RecycleAdapter> rec_adapters = new ArrayList<>();
+
 
     private RecyclerView recyclerView;
     private int task_position;
     private RecycleAdapter.TaskHolder current_holder;
+
+    private int userID = 1;
+    private int groupID = 1;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -52,6 +63,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 //        Fresco.initialize(this);
         setContentView(R.layout.activity_horizontal_coordinator_ntb);
         initUI();
+
     }
 
     @Override
@@ -64,30 +76,64 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 //                addTask(position, task_todo.get(position), task_doing, rec_adapters.get(1));
 //                removeTask(position, task_todo, rec_adapters.get(0));
                 task_doing.add(0, task_todo.get(position));
-                rec_adapters.get(1).notifyItemInserted(-1);
+//                rec_adapters.get(1).notifyItemInserted(-1);
+                if(task_doing.size()==1){
+
+                    rec_adapters.get(1).notifyDataSetChanged();
+
+                } else {
+
+                    rec_adapters.get(1).notifyItemInserted(-1);
+
+                }
                 task_todo.remove(position);
                 rec_adapters.get(0).notifyItemRemoved(position);
+                rec_adapters.get(0).notifyItemRangeChanged(position,task_todo.size());
                 break;
             case 2:
                 position = current_holder.getAdapterPosition();
                 task_todo.add(0, task_doing.get(position));
-                rec_adapters.get(0).notifyItemInserted(-1);
+                if(task_todo.size()==1){
+
+                    rec_adapters.get(0).notifyDataSetChanged();
+                } else {
+
+                    rec_adapters.get(0).notifyItemInserted(-1);
+
+                }
                 task_doing.remove(position);
                 rec_adapters.get(1).notifyItemRemoved(position);
+                rec_adapters.get(1).notifyItemRangeChanged(position,task_doing.size());
                 break;
             case 3:
                 position = current_holder.getAdapterPosition();
                 task_done.add(0, task_doing.get(position));
-                rec_adapters.get(2).notifyItemInserted(-1);
+                if(task_done.size()==1){
+
+                    rec_adapters.get(2).notifyDataSetChanged();
+                } else {
+
+                    rec_adapters.get(2).notifyItemInserted(-1);
+
+                }
                 task_doing.remove(position);
                 rec_adapters.get(1).notifyItemRemoved(position);
+                rec_adapters.get(1).notifyItemRangeChanged(position,task_doing.size());
                 break;
             default:
                 position = current_holder.getAdapterPosition();
                 task_doing.add(0, task_done.get(position));
-                rec_adapters.get(1).notifyItemInserted(-1);
+                if(task_doing.size()==1){
+
+                    rec_adapters.get(1).notifyDataSetChanged();
+                } else {
+
+                    rec_adapters.get(1).notifyItemInserted(-1);
+
+                }
                 task_done.remove(position);
                 rec_adapters.get(2).notifyItemRemoved(position);
+                rec_adapters.get(2).notifyItemRangeChanged(position,task_done.size());
         }
         return super.onContextItemSelected(item);
     }
@@ -104,7 +150,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         Log.d("nameg", "initUI: "+group_name);
         tb.setTitle(group_name);
 
-
+        viewPager.setOffscreenPageLimit(2);
         viewPager.setAdapter(new PagerAdapter() {
             @Override
             public int getCount() {
@@ -148,8 +194,48 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                 rec_adapter.setOnItemClickLitener(new RecycleAdapter.OnItemClickLitener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        Log.d("page", "hahahah");
-                        Toast.makeText(HorizontalCoordinatorNtbActivity.this,"postion"+position,Toast.LENGTH_SHORT).show();
+                        ///WWWWWWWW
+                        Task task;
+                        int RequestCode;
+                        switch (page_position) {
+                            case 0:
+                                task = task_todo.get(position);
+                                RequestCode = 11;
+                                break;
+                            case 1:
+                                task = task_doing.get(position);
+                                RequestCode = 22;
+                                break;
+                            default:
+                                task = task_done.get(position);
+                                RequestCode = 33;
+                                break;
+                        }
+
+                        String title = task.getTitle();
+                        String description = task.getDescription();
+                        String username = task.getUsername();
+                        String status = task.getStatus();
+                        String strDate = task.getCreateDate();
+                        String eduDate = task.getDueDate();
+                        String location = task.getlocation();
+                        String path = task.getPath();
+
+
+                        // 传输 数据 让其展示
+                        Intent intent = new Intent(HorizontalCoordinatorNtbActivity.this, ShowTaskActivity.class);
+                        intent.putExtra("title", title);
+                        intent.putExtra("description", description);
+                        intent.putExtra("status", status);
+                        intent.putExtra("username", username);
+                        intent.putExtra("strDate", strDate);
+                        intent.putExtra("dueDate", eduDate);
+                        intent.putExtra("path", path);
+                        intent.putExtra("location", location);
+                        intent.putExtra("userID", Integer.toString(userID));
+                        intent.putExtra("groupID", Integer.toString(groupID));
+
+                        startActivityForResult(intent, RequestCode);
                     }
                 });
 
@@ -176,6 +262,8 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                 return view;
             }
         });
+
+
 
         final String[] colors = getResources().getStringArray(R.array.default_preview);
 
@@ -244,33 +332,42 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 
 
         final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.parent);
+
         findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                for (int i = 0; i < navigationTabBar.getModels().size(); i++) {
-                    final NavigationTabBar.Model model = navigationTabBar.getModels().get(i);
-                    navigationTabBar.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            final String title = String.valueOf(new Random().nextInt(15));
-                            if (!model.isBadgeShowed()) {
-                                model.setBadgeTitle(title);
-                                model.showBadge();
-                            } else model.updateBadgeTitle(title);
-                        }
-                    }, i * 100);
-                }
 
-                coordinatorLayout.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        final Snackbar snackbar = Snackbar.make(navigationTabBar, "Coordinator NTB", Snackbar.LENGTH_SHORT);
-                        snackbar.getView().setBackgroundColor(Color.parseColor("#9b92b3"));
-                        ((TextView) snackbar.getView().findViewById(R.id.snackbar_text))
-                                .setTextColor(Color.parseColor("#423752"));
-                        snackbar.show();
-                    }
-                }, 1000);
+                Intent intent = new Intent(HorizontalCoordinatorNtbActivity.this, CreateButton.class);
+                intent.putExtra("userid", Integer.toString(userID));
+                intent.putExtra("groupid",Integer.toString(groupID));
+                startActivityForResult(intent, 1);
+
+
+
+//                for (int i = 0; i < navigationTabBar.getModels().size(); i++) {
+//                    final NavigationTabBar.Model model = navigationTabBar.getModels().get(i);
+//                    navigationTabBar.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            final String title = String.valueOf(new Random().nextInt(15));
+//                            if (!model.isBadgeShowed()) {
+//                                model.setBadgeTitle(title);
+//                                model.showBadge();
+//                            } else model.updateBadgeTitle(title);
+//                        }
+//                    }, i * 100);
+//                }
+
+//                coordinatorLayout.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        final Snackbar snackbar = Snackbar.make(navigationTabBar, "Coordinator NTB", Snackbar.LENGTH_SHORT);
+//                        snackbar.getView().setBackgroundColor(Color.parseColor("#9b92b3"));
+//                        ((TextView) snackbar.getView().findViewById(R.id.snackbar_text))
+//                                .setTextColor(Color.parseColor("#423752"));
+//                        snackbar.show();
+//                    }
+//                }, 1000);
             }
         });
 
@@ -295,22 +392,25 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 
 
     private void populate() {
-        this.task_todo.add(new Task(1, "todo_test1", "This is todo_test 1", 1, 1, "ToDo"));
-        this.task_todo.add(new Task(2, "todo_test2", "This is todo_test 2", 2, 1, "ToDo"));
-        this.task_todo.add(new Task(3, "todo_test3", "This is todo_test 3", 3, 1, "ToDo"));
-        this.task_todo.add(new Task(4, "todo_test4", "This is todo_test 4", 4, 1, "ToDo"));
+        String n = "a";
+        Task newtask = new Task(n, "todo1", n, 1,1, n, n, n, n, "To-Do");
+        this.task_todo.add(newtask);
 
-        this.task_doing.add(new Task(1, "doing_test1", "This is doing_test 1", 1, 1, "Doing"));
-        this.task_doing.add(new Task(2, "doing_test2", "This is doing_test 2", 2, 1, "Doing"));
-        this.task_doing.add(new Task(3, "doing_test3", "This is doing_test 3", 3, 1, "Doing"));
-        this.task_doing.add(new Task(4, "doing_test4", "This is doing_test 4", 4, 1, "Doing"));
-
-        this.task_done.add(new Task(1, "done_test1", "This is done_test 1", 1, 1, "Done"));
-        this.task_done.add(new Task(2, "done_test2", "This is done_test 2", 2, 1, "Done"));
-        this.task_done.add(new Task(3, "done_test3", "This is done_test 3", 3, 1, "Done"));
-        this.task_done.add(new Task(4, "done_test4", "This is done_test 4", 4, 1, "Done"));
-
-
+//        this.task_todo.add(new Task(1, "todo_test1", "This is todo_test 1", 1, 1, "ToDo"));
+//        this.task_todo.add(new Task(2, "todo_test2", "This is todo_test 2", 2, 1, "ToDo"));
+//        this.task_todo.add(new Task(3, "todo_test3", "This is todo_test 3", 3, 1, "ToDo"));
+//        this.task_todo.add(new Task(4, "todo_test4", "This is todo_test 4", 4, 1, "ToDo"));
+//
+//        this.task_doing.add(new Task(1, "doing_test1", "This is doing_test 1", 1, 1, "Doing"));
+//        this.task_doing.add(new Task(2, "doing_test2", "This is doing_test 2", 2, 1, "Doing"));
+//        this.task_doing.add(new Task(3, "doing_test3", "This is doing_test 3", 3, 1, "Doing"));
+//        this.task_doing.add(new Task(4, "doing_test4", "This is doing_test 4", 4, 1, "Doing"));
+//
+//        this.task_done.add(new Task(1, "done_test1", "This is done_test 1", 1, 1, "Done"));
+//        this.task_done.add(new Task(2, "done_test2", "This is done_test 2", 2, 1, "Done"));
+//        this.task_done.add(new Task(3, "done_test3", "This is done_test 3", 3, 1, "Done"));
+//        this.task_done.add(new Task(4, "done_test4", "This is done_test 4", 4, 1, "Done"));
+//
 
     }
 
@@ -369,7 +469,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof TaskHolder) {
-                ((TaskHolder) holder).txt.setText(tasks.get(position).getText());
+                ((TaskHolder) holder).txt.setText(tasks.get(position).getTitle());
 
                 if (mOnItemClickLitener != null) {
                     ((TaskHolder) holder).txt.setOnClickListener(new View.OnClickListener() {
@@ -446,12 +546,66 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 //                      menu.add(Menu.NONE, 2, 2, "Done");
                         break;
                 }
+            }
+        }
+    }
+
+
+
+    /// WWWWWW
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // 从CREATE ACTIVITY 里传回来的数据
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+
+                // 接听数据
+
+                String title = data.getStringExtra("title");
+                String description = data.getStringExtra("description");
+                String username = data.getStringExtra("username");
+                String startDate = data.getStringExtra("startDate");
+                String dueDate = data.getStringExtra("dueDate");
+                String location = data.getStringExtra("location");
+//                Bitmap bitmap = data.getParcelableExtra("bitmap");
+                String path = data.getStringExtra("path");
+
+
+                Task newtask = new Task
+                        (username, title, description, userID,
+                                groupID, startDate, dueDate, path, location, "To-Do");
+
+
+                task_todo.add(0, newtask);
+                rec_adapters.get(0).notifyDataSetChanged();
+
+//                dic.put(title, newtask);
+//
+//                // 更新ADAPTER
+//                list.add(title);
+//                adapter.setData(list);
+
 
             }
-
-
         }
-
-
+        // 从 SHOW TASK ACTIVITY 里传回来的数据
+        else if (requestCode == 2){
+//            if(resultCode == RESULT_OK) {
+//                String title = data.getStringExtra("title");
+//                String description = data.getStringExtra("description");
+//                String username = data.getStringExtra("username");
+//                String startDate = data.getStringExtra("startDate");
+//                String dueDate = data.getStringExtra("dueDate");
+//                String bitmap = data.getParcelableExtra("bitmap");
+//                String location = data.getStringExtra("location");
+//                String status = data.getStringExtra("status");
+//                Task newtask = new Task
+//                        (username, title, description, userID,
+//                                groupID, startDate, dueDate, path, location, status);
+//
+//            }
+        }
     }
 }
