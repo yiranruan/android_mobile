@@ -117,7 +117,15 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                     List remoteList = new ArrayList();
                     JSONArray jsonArray = jsonData.getJSONArray("list");
                     Log.d("group list", "onResponse: ");
-
+                    for (int i = 0 ; i < jsonArray.length(); i++){
+                        JSONObject element = jsonArray.getJSONObject(i);
+                        int groupID = element.getInt("groupID");
+                        String groupName = element.getString("groupName");
+                        String description = element.getString("description");
+                        int memberCount = element.getInt("memberCount");
+                        String subjectName = element.getString("subjectName");
+                        models.add(new Model(groupID,memberCount,groupName,subjectName, description));
+                    }
 
                     // Need to handle group list here !!!
 
@@ -135,7 +143,8 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                         Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(ShowGroupActivity.this, GroupCreateActivity.class);
-//                intent.putExtra("extra_data", "Hello world");
+                intent.putExtra("useID", userID);
+                intent.putExtra("token", token);
                 startActivityForResult(intent, 1);
             }
         });
@@ -184,7 +193,9 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                 Toast.makeText(ShowGroupActivity.this, "You clicked",
                         Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(ShowGroupActivity.this, GroupJoinActivity.class);
-                startActivityForResult(intent, 1);
+                intent.putExtra("userID", userID);
+                intent.putExtra("token", token);
+                startActivityForResult(intent, 2);
             }
         });
 
@@ -200,7 +211,7 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                 getResources().getColor(R.color.color4)
         };
 
-        models.add(new Model(Integer.valueOf(userID), "deadline", 1, "Personal Tasks", " ", "This is a personal task"));
+        models.add(new Model(Integer.valueOf(userID),  1, "Personal Tasks", " ", "This is a personal task"));
 
 //        models.add(new Model(1, R.drawable.brochure, "Brochure","Brochure is xxxxx"));
 //        models.add(new Model(2,R.drawable.sticker, "Sticker","Sticker is xxxxx"));
@@ -221,6 +232,8 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                 Intent intent = new Intent(ShowGroupActivity.this, HorizontalCoordinatorNtbActivity.class);
                 intent.putExtra("GroupName", models.get(page_position).getGroupName());
                 intent.putExtra("groupID",models.get(page_position).getGroupID());
+                intent.putExtra("userID", userID);
+                intent.putExtra("token", token);
                 startActivityForResult(intent, 1); // 获得position 得到特定页面
             }
         });
@@ -245,6 +258,27 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                 }
                 // send msg to server!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 break;
+
+            case 2:
+                if (requestCode == RESULT_OK){
+                    String groupInfo = data.getStringExtra("joinedGroup");
+                    try {
+                        JSONObject jsonGroupInfo = new JSONObject(groupInfo);
+                        models.add(new Model(
+                                jsonGroupInfo.getInt("groupID"),
+                                jsonGroupInfo.getInt("memberCount"),
+                                jsonGroupInfo.getString("groupName"),
+                                jsonGroupInfo.getString("subjectName"),
+                                jsonGroupInfo.getString("description")
+                                ));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    Toast.makeText(ShowGroupActivity.this, "Failed to join a new group, try it later", Toast.LENGTH_SHORT).show();
+                }
+
             default:
                 break;
         }

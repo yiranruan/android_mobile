@@ -34,6 +34,10 @@ import java.util.List;
 import java.util.Random;
 
 import devlight.io.library.ntb.NavigationTabBar;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 public class HorizontalCoordinatorNtbActivity extends Activity {
     List<Task> task_todo = new ArrayList<>();
@@ -45,12 +49,37 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
     private RecyclerView recyclerView;
     private int task_position;
     private RecycleAdapter.TaskHolder current_holder;
+    private String userID;
+    private String token;
+    private String group_name;
+    private String groupID;
+    Intent intent;
+
+    OkHttpClient client;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        Fresco.initialize(this);
         setContentView(R.layout.activity_horizontal_coordinator_ntb);
+        userID = intent.getStringExtra("userID");
+        token = intent.getStringExtra("token");
+        group_name = intent.getStringExtra("groupName");
+        groupID = intent.getStringExtra("groupID");
+        /*
+
+            fetch task data from server
+
+         */
+        RequestBody requestBody = new FormBody.Builder()
+                .add("userID", userID)
+                .add("token", token)
+                .add("groupID", groupID)
+                .build();
+
+//        Request request = new Request.Builder()
+
+
         initUI();
     }
 
@@ -97,8 +126,6 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         populate();
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.vp_horizontal_ntb);
-        Intent intent = getIntent();
-        String group_name = intent.getStringExtra("GroupName");
         @SuppressLint("ResourceType")
         CollapsingToolbarLayout tb = findViewById(R.id.toolbar);
         Log.d("nameg", "initUI: "+group_name);
