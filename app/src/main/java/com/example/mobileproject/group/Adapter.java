@@ -41,18 +41,18 @@ public class Adapter extends PagerAdapter {
         layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(R.layout.item, container, false);
 
-        TextView groupName, countMembers, subjectName, deadline, description;
+        TextView groupName, countMembers, subjectName, inviteCode, description;
 
         groupName = view.findViewById(R.id.group_name);
         countMembers = view.findViewById(R.id.count_member);
         subjectName = view.findViewById(R.id.subject_name);
-        deadline = view.findViewById(R.id.deadline);
+        inviteCode = view.findViewById(R.id.invite_code);
         description = view.findViewById(R.id.desc);
 
         groupName.setText(models.get(position).getGroupName());
         countMembers.setText(models.get(position).getUserCount());
         subjectName.setText((models.get(position).getSubjectName()));
-        deadline.setText("Deadline: " + models.get(position).getDeadline());
+        inviteCode.setText("Deadline: " + models.get(position).getInviteCode());
         description.setText(models.get(position).getDescription());
 
 

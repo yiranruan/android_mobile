@@ -6,13 +6,15 @@ public class Model {
     private int userCount;
     private String groupName;
     private String subjectName;
+    private String inviteCode;
     private String description;
 
-    public Model(int groupID, int userCount, String groupName, String subjectName, String description) {
+    public Model(int groupID, int userCount, String groupName, String subjectName,String inviteCode, String description) {
         this.groupID = groupID;
         this.userCount = userCount;
         this.groupName = groupName;
         this.subjectName = subjectName;
+        this.inviteCode = inviteCode;
         this.description = description;
     }
 
@@ -48,6 +50,12 @@ public class Model {
 
     public void setSubjectName(String subjectName) {
         this.subjectName = subjectName;
+    }
+
+    public String getInviteCode(){return inviteCode;}
+
+    public void setInviteCode(String inviteCode){
+        this.inviteCode = inviteCode;
     }
 
     public String getDescription(){return description;}

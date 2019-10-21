@@ -85,13 +85,20 @@ public class GroupCreateActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                        
+                        String responseData = response.body().string();
+                        try {
+                            JSONObject jsonData = new JSONObject(responseData);
+                            String groupInfo = jsonData.getString("groupInfo");
+                            intent.putExtra("groupInfo", groupInfo);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        setResult(RESULT_OK, intent);
+                        finish();
                     }
                 });
 
-                setResult(RESULT_OK, intent);
-//                Toast.makeText(GroupCreateActivity.this, "Create Group Success!", Toast.LENGTH_SHORT).show();
-                finish();
+
             }
         });
     }
