@@ -123,8 +123,9 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                         String groupName = element.getString("groupName");
                         String description = element.getString("description");
                         int memberCount = element.getInt("memberCount");
+                        String inviteCode = element.getString("inviteCode");
                         String subjectName = element.getString("subjectName");
-                        models.add(new Model(groupID,memberCount,groupName,subjectName, description));
+                        models.add(new Model(groupID,memberCount,groupName,subjectName,inviteCode, description));
                     }
 
                     // Need to handle group list here !!!
@@ -211,7 +212,7 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                 getResources().getColor(R.color.color4)
         };
 
-        models.add(new Model(Integer.valueOf(userID),  1, "Personal Tasks", " ", "This is a personal task"));
+        models.add(new Model(Integer.valueOf(userID),  1, "Personal Tasks", " ","", "This is a personal task"));
 
 //        models.add(new Model(1, R.drawable.brochure, "Brochure","Brochure is xxxxx"));
 //        models.add(new Model(2,R.drawable.sticker, "Sticker","Sticker is xxxxx"));
@@ -246,18 +247,28 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
         switch (requestCode) {
             case 1:
                 if (resultCode == RESULT_OK) {
-                    String returnName = data.getStringExtra("group_name");
-                    String returnPw = data.getStringExtra("password");
-                    Toast.makeText(ShowGroupActivity.this, returnName,
-                            Toast.LENGTH_SHORT).show();
-//                    models.add(new Model(R.drawable.namecard, returnName,"This is "+returnName));
-
-//                    adapter = new Adapter(models, this);
-//                    startActivity(new Intent(MainActivity.this, GroupCreateActivity.class));
-                    startDrawable(returnName);
+                    String groupInfo = data.getStringExtra("groupInfo");
+                    try {
+                        JSONObject jsonGroupInfo = new JSONObject(groupInfo);
+                        models.add(new Model(
+                                jsonGroupInfo.getInt("groupID"),
+                                jsonGroupInfo.getInt("memberCount"),
+                                jsonGroupInfo.getString("groupName"),
+                                jsonGroupInfo.getString("subjectName"),
+                                jsonGroupInfo.getString("inviteCode"),
+                                jsonGroupInfo.getString("description")
+                        ));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-                // send msg to server!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                else{
+                    Toast.makeText(ShowGroupActivity.this, "Failed to join a new group, try it later", Toast.LENGTH_SHORT).show();
+                }
+
+//                    startDrawable(returnName);
                 break;
+                // send msg to server!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
             case 2:
                 if (requestCode == RESULT_OK){
@@ -269,6 +280,7 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                                 jsonGroupInfo.getInt("memberCount"),
                                 jsonGroupInfo.getString("groupName"),
                                 jsonGroupInfo.getString("subjectName"),
+                                jsonGroupInfo.getString("inviteCode"),
                                 jsonGroupInfo.getString("description")
                                 ));
                     } catch (JSONException e) {
