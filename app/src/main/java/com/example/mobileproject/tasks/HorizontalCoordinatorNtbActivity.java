@@ -60,8 +60,8 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
     private RecycleAdapter.TaskHolder current_holder;
     private String userID;
     private String token;
-    private String group_name;
-    private String groupID;
+    private int groupID;
+    private String groupName;
     Intent intent;
 
     OkHttpClient client;
@@ -74,7 +74,8 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         setContentView(R.layout.activity_horizontal_coordinator_ntb);
         userID = intent.getStringExtra("userID");
         token = intent.getStringExtra("token");
-        groupID = intent.getStringExtra("groupID");
+        groupID = intent.getIntExtra("groupID", Integer.valueOf(userID));
+        groupName = intent.getStringExtra("groupName");
         /*
 
             fetch task data from server
@@ -83,7 +84,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         RequestBody requestBody = new FormBody.Builder()
                 .add("userID", userID)
                 .add("token", token)
-                .add("groupID", groupID)
+                .add("groupID", String.valueOf(groupID))
                 .build();
 
         Request request = new Request.Builder()
@@ -159,8 +160,8 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         final ViewPager viewPager = (ViewPager) findViewById(R.id.vp_horizontal_ntb);
         @SuppressLint("ResourceType")
         CollapsingToolbarLayout tb = findViewById(R.id.toolbar);
-        Log.d("nameg", "initUI: "+group_name);
-        tb.setTitle(group_name);
+        Log.d("nameg", "initUI: "+groupName);
+        tb.setTitle(groupName);
 
 
         viewPager.setAdapter(new PagerAdapter() {

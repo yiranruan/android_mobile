@@ -247,8 +247,9 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                 Log.d("page_pos", "onClick: "+page_position);
 
                 Intent intent = new Intent(ShowGroupActivity.this, HorizontalCoordinatorNtbActivity.class);
-//                intent.putExtra("GroupName", models.get(page_position).getGroupName());
-                intent.putExtra("groupID",models.get(page_position).getGroupID());
+                int groupID = models.get(page_position).getGroupID();
+                intent.putExtra("groupName", models.get(page_position).getGroupName());
+                intent.putExtra("groupID",groupID);
                 intent.putExtra("userID", userID);
                 intent.putExtra("token", token);
                 startActivity(intent); // 获得position 得到特定页面
