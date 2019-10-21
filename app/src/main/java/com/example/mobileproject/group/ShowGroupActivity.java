@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,10 +18,12 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
@@ -217,7 +220,6 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
 
 
 
-
         colors = new Integer[]{
                 getResources().getColor(R.color.color1),
                 getResources().getColor(R.color.color2),
@@ -228,6 +230,7 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
 
         Log.d("TEST", "onResponse: 2222");
         startDrawable();
+
 
 
 //        models.add(new Model(1, R.drawable.brochure, "Brochure","Brochure is xxxxx"));
@@ -245,7 +248,19 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                 Toast.makeText(ShowGroupActivity.this, "You clicked",
                         Toast.LENGTH_SHORT).show();
                 Log.d("page_pos", "onClick: "+page_position);
+            }
+        });
 
+
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        Log.d("item", "onContextItemSelected: "+item.getItemId());
+        int position;
+        switch (item.getItemId()) {//根据子菜单ID进行菜单选择判断
+            case 1:
+                Log.d("hhh", "onLongClick: True");
                 Intent intent = new Intent(ShowGroupActivity.this, HorizontalCoordinatorNtbActivity.class);
                 int groupID = models.get(page_position).getGroupID();
                 intent.putExtra("groupName", models.get(page_position).getGroupName());
@@ -253,9 +268,22 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                 intent.putExtra("userID", userID);
                 intent.putExtra("token", token);
                 startActivity(intent); // 获得position 得到特定页面
-            }
-        });
+                break;
+            case 2:
+                Log.d("model_size1", "onContextItemSelected: "+models.size());
 
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        models.remove(page_position);
+                        Log.d("model_size2", "onContextItemSelected: "+models.size());
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+                break;
+        }
+        return super.onContextItemSelected(item);
     }
 
     @Override
@@ -340,13 +368,18 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
 //                    break;
 //            }
 //        }
-        Log.d("run", "startDrawable: ");
+
 
         adapter = new Adapter(models, this);
-        Log.d("adapter", "This is a adp");
+        Log.d("hhh", "This is a adp");
         viewPager = findViewById(R.id.viewPager);
+        viewPager.setOffscreenPageLimit(2);
+
         viewPager.setAdapter(adapter);
         viewPager.setPadding(130, 0,130,0);
+
+        Log.d("hhh", "startDrawable: 321213");
+
 
 
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
