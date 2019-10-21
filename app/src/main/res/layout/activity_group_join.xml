@@ -1,98 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
+    android:layout_marginBottom="50dp"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btnJoin"
-        android:text="Join now!"
-        android:textAllCaps="false"
-        android:textColor="#fff"
-        android:background="@drawable/round"
-        android:paddingLeft="30dp"
-        android:paddingRight="30dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="60dp"
-        android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
-    <com.getbase.floatingactionbutton.FloatingActionsMenu
-        android:id="@+id/multiple_actions"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="14dp"
-        android:layout_marginRight="14dp"
-        android:layout_marginBottom="18dp"
-        app:fab_addButtonColorNormal="@color/pink"
-        app:fab_addButtonColorPressed="@color/pink_pressed"
-        app:fab_labelStyle="@style/menu_labels_style"
-        tools:ignore="RtlHardcoded">
+        android:orientation="horizontal"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:gravity="center"
+        android:layout_marginTop="20dp">
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/join"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/join_code"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:hint="Code"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/join_code_tf"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/join_group_btn"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/white"
-            app:fab_colorPressed="@color/white_pressed"
-            app:fab_title="Join a Group" />
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:text="Join"
+            android:textAllCaps="false"/>
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/create"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/white"
-            app:fab_colorPressed="@color/white_pressed"
-            app:fab_title="Create My Group" />
+    </LinearLayout>
 
-    </com.getbase.floatingactionbutton.FloatingActionsMenu>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/join_text_field"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="150dp"
-        app:mtf_image="@drawable/ic_face_black_24dp"
-        app:mtf_labelColor="#666">
-
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/join_name_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Group Name"
-            android:maxLength="30"
-            android:textColor="#333"
-            android:textSize="15sp" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.github.florent37.materialtextfield.MaterialTextField
-        android:id="@+id/join_text_field2"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="250dp"
-        app:mtf_image="@drawable/ic_assignment_ind_black_24dp"
-        app:mtf_labelColor="#666">
-
-        <EditText
-            android:id="@+id/join_pw_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="PassWord"
-            android:maxLength="6"
-            android:textColor="#333"
-            android:textSize="15sp" />
-
-    </com.github.florent37.materialtextfield.MaterialTextField>
-
-</RelativeLayout>
+</LinearLayout>

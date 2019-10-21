@@ -8,95 +8,108 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/btnOrder"
+        android:id="@+id/btnCreate"
         android:text="Group now!"
         android:textAllCaps="false"
         android:textColor="#fff"
         android:background="@drawable/round"
         android:paddingLeft="30dp"
         android:paddingRight="30dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="60dp"
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-
-    <com.getbase.floatingactionbutton.FloatingActionsMenu
-        android:id="@+id/multiple_actions"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="14dp"
-        android:layout_marginRight="14dp"
-        android:layout_marginBottom="18dp"
-        app:fab_addButtonColorNormal="@color/pink"
-        app:fab_addButtonColorPressed="@color/pink_pressed"
-        app:fab_labelStyle="@style/menu_labels_style"
-        tools:ignore="RtlHardcoded">
+        android:layout_below="@id/content"
+        android:layout_marginTop="20dp"/>
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/join"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/white"
-            app:fab_colorPressed="@color/white_pressed"
-            app:fab_title="Join a Group" />
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/create"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/white"
-            app:fab_colorPressed="@color/white_pressed"
-            app:fab_title="Create My Group" />
-
-    </com.getbase.floatingactionbutton.FloatingActionsMenu>
-
-    <com.github.florent37.materialtextfield.MaterialTextField
-        android:id="@+id/create_text_field"
-        android:layout_width="300dp"
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="150dp"
-        app:mtf_image="@drawable/ic_face_black_24dp"
-        app:mtf_labelColor="#666">
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginTop="30dp">
 
-
-        <EditText
-            android:id="@+id/group_name_edit_text"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/create_group_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Group Name"
-            android:maxLength="30"
-            android:textColor="#333"
-            android:textSize="15sp" />
+            android:layout_centerHorizontal="true"
+            app:mtf_image="@drawable/ic_face_black_24dp"
+            app:mtf_labelColor="#666"
+            android:layout_marginTop="10dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-    </com.github.florent37.materialtextfield.MaterialTextField>
 
-    <com.github.florent37.materialtextfield.MaterialTextField
-        android:id="@+id/create_text_field2"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="250dp"
-        app:mtf_image="@drawable/ic_assignment_ind_black_24dp"
-        app:mtf_labelColor="#666"
-        app:mtf_cardCollapsedHeight="4dp"
-        app:mtf_animationDuration="1000"
-        app:mtf_openKeyboardOnFocus="true">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/create_group_name_tf"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:hint="Group Name"
+                android:maxLength="30"
+                android:textColor="#333"
+                android:textSize="15sp"/>
 
-        <EditText
-            android:id="@+id/group_pw_edit_text"
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/create_subj_nm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="PassWord"
-            android:maxLength="6"
-            android:textColor="#333"
-            android:textSize="15sp" />
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_centerHorizontal="true"
+            app:mtf_image="@drawable/ic_face_black_24dp"
+            app:mtf_labelColor="#666"
+            android:layout_marginTop="10dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-    </com.github.florent37.materialtextfield.MaterialTextField>
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/create_subj_nm_tf"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Subject Name"
+                android:maxLength="30"
+                android:textColor="#333"
+                android:textSize="15sp"
+                android:maxLines="1"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/create_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_centerHorizontal="true"
+            app:mtf_image="@drawable/ic_face_black_24dp"
+            app:mtf_labelColor="#666"
+            android:layout_marginTop="10dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/create_desc_tf"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:hint="Description"
+                android:maxLength="30"
+                android:textColor="#333"
+                android:textSize="15sp"
+                android:maxLines="3"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>
