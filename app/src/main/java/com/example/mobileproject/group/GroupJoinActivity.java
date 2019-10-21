@@ -75,16 +75,18 @@ public class GroupJoinActivity extends AppCompatActivity {
                         String responseData = response.body().string();
                         try {
                             JSONObject jsonData = new JSONObject(responseData);
-                            String groupInfo = jsonData.getString("group");
-                            if (jsonData.getBoolean("result")){
-                                Intent intent = new Intent();
-                                intent.putExtra("joinedGroup", groupInfo);
-                                setResult(RESULT_OK, intent);
-                                finish();
+                            Boolean result = jsonData.getBoolean("result");
+                            if (result){
+                                String groupInfo = jsonData.getString("group");
+                                Intent intent2 = new Intent();
+                                intent2.putExtra("groupInfo", groupInfo);
+                                setResult(RESULT_OK, intent2);
                             }
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        finish();
                     }
                 });
 

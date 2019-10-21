@@ -29,15 +29,24 @@ import com.example.mobileproject.R;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import devlight.io.library.ntb.NavigationTabBar;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class HorizontalCoordinatorNtbActivity extends Activity {
     List<Task> task_todo = new ArrayList<>();
@@ -60,11 +69,11 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        intent = getIntent();
 //        Fresco.initialize(this);
         setContentView(R.layout.activity_horizontal_coordinator_ntb);
         userID = intent.getStringExtra("userID");
         token = intent.getStringExtra("token");
-        group_name = intent.getStringExtra("groupName");
         groupID = intent.getStringExtra("groupID");
         /*
 
@@ -77,7 +86,29 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                 .add("groupID", groupID)
                 .build();
 
-//        Request request = new Request.Builder()
+        Request request = new Request.Builder()
+                .url(getString(R.string.group_tasks))
+                .post(requestBody)
+                .build();
+
+        client = new OkHttpClient();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseData = response.body().string();
+                try {
+                    JSONObject jsonResponse = new JSONObject(responseData);
+                    JSONArray tasks = jsonResponse.getJSONArray("tasks");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
 
         initUI();

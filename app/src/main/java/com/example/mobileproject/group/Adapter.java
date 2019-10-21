@@ -1,6 +1,7 @@
 package com.example.mobileproject.group;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,9 +51,9 @@ public class Adapter extends PagerAdapter {
         description = view.findViewById(R.id.desc);
 
         groupName.setText(models.get(position).getGroupName());
-        countMembers.setText(models.get(position).getUserCount());
+        countMembers.setText(Integer.toString(models.get(position).getUserCount()));
         subjectName.setText((models.get(position).getSubjectName()));
-        inviteCode.setText("Deadline: " + models.get(position).getInviteCode());
+        inviteCode.setText(models.get(position).getInviteCode());
         description.setText(models.get(position).getDescription());
 
 
