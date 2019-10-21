@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
                                 startActivity(intent);
                                 finish();
                             }else{
-                                Toast.makeText(MainActivity.this, "Failed, please your verify code", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MainActivity.this, "Failed, please verify your code", Toast.LENGTH_SHORT).show();
                             }
 
                         } catch (JSONException e) {
