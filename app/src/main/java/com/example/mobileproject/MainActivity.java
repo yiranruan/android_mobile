@@ -190,13 +190,13 @@ public class MainActivity extends AppCompatActivity {
                             final JSONObject jsonData = new JSONObject(responseData);
                             String userID = jsonData.getString("userID");
                             String token = jsonData.getString("token");
-                            String result = jsonData.getString("result");
+                            Boolean result = jsonData.getBoolean("result");
 
                             Intent intent = new Intent(MainActivity.this, ShowGroupActivity.class);
                             intent.putExtra("userID",userID);
                             intent.putExtra("token", token);
 
-                            if (result.equals("success")){
+                            if (result){
                                 startActivity(intent);
                                 finish();
                             }else{

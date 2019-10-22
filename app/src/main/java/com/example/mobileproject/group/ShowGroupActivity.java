@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,10 +18,12 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
@@ -72,8 +75,8 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
     //    private LinearLayout linearLayout;
     private int res = R.drawable.content_music;
     private int page_position = 0;
-    private String userID;
-    private String token;
+    private String userID = "6";
+    private String token = "umeuuuufae";
     private OkHttpClient client;
 
     @Override
@@ -89,8 +92,8 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
          */
 
         Intent intent = getIntent();
-        userID = intent.getStringExtra("userID");
-        token = intent.getStringExtra("token");
+//        userID = intent.getStringExtra("userID");
+//        token = intent.getStringExtra("token");
 
         RequestBody requestBody = new FormBody.Builder()
                 .add("userID", userID)
@@ -114,21 +117,34 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                 String responseData = response.body().string();
                 try {
                     JSONObject jsonData = new JSONObject(responseData);
-                    List remoteList = new ArrayList();
                     JSONArray jsonArray = jsonData.getJSONArray("list");
-                    Log.d("group list", "onResponse: ");
-                    for (int i = 0 ; i < jsonArray.length(); i++){
+                    Log.d("group list", "onResponse: " + jsonArray.length());
+                    for (int i = 0 ; i < jsonArray.length(); i++) {
                         JSONObject element = jsonArray.getJSONObject(i);
+                        Log.d("group", "group " + i + ": " + element.toString());
                         int groupID = element.getInt("groupID");
                         String groupName = element.getString("groupName");
                         String description = element.getString("description");
                         int memberCount = element.getInt("memberCount");
-                        String inviteCode = element.getString("inviteCode");
+                        String inviteCode = element.getString("groupCode");
                         String subjectName = element.getString("subjectName");
-                        models.add(new Model(groupID,memberCount,groupName,subjectName,inviteCode, description));
-                    }
+                        Log.d("TEST", "onResponse: 1111");
+                        models.add(new Model(groupID, memberCount, groupName, subjectName, inviteCode, description));
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
 
-                    // Need to handle group list here !!!
+                    }
+                    models.add(new Model(Integer.valueOf(userID),  1, "Personal Tasks", " ","", "This is a personal task"));
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -144,9 +160,9 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                         Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(ShowGroupActivity.this, GroupCreateActivity.class);
-                intent.putExtra("useID", userID);
+                intent.putExtra("userID", userID);
                 intent.putExtra("token", token);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, 2);
             }
         });
 
@@ -196,10 +212,9 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                 Intent intent = new Intent(ShowGroupActivity.this, GroupJoinActivity.class);
                 intent.putExtra("userID", userID);
                 intent.putExtra("token", token);
-                startActivityForResult(intent, 2);
+                startActivityForResult(intent, 1);
             }
         });
-
 
 
 
@@ -212,7 +227,11 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                 getResources().getColor(R.color.color4)
         };
 
-        models.add(new Model(Integer.valueOf(userID),  1, "Personal Tasks", " ","", "This is a personal task"));
+
+        Log.d("TEST", "onResponse: 2222");
+        startDrawable();
+
+
 
 //        models.add(new Model(1, R.drawable.brochure, "Brochure","Brochure is xxxxx"));
 //        models.add(new Model(2,R.drawable.sticker, "Sticker","Sticker is xxxxx"));
@@ -220,7 +239,7 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
 //        models.add(new Model(4,R.drawable.namecard, "NameCard","NameCard is xxxxx"));
 
 
-        startDrawable("private");
+
 
         final Button btn_task = findViewById(R.id.btnTask);
         btn_task.setOnClickListener(new View.OnClickListener() {
@@ -229,24 +248,52 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                 Toast.makeText(ShowGroupActivity.this, "You clicked",
                         Toast.LENGTH_SHORT).show();
                 Log.d("page_pos", "onClick: "+page_position);
-
-                Intent intent = new Intent(ShowGroupActivity.this, HorizontalCoordinatorNtbActivity.class);
-                intent.putExtra("GroupName", models.get(page_position).getGroupName());
-                intent.putExtra("groupID",models.get(page_position).getGroupID());
-                intent.putExtra("userID", userID);
-                intent.putExtra("token", token);
-                startActivityForResult(intent, 1); // 获得position 得到特定页面
             }
         });
 
+
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        Log.d("item", "onContextItemSelected: "+item.getItemId());
+        int position;
+        switch (item.getItemId()) {//根据子菜单ID进行菜单选择判断
+            case 1:
+                Log.d("hhh", "onLongClick: True");
+                Intent intent = new Intent(ShowGroupActivity.this, HorizontalCoordinatorNtbActivity.class);
+                int groupID = models.get(page_position).getGroupID();
+                intent.putExtra("groupName", models.get(page_position).getGroupName());
+                intent.putExtra("groupID",groupID);
+                intent.putExtra("userID", userID);
+                intent.putExtra("token", token);
+                startActivity(intent); // 获得position 得到特定页面
+                break;
+            case 2:
+                Log.d("model_size1", "onContextItemSelected: "+models.size());
+
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        models.remove(page_position);
+                        Log.d("model_size2", "onContextItemSelected: "+models.size());
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+                break;
+        }
+        return super.onContextItemSelected(item);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
+
+            // Join a new group
             case 1:
-                if (resultCode == RESULT_OK) {
+                if (resultCode == RESULT_OK){
                     String groupInfo = data.getStringExtra("groupInfo");
                     try {
                         JSONObject jsonGroupInfo = new JSONObject(groupInfo);
@@ -255,48 +302,51 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                                 jsonGroupInfo.getInt("memberCount"),
                                 jsonGroupInfo.getString("groupName"),
                                 jsonGroupInfo.getString("subjectName"),
-                                jsonGroupInfo.getString("inviteCode"),
-                                jsonGroupInfo.getString("description")
-                        ));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                else{
-                    Toast.makeText(ShowGroupActivity.this, "Failed to join a new group, try it later", Toast.LENGTH_SHORT).show();
-                }
-
-//                    startDrawable(returnName);
-                break;
-                // send msg to server!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-            case 2:
-                if (requestCode == RESULT_OK){
-                    String groupInfo = data.getStringExtra("joinedGroup");
-                    try {
-                        JSONObject jsonGroupInfo = new JSONObject(groupInfo);
-                        models.add(new Model(
-                                jsonGroupInfo.getInt("groupID"),
-                                jsonGroupInfo.getInt("memberCount"),
-                                jsonGroupInfo.getString("groupName"),
-                                jsonGroupInfo.getString("subjectName"),
-                                jsonGroupInfo.getString("inviteCode"),
+                                jsonGroupInfo.getString("groupCode"),
                                 jsonGroupInfo.getString("description")
                                 ));
+                        adapter.notifyDataSetChanged();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
                 else{
-                    Toast.makeText(ShowGroupActivity.this, "Failed to join a new group, try it later", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ShowGroupActivity.this, "You are in this group", Toast.LENGTH_SHORT).show();
                 }
+                break;
 
+            // Create a new group
+            case 2:
+                Log.d("create group", "onActivityResult: 3");
+                if(resultCode == RESULT_OK){
+                    String group = data.getStringExtra("groupInfo");
+                    Log.d("created group", "onActivityResult: " + group);
+                    try {
+                        JSONObject groupJson = new JSONObject(group);
+                        models.add(new Model(
+                                groupJson.getInt("groupID"),
+                                groupJson.getInt("memberCount"),
+                                groupJson.getString("groupName"),
+                                groupJson.getString("subjectName"),
+                                groupJson.getString("groupCode"),
+                                groupJson.getString("description")
+                        ));
+                        adapter.notifyDataSetChanged();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    Toast.makeText(ShowGroupActivity.this, "Fail to create a new group, try it later", Toast.LENGTH_SHORT).show();
+                }
+                break;
             default:
                 break;
         }
     }
 
-    protected void startDrawable(String returnName){
+    protected void startDrawable(){
+        Log.d("TEST", "onResponse: 3333");
 //        drawables = getResources().obtainTypedArray(R.array.random_imgs);
 
 //        if (returnName != "private") {
@@ -318,13 +368,19 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
 //                    break;
 //            }
 //        }
+
+
         adapter = new Adapter(models, this);
-        Log.d("adapter", "This is a adp");
+        Log.d("hhh", "This is a adp");
         viewPager = findViewById(R.id.viewPager);
+        viewPager.setOffscreenPageLimit(2);
+
         viewPager.setAdapter(adapter);
         viewPager.setPadding(130, 0,130,0);
 
-//        colors = color_temp;
+        Log.d("hhh", "startDrawable: 321213");
+
+
 
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.opengl.ETC1;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,6 +42,10 @@ public class GroupCreateActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_create);
+        Intent intent = getIntent();
+        userID = intent.getStringExtra("userID");
+        token = intent.getStringExtra("token");
+
         createGroup = (Button) findViewById(R.id.btnCreate);
         groupName = findViewById(R.id.create_group_name_tf);
         subjectName = findViewById(R.id.create_subj_nm_tf);
@@ -49,24 +54,16 @@ public class GroupCreateActivity extends AppCompatActivity {
         createGroup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent();
                 String createdGroupName = groupName.getText().toString();
                 String createdSubjectName = subjectName.getText().toString();
                 String createdDescription = description.getText().toString();
 
-                JSONObject data = new JSONObject();
-                try {
-                    data.put("groupName", groupName);
-                    data.put("subjectName", subjectName);
-                    data.put("description", description);
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                String sentData = data.toString();
+                Log.d("fk", "onClick: "+userID);
                 RequestBody requestBody = new FormBody.Builder()
-                        .add("groupInfo", sentData)
+                        .add("groupName",createdGroupName)
+                        .add("subjectName",createdSubjectName)
+                        .add("description",createdDescription)
                         .add("userID", userID)
                         .add("token", token)
                         .build();
@@ -88,9 +85,11 @@ public class GroupCreateActivity extends AppCompatActivity {
                         String responseData = response.body().string();
                         try {
                             JSONObject jsonData = new JSONObject(responseData);
-                            String groupInfo = jsonData.getString("groupInfo");
+                            String groupInfo = jsonData.getString("group");
                             intent.putExtra("groupInfo", groupInfo);
+                            Log.d("groupInfo", "onResponse: "+groupInfo);
                         } catch (JSONException e) {
+                            Log.d("groupInfo", "onResponse: fail");
                             e.printStackTrace();
                         }
                         setResult(RESULT_OK, intent);

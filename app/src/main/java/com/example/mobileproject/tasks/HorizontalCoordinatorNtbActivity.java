@@ -29,15 +29,24 @@ import com.example.mobileproject.R;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import devlight.io.library.ntb.NavigationTabBar;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class HorizontalCoordinatorNtbActivity extends Activity {
     List<Task> task_todo = new ArrayList<>();
@@ -51,8 +60,8 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
     private RecycleAdapter.TaskHolder current_holder;
     private String userID;
     private String token;
-    private String group_name;
-    private String groupID;
+    private int groupID;
+    private String groupName;
     Intent intent;
 
     OkHttpClient client;
@@ -60,12 +69,13 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        intent = getIntent();
 //        Fresco.initialize(this);
         setContentView(R.layout.activity_horizontal_coordinator_ntb);
         userID = intent.getStringExtra("userID");
         token = intent.getStringExtra("token");
-        group_name = intent.getStringExtra("groupName");
-        groupID = intent.getStringExtra("groupID");
+        groupID = intent.getIntExtra("groupID", Integer.valueOf(userID));
+        groupName = intent.getStringExtra("groupName");
         /*
 
             fetch task data from server
@@ -74,10 +84,32 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         RequestBody requestBody = new FormBody.Builder()
                 .add("userID", userID)
                 .add("token", token)
-                .add("groupID", groupID)
+                .add("groupID", String.valueOf(groupID))
                 .build();
 
-//        Request request = new Request.Builder()
+        Request request = new Request.Builder()
+                .url(getString(R.string.group_tasks))
+                .post(requestBody)
+                .build();
+
+        client = new OkHttpClient();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseData = response.body().string();
+                try {
+                    JSONObject jsonResponse = new JSONObject(responseData);
+                    JSONArray tasks = jsonResponse.getJSONArray("tasks");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
 
         initUI();
@@ -128,8 +160,8 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         final ViewPager viewPager = (ViewPager) findViewById(R.id.vp_horizontal_ntb);
         @SuppressLint("ResourceType")
         CollapsingToolbarLayout tb = findViewById(R.id.toolbar);
-        Log.d("nameg", "initUI: "+group_name);
-        tb.setTitle(group_name);
+        Log.d("nameg", "initUI: "+groupName);
+        tb.setTitle(groupName);
 
 
         viewPager.setAdapter(new PagerAdapter() {
