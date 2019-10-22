@@ -33,13 +33,17 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.kyle.calendarprovider.calendar.CalendarEvent;
+import com.kyle.calendarprovider.calendar.CalendarProviderManager;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -84,8 +88,10 @@ public class CreateButton extends AppCompatActivity {
 
     // 以下为 XML 服务
     private Button btn_add;
-
     private Button btn_cancel;
+
+    private SwitchMaterial switch_calender;
+    private Boolean send_calender = false;
 
 
 //    private TextInputLayout location_layout;
@@ -116,16 +122,28 @@ public class CreateButton extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_button);
+        /// 添加任务 相关的任务
+
+        // 接收小组ID 和 USERID 的数据
+        Intent intent_reci = getIntent();
+
+        int groupID = Integer.parseInt(intent_reci.getStringExtra("groupid"));
+        String userID = intent_reci.getStringExtra("userid");
 
 
+        /// 这三个是 EDITTEXT 绑定ID即可
+        input_title = findViewById(R.id.input_title);
+        input_note = findViewById(R.id.notes_input);
+        input_member = findViewById(R.id.members_input);
 
+        Log.d("msg","check 1");
 
 //        location_layout = findViewById(R.id.location);
 //        start_date = findViewById(R.id.start_date);
 
 
+        // ---  点击图片弹窗 是否删除 ---
         mImageView = findViewById(R.id.image_view);
-
         mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,6 +155,7 @@ public class CreateButton extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mImageView.setImageURI(null);
+                        filePath = null;
                     }
                 });
 
@@ -160,20 +179,15 @@ public class CreateButton extends AppCompatActivity {
             }
         });
 
-
-        /// ------ 设置 CANCEL BUTTON
-        OnClick onClick = new OnClick();
-        btn_cancel = findViewById(R.id.btn_cancel);
-        btn_cancel.setOnClickListener(onClick);
+        Log.d("msg","check 2");
 
 
         /// ------ 设置 LOCATION BUTTION
 
-        OnClick onClick1 = new OnClick();
+//        OnClick onClick1 = new OnClick();
+//        tv_location.setOnClickListener(onClick1);
 
         tv_location = findViewById(R.id.input_location);
-
-//        tv_location.setOnClickListener(onClick1);
         tv_location.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -186,33 +200,39 @@ public class CreateButton extends AppCompatActivity {
         });
 
 
+        // switch bar;
+        switch_calender = findViewById(R.id.switchBtn);
+        switch_calender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(switch_calender.isChecked()){
+                    send_calender = true;
+                }else{
+                    send_calender = false;
+                }
+            }
+        });
 
+        Log.d("msg","check 3");
 
-        /// 添加任务 相关的任务
-
-        // 接收小组ID 和 USERID 的数据
-        Intent intent_reci = getIntent();
-        int groupID = Integer.parseInt(intent_reci.getStringExtra("groupid"));
-        String userID = intent_reci.getStringExtra("userid");
-
-
-        /// 这三个是 EDITTEXT 绑定ID即可
-        input_title = findViewById(R.id.input_title);
-        input_note = findViewById(R.id.notes_input);
-        input_member = findViewById(R.id.members_input);
-
-        // ADD BUTTON 的代码
+        // ADD BUTTON 的代码 -- 确认信息
         btn_add = findViewById(R.id.btn_ok);
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+                Boolean send_calender = switch_calender.isChecked();
+                if (send_calender) {addCalender();}
+
                 title = input_title.getText().toString();
                 description = input_note.getText().toString();
                 username = input_member.getText().toString();
+
                 if (title.length() > 0 && username.length() > 0) {
 
                     Intent intent_put = new Intent();
+
+                    intent_put.putExtra("setCalender", send_calender);
                     intent_put.putExtra("title", title);
                     intent_put.putExtra("description", description);
                     intent_put.putExtra("username", username);
@@ -240,6 +260,10 @@ public class CreateButton extends AppCompatActivity {
             }
         });
 
+        /// ------ 设置 CANCEL BUTTON
+        OnClick onClick = new OnClick();
+        btn_cancel = findViewById(R.id.btn_cancel);
+        btn_cancel.setOnClickListener(onClick);
 
 //        btn_add.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -405,7 +429,6 @@ public class CreateButton extends AppCompatActivity {
         /// ------ 打开摄像机的代码 --------
 
         mCaptureBtn = findViewById(R.id.photo);
-
         mCaptureBtn.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -544,6 +567,30 @@ public class CreateButton extends AppCompatActivity {
 //                    startActivityForResult(intent,30);
 //                    break;
             }
+        }
+    }
+
+    public void addCalender(){
+        CalendarEvent calendarEvent = new CalendarEvent(
+                "马上吃饭",
+                "吃好吃的",
+                "南信院二食堂",
+                System.currentTimeMillis(),
+                System.currentTimeMillis() + 60000,
+                0, null
+        );
+
+        Log.d("msg:", Long.toString(System.currentTimeMillis()));
+
+        // 添加事件
+        int result = CalendarProviderManager.addCalendarEvent(CreateButton.this, calendarEvent);
+
+        if (result == 0) {
+            Toast.makeText(CreateButton.this, "successfully insert", Toast.LENGTH_SHORT).show();
+        } else if (result == -1) {
+            Toast.makeText(CreateButton.this, "unsuccessfully insert", Toast.LENGTH_SHORT).show();
+        } else if (result == -2) {
+            Toast.makeText(CreateButton.this, "Do not have the permission", Toast.LENGTH_SHORT).show();
         }
     }
 }

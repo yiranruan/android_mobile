@@ -22,6 +22,7 @@ public class Task extends Object{
     private String path;
     private String location;
     private String status = "To-Do";
+    private boolean setCal = false;
 
 
     public Task(String username, String title, String description, String usersID, int groupID,
@@ -37,6 +38,22 @@ public class Task extends Object{
         this.dueDate = dueDate;
 
     };
+    public Task(String username, String title, String description, String usersID, int groupID,
+                String createDate, String dueDate, String path, String location, String status,
+                Boolean setCal) {
+        this.username = username;
+        this.title = title;
+        this.description = description;
+        this.usersID = usersID;
+        this.groupID = groupID;
+        this.path = path;
+        this.location = location;
+        this.createDate = createDate;
+        this.dueDate = dueDate;
+        this.setCal = setCal;
+    };
+
+    public Boolean setCal() {return setCal;}
 
     public String getCreateDate() {
         return createDate;
