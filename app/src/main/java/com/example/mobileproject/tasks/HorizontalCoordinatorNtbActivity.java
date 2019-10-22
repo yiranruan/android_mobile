@@ -197,7 +197,6 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 
 
     private void initUI() {
-        populate();
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.vp_horizontal_ntb);
         /// Menu
@@ -500,27 +499,6 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 
 
 
-    private void populate() {
-
-
-//        this.task_todo.add(new Task(1, "todo_test1", "This is todo_test 1", 1, 1, "ToDo"));
-//        this.task_todo.add(new Task(2, "todo_test2", "This is todo_test 2", 2, 1, "ToDo"));
-//        this.task_todo.add(new Task(3, "todo_test3", "This is todo_test 3", 3, 1, "ToDo"));
-//        this.task_todo.add(new Task(4, "todo_test4", "This is todo_test 4", 4, 1, "ToDo"));
-//
-//        this.task_doing.add(new Task(1, "doing_test1", "This is doing_test 1", 1, 1, "Doing"));
-//        this.task_doing.add(new Task(2, "doing_test2", "This is doing_test 2", 2, 1, "Doing"));
-//        this.task_doing.add(new Task(3, "doing_test3", "This is doing_test 3", 3, 1, "Doing"));
-//        this.task_doing.add(new Task(4, "doing_test4", "This is doing_test 4", 4, 1, "Doing"));
-//
-//        this.task_done.add(new Task(1, "done_test1", "This is done_test 1", 1, 1, "Done"));
-//        this.task_done.add(new Task(2, "done_test2", "This is done_test 2", 2, 1, "Done"));
-//        this.task_done.add(new Task(3, "done_test3", "This is done_test 3", 3, 1, "Done"));
-//        this.task_done.add(new Task(4, "done_test4", "This is done_test 4", 4, 1, "Done"));
-//
-
-    }
-
     private void displaySnackbar(String text, String actionName, View.OnClickListener action) {
         Snackbar snack = Snackbar.make(findViewById(android.R.id.content), text, Snackbar.LENGTH_LONG)
                 .setAction(actionName, action);
@@ -665,6 +643,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
 
         // 从CREATE ACTIVITY 里传回来的数据
+        checkExpansion();
 
         switch (requestCode) {
             case 1:
@@ -693,54 +672,63 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                         e.printStackTrace();
                     }
 
-            }
+                }
+                break;
+
+            case 2:
+                if(resultCode == RESULT_OK) {
+                    int position = data.getIntExtra("position", 999);
+                    int page_code = data.getIntExtra("page_code", 999);
+                    int delete = data.getIntExtra("delete", 3);
+                    boolean result = data.getBooleanExtra("result", false);
+                    Log.d("delete", "onActivityResult: " + delete);
+                    if (delete == 0) {
+                        //改变
+                        if (result){
+                            Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Update task successed!", Toast.LENGTH_SHORT).show();
+                        }
+                        else{
+                            Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Fail to update the task!", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                    else if (delete == 1){
+                        if(result){
+                            switch (page_code){
+                                case 0:
+                                    task_todo.remove(position);
+                                    rec_adapters.get(0).notifyItemRemoved(position);
+                                    rec_adapters.get(0).notifyItemRangeChanged(position,task_todo.size());
+                                    break;
+                                case 1:
+                                    task_doing.remove(position);
+                                    rec_adapters.get(1).notifyItemRemoved(position);
+                                    rec_adapters.get(1).notifyItemRangeChanged(position,task_doing.size());
+
+                                    break;
+                                case 2:
+                                    task_doing.remove(position);
+                                    rec_adapters.get(2).notifyItemRemoved(position);
+                                    rec_adapters.get(2).notifyItemRangeChanged(position,task_doing.size());
+                                    break;
+                            }
+                            Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Delete task successed!", Toast.LENGTH_SHORT).show();
+                        }
+                        else{
+                            Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Fail to delete the task!", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                }
+                break;
         }
         // 从 SHOW TASK ACTIVITY 里传回来的数据
-        else if (requestCode == 2){
-            if(resultCode == RESULT_OK) {
-                int position = data.getIntExtra("position", 999);
-                int page_code = data.getIntExtra("page_code", 999);
-                int delete = data.getIntExtra("delete", 3);
-                boolean result = data.getBooleanExtra("result", false);
-                Log.d("delete", "onActivityResult: " + delete);
-                if (delete == 0) {
-                    //改变
-                    if (result){
-                        Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Update task successed!", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
-                        Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Fail to update the task!", Toast.LENGTH_SHORT).show();
-                    }
 
-                }
-                else if (delete == 1){
-                    if(result){
-                        switch (page_code){
-                            case 0:
-                                task_todo.remove(position);
-                                rec_adapters.get(0).notifyItemRemoved(position);
-                                rec_adapters.get(0).notifyItemRangeChanged(position,task_todo.size());
-                                break;
-                            case 1:
-                                task_doing.remove(position);
-                                rec_adapters.get(1).notifyItemRemoved(position);
-                                rec_adapters.get(1).notifyItemRangeChanged(position,task_doing.size());
+    }
 
-                                break;
-                            case 2:
-                                task_doing.remove(position);
-                                rec_adapters.get(2).notifyItemRemoved(position);
-                                rec_adapters.get(2).notifyItemRangeChanged(position,task_doing.size());
-                                break;
-                        }
-                        Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Delete task successed!", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
-                        Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Fail to delete the task!", Toast.LENGTH_SHORT).show();
-                    }
-
-                }
-            }
+    public void checkExpansion(){
+        if (menuMultipleActions.isExpanded()) {
+            menuMultipleActions.collapseImmediately();
         }
     }
 }
