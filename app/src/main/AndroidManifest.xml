@@ -2,8 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.mobileproject">
 
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -12,7 +17,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme">
-        <activity android:name=".tasks.HorizontalCoordinatorNtbActivity"></activity>
+        <activity android:name=".tasks.ShowTaskActivity"></activity>
+        <activity android:name=".tasks.LocationActivity" />
+        <activity android:name=".tasks.MapActivity" />
+        <activity android:name=".tasks.CreateButton" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyC6jbrg0Qsu5MNJqUSiR6FMnmeY9G2nj7Y" />
+
+        <activity android:name=".tasks.HorizontalCoordinatorNtbActivity" />
         <activity android:name=".group.GroupCreateActivity" />
         <activity android:name=".group.GroupJoinActivity" />
         <activity android:name=".group.ShowGroupActivity">
@@ -23,7 +37,5 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity"/>
-
     </application>
-
 </manifest>
