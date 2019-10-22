@@ -64,6 +64,7 @@ dependencies {
     implementation 'com.github.mancj:MaterialSearchBar:0.8.2'
     implementation 'com.google.android.libraries.places:places:2.0.0'
     implementation project(':calendarprovider')
+    implementation 'com.kaopiz:kprogresshud:1.2.0'
 }
 
 dependencies {
@@ -90,6 +91,11 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
 
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:+'
+    implementation 'androidx.constraintlayout:constraintlayout:+'
 }
 
 dependencies {
