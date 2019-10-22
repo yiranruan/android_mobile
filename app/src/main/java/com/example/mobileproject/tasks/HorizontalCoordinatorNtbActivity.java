@@ -405,8 +405,14 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
             @Override
             public void onClick(View view) {
                 checkExpansion();
+                Intent intent = new Intent(HorizontalCoordinatorNtbActivity.this, ProgressActivity.class);
+//                intent.putExtra("userID", userID);
+//                intent.putExtra("token", token);
+//                intent.putExtra("groupID", Integer.toString(groupID));
+                checkExpansion();
+                startActivity(intent);
+                Log.d("msg","in create");
                 Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Progress", Toast.LENGTH_SHORT).show();
-                menuMultipleActions.collapseImmediately();
             }
         });
 

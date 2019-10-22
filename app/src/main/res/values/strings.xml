@@ -8,7 +8,7 @@
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
     <string name="action_contact">Contact</string>
-    
+
     <string name="request_verify_code">https://groupmonster.herokuapp.com/new/email</string>
     <string name="log_in">https://groupmonster.herokuapp.com/user/login</string>
     <string name="get_group_list">https://groupmonster.herokuapp.com/get/groups</string>
@@ -20,5 +20,5 @@
     <string name="get_task">https://groupmonster.herokuapp.com/get/task</string>
     <string name="delete_task">https://groupmonster.herokuapp.com/delete/task</string>
     <string name="update_task">https://groupmonster.herokuapp.com/update/task</string>
-    
+
 </resources>
