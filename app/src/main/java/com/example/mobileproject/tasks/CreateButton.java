@@ -1,16 +1,8 @@
 package com.example.mobileproject.tasks;
 
-import com.example.mobileproject.R;
-
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -22,46 +14,38 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.mobileproject.R;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.kyle.calendarprovider.calendar.CalendarEvent;
 import com.kyle.calendarprovider.calendar.CalendarProviderManager;
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.time.Year;
 import java.util.Calendar;
-import java.util.Date;
-import java.text.SimpleDateFormat;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -485,16 +469,36 @@ public class CreateButton extends AppCompatActivity {
                         image = Base64.encodeToString(bb, 0);
                     }
                 }
+                break;
             case 30:
                 if (resultCode == RESULT_OK) {
                     Log.d("check:", "get location");
                     location = data.getStringExtra("location");
                     tv_location.setText(location);
                 }
+                break;
             case 40:
                 if (resultCode == RESULT_OK) {
-                    
+                    Log.d("saveScreenShot", "onActivityResult: true");
+                    ImageView imageview = (ImageView) findViewById(R.id.image_view);
+//                    Intent intent = getIntent();
+                    byte [] bis = data.getByteArrayExtra("bitmap");
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
+
+//                        bitmap = intent.getParcelableExtra("bitmap");
+                    imageview.setImageBitmap(bitmap);
+                    Log.d("saveScreenShot", "onActivityResult: ttt");
+//                    if (intent != null) {
+//                        byte [] bis = intent.getByteArrayExtra("bitmap");
+//                        Bitmap bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
+//
+////                        bitmap = intent.getParcelableExtra("bitmap");
+//                        imageview.setImageBitmap(bitmap);
+//                        Log.d("saveScreenShot", "onActivityResult: ttt");
+//
+//                    }
                 }
+                break;
         }
     }
 
