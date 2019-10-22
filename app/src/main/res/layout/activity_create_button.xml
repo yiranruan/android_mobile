@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.circularreveal.coordinatorlayout.CircularRevealCoordinatorLayout
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".CreateButton">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:id="@+id/L_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/btn_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cancel"
+                    android:textSize="16sp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="New Task"
+                        android:textSize="16sp"/>
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btn_ok"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add"
+                    android:textSize="16sp"/>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/view1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/L_1"
+                android:background="#aa000000">
+            </View>
+
+            <!--Task Title-->
+
+            <!--        original-->
+            <!--        <EditText-->
+            <!--            android:id="@+id/et_Title"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="50dp"-->
+            <!--            android:layout_marginTop="60dp"-->
+            <!--            android:hint="Task Title"-->
+            <!--            android:textSize="16sp"/>-->
+
+            <!--        modified task title-->
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/et_Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Title"
+                android:layout_margin="10dp"
+                android:layout_below="@id/L_1"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:maxLines="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+
+            <!--        <TextView-->
+            <!--            android:id="@+id/tv_Location"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="50dp"-->
+            <!--            android:layout_below="@+id/et_Title"-->
+            <!--            android:layout_marginTop="15dp"-->
+            <!--            android:hint="Location"-->
+            <!--            android:textSize="16sp"/>-->
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Location"
+                android:layout_margin="10dp"
+                android:layout_below="@id/et_Title"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:maxLines="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+
+            <!--        members-->
+
+            <!--        <EditText-->
+            <!--            android:id="@+id/member"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="50dp"-->
+            <!--            android:layout_below="@+id/capture_image_btn"-->
+            <!--            android:layout_marginTop="15dp"-->
+            <!--            android:hint="Member"-->
+            <!--            android:textSize="16sp"/>-->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/members"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Members"
+                android:layout_margin="10dp"
+                android:layout_below="@id/location"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/members_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:maxLines="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+
+            <LinearLayout
+                android:id="@+id/dates"
+                android:layout_below="@+id/members"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!--            <TextView-->
+                <!--                android:layout_width="140dp"-->
+                <!--                android:layout_height="wrap_content"-->
+                <!--                android:text="Select Start Date:"-->
+                <!--                android:textSize="16sp" />-->
+
+                <!--            start date-->
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/start_date"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:hint="Start date"
+                    android:layout_margin="10dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    >
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/start_date_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="1" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <!--            due date-->
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/due_date"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:hint="Due date"
+                    android:layout_margin="10dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    >
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/due_date_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="1" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="Add to calender events"
+                android:layout_below="@+id/dates"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                style="@style/Widget.MaterialComponents.CompoundButton.Switch"/>
+
+            <!--        Notes-->
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/notes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Description"
+                android:layout_margin="10dp"
+                android:layout_below="@id/switchBtn"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/notes_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:inputType="text"
+                    android:maxLines="5" />
+
+                <ImageView
+                    android:id="@+id/image_view"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_below="@+id/notes"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:maxWidth="100dp"
+                    android:maxHeight="10dp"
+                    android:scaleType="fitXY" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <!--            <LinearLayout-->
+            <!--                android:layout_width="100dp"-->
+            <!--                android:layout_height="100dp"-->
+            <!--                android:layout_below="@+id/notes"-->
+            <!--                android:layout_margin="10dp"-->
+            <!--                >-->
+
+            <!--                -->
+
+            <!--            </LinearLayout>-->
+
+
+            <!--Button to capture image-->
+            <!--        <Button-->
+            <!--            android:id="@+id/capture_image_btn"-->
+            <!--            android:layout_below="@+id/image_view"-->
+            <!--            android:text="Capture Image"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="wrap_content" />-->
+
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/photo"
+        style="@style/Widget.Design.FloatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add_a_photo_white_24dp"/>
+
+</com.google.android.material.circularreveal.coordinatorlayout.CircularRevealCoordinatorLayout>
