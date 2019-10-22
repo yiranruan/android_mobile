@@ -143,7 +143,7 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                         });
 
                     }
-                    models.add(new Model(Integer.valueOf(userID),  1, "Personal Tasks", " ","", "This is a personal task"));
+                    models.add(new Model(0,  1, "Personal Tasks", " ","", "This is a personal task"));
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
