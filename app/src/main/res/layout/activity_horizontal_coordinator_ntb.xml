@@ -100,16 +100,18 @@
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/white"
-            app:fab_colorPressed="@color/white_pressed"
+            android:src="@drawable/ic_note_add_white_24dp"
+            app:fab_colorNormal="@color/blue_semi_transparent"
+            app:fab_colorPressed="@color/blue_semi_transparent_pressed"
             app:fab_title="Create a task" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/white"
-            app:fab_colorPressed="@color/white_pressed"
+            android:src="@drawable/ic_equalizer_white_24dp"
+            app:fab_colorNormal="@color/blue_semi_transparent"
+            app:fab_colorPressed="@color/blue_semi_transparent_pressed"
             app:fab_title="Progress" />
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>

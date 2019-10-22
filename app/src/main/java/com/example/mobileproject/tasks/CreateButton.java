@@ -77,6 +77,7 @@ public class CreateButton extends AppCompatActivity {
     // 以下为 XML 服务
     private Button btn_add;
     private Button btn_cancel;
+    private FloatingActionsMenu menuMultipleActions;
     private FloatingActionButton mHandWriteBtn;
     private FloatingActionButton mCaptureBtn;
 
@@ -107,7 +108,7 @@ public class CreateButton extends AppCompatActivity {
     private String groupID;
     private String userID;
     private String token;
-    private FloatingActionsMenu menuMultipleActions;
+
 
 
     private OkHttpClient client;
@@ -128,6 +129,7 @@ public class CreateButton extends AppCompatActivity {
         input_title = findViewById(R.id.input_title);
         input_note = findViewById(R.id.notes_input);
         input_member = findViewById(R.id.members_input);
+        menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions_photo);
 
         Log.d("msg","check 1");
 
@@ -365,7 +367,7 @@ public class CreateButton extends AppCompatActivity {
 
 
         // 悬浮窗口
-        menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions_photo);
+
 
         mHandWriteBtn = findViewById(R.id.handwriting);
         mHandWriteBtn.setOnClickListener(new View.OnClickListener(){

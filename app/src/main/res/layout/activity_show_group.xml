@@ -88,16 +88,18 @@
             android:id="@+id/join"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/white"
-            app:fab_colorPressed="@color/white_pressed"
+            android:src="@drawable/ic_group_add_white_24dp"
+            app:fab_colorNormal="@color/blue_semi_transparent"
+            app:fab_colorPressed="@color/blue_semi_transparent_pressed"
             app:fab_title="Join a Group" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/create"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/white"
-            app:fab_colorPressed="@color/white_pressed"
+            android:src="@drawable/ic_create_white_24dp"
+            app:fab_colorNormal="@color/blue_semi_transparent"
+            app:fab_colorPressed="@color/blue_semi_transparent_pressed"
             app:fab_title="Create My Group" />
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
