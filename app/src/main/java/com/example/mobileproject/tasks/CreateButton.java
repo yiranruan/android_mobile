@@ -465,32 +465,36 @@ public class CreateButton extends AppCompatActivity {
         //called when image was captured from camera
         // ------- 接收 照相机 数据 -------
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == IMAGE_CAPTURE_CODE) {
-            if (resultCode == RESULT_OK) {
-                //set the image captured to our Im
-                if (image_uri != null) {
-                    mImageView.setImageURI(image_uri);
-                    //把image的string获得
-                    ImageView iv1 = (ImageView) findViewById(R.id.image_view);
-                    BitmapDrawable drawable = (BitmapDrawable) iv1.getDrawable();
-                    bitmap = drawable.getBitmap();
+        switch (requestCode) {
+            case IMAGE_CAPTURE_CODE:
+                if (resultCode == RESULT_OK) {
+                    //set the image captured to our Im
+                    if (image_uri != null) {
+                        mImageView.setImageURI(image_uri);
+                        //把image的string获得
+                        ImageView iv1 = (ImageView) findViewById(R.id.image_view);
+                        BitmapDrawable drawable = (BitmapDrawable) iv1.getDrawable();
+                        bitmap = drawable.getBitmap();
 
-                    filePath = temFileImage(CreateButton.this,bitmap,"name");
+                        filePath = temFileImage(CreateButton.this,bitmap,"name");
 
 
-                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
-                    byte[] bb = bos.toByteArray();
-                    image = Base64.encodeToString(bb, 0);
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+                        byte[] bb = bos.toByteArray();
+                        image = Base64.encodeToString(bb, 0);
+                    }
                 }
-            }
-        }
-        // ------ 接收 location 数据 --------
-        else if (requestCode == 30) {
-
-            Log.d("check:", "get location");
-            location = data.getStringExtra("location");
-            tv_location.setText(location);
+            case 30:
+                if (resultCode == RESULT_OK) {
+                    Log.d("check:", "get location");
+                    location = data.getStringExtra("location");
+                    tv_location.setText(location);
+                }
+            case 40:
+                if (resultCode == RESULT_OK) {
+                    
+                }
         }
     }
 
