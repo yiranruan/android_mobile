@@ -2,14 +2,17 @@ package com.example.mobileproject.group;
 
 import android.animation.Animator;
 import android.animation.ArgbEvaluator;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -78,12 +81,14 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
     private String userID = "6";
     private String token = "umeuuuufae";
     private OkHttpClient client;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_group);
         models = new ArrayList<>();
+        mContext = getApplicationContext();
 
         /*
 
@@ -138,7 +143,7 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                         });
 
                     }
-                    models.add(new Model(Integer.valueOf(userID),  1, "Personal Tasks", " ","", "This is a personal task"));
+                    models.add(new Model(0,  1, "Personal Tasks", " ","", "This is a personal task"));
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -233,26 +238,11 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
 
 
 
-//        models.add(new Model(1, R.drawable.brochure, "Brochure","Brochure is xxxxx"));
-//        models.add(new Model(2,R.drawable.sticker, "Sticker","Sticker is xxxxx"));
-//        models.add(new Model(3,R.drawable.poster, "Poster","Poster is xxxxx"));
-//        models.add(new Model(4,R.drawable.namecard, "NameCard","NameCard is xxxxx"));
 
-
-
-
-        final Button btn_task = findViewById(R.id.btnTask);
-        btn_task.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(ShowGroupActivity.this, "You clicked",
-                        Toast.LENGTH_SHORT).show();
-                Log.d("page_pos", "onClick: "+page_position);
-            }
-        });
 
 
     }
+
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
@@ -269,18 +259,51 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
                 intent.putExtra("token", token);
                 startActivity(intent); // 获得position 得到特定页面
                 break;
+
+                // remove group item
             case 2:
                 Log.d("model_size1", "onContextItemSelected: "+models.size());
+                RequestBody requestBody = new FormBody.Builder()
+                        .add("userID", userID)
+                        .add("token", token)
+                        .add("groupID", String.valueOf(models.get(page_position).getGroupID()))
+                        .build();
+                Request request = new Request.Builder()
+                        .url(getString(R.string.delete_group))
+                        .post(requestBody)
+                        .build();
 
-
-                runOnUiThread(new Runnable() {
+                client.newCall(request).enqueue(new Callback() {
                     @Override
-                    public void run() {
-                        models.remove(page_position);
-                        Log.d("model_size2", "onContextItemSelected: "+models.size());
-                        adapter.notifyDataSetChanged();
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        Toast.makeText(ShowGroupActivity.this, "Netweotk issue, try it later", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        String responseData = response.body().string();
+                        try {
+                            JSONObject jsonData = new JSONObject(responseData);
+                            Boolean result = jsonData.getBoolean("result");
+                            if (result){
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        models.remove(page_position);
+                                        Log.d("model_size2", "onContextItemSelected: "+models.size());
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                });
+                            }else{
+                                Toast.makeText(ShowGroupActivity.this, "Your are not the creator, you cannot delete this group", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
+
+
                 break;
         }
         return super.onContextItemSelected(item);
@@ -371,14 +394,11 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
 
 
         adapter = new Adapter(models, this);
-        Log.d("hhh", "This is a adp");
         viewPager = findViewById(R.id.viewPager);
         viewPager.setOffscreenPageLimit(2);
 
         viewPager.setAdapter(adapter);
         viewPager.setPadding(130, 0,130,0);
-
-        Log.d("hhh", "startDrawable: 321213");
 
 
 
