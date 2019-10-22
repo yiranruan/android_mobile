@@ -85,6 +85,11 @@ public class CreateButton extends AppCompatActivity {
     private String description = "no note";
     private String username = "ZI JI";
 
+    //为了时间数据转化为Long类型
+    private String startDateInitial;
+    private String endDateInitial;
+    private long  sDate;
+    private long eDate;
 
     // 以下为 XML 服务
     private Button btn_add;
@@ -362,6 +367,13 @@ public class CreateButton extends AppCompatActivity {
                                         minute_x =i1;
                                         tv_startDate.setText(day_x+"/"+(month_x+1)+"/"+year_x+" "+hour_x+":"+minute_x);
                                         startDate = day_x+"/"+(month_x+1)+"/"+year_x+" "+hour_x+":"+minute_x;
+                                        startDateInitial = year_x+"-"+(month_x+1)+"-"+day_x+" "+hour_x+":"+minute_x;
+                                        SimpleDateFormat dataformat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                                        try {
+                                            sDate = dataformat.parse(startDateInitial).getTime();
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
                                 }, hour, minute, true);
                                 timePickerDialog.show();
@@ -403,6 +415,13 @@ public class CreateButton extends AppCompatActivity {
                                         minute_y =i1;
                                         tv_endDate.setText(day_y+"/"+(month_y+1)+"/"+year_y+" "+hour_y+":"+minute_y);
                                         dueDate = day_y+"/"+(month_y+1)+"/"+year_y+" "+hour_y+":"+minute_y;
+                                        endDateInitial = year_x+"-"+(month_x+1)+"-"+day_x+" "+hour_x+":"+minute_x;
+                                        SimpleDateFormat dataformat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                                        try {
+                                            eDate = dataformat.parse(endDateInitial).getTime();
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
                                 }, hour, minute, true);
                                 timePickerDialog.show();
@@ -575,8 +594,8 @@ public class CreateButton extends AppCompatActivity {
                 "马上吃饭",
                 "吃好吃的",
                 "南信院二食堂",
-                System.currentTimeMillis(),
-                System.currentTimeMillis() + 60000,
+                sDate,
+                eDate,
                 0, null
         );
 
