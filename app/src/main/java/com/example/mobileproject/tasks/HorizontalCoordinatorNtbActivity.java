@@ -30,6 +30,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.mobileproject.R;
+import com.example.mobileproject.group.ShowGroupActivity;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -90,69 +91,12 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
             fetch task data from server
 
          */
-        RequestBody requestBody = new FormBody.Builder()
-                .add("userID", userID)
-                .add("token", token)
-                .add("groupID", String.valueOf(groupID))
-                .build();
-
-        Request request = new Request.Builder()
-                .url(getString(R.string.group_tasks))
-                .post(requestBody)
-                .build();
-
-        client = new OkHttpClient();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String responseData = response.body().string();
-                try {
-                    JSONObject jsonResponse = new JSONObject(responseData);
-                    JSONArray tasks = jsonResponse.getJSONArray("tasks");
-                    for (int i = 0; i < tasks.length(); i++){
-                        JSONObject task = tasks.getJSONObject(i);
-                        String category = task.getString("status");
-                        if(category.equals("todo")){
-                            task_todo.add(new Task(
-                                    Integer.valueOf(task.getInt("_id")),
-                                    task.getString("titile"),
-                                    task.getString("description"),
-                                    task.getInt("userID"),
-                                    task.getInt("groupID")
-                            ));
-                        }
-                        if(category.equals("doing")){
-                            task_todo.add(new Task(
-                                    Integer.valueOf(task.getInt("_id")),
-                                    task.getString("titile"),
-                                    task.getString("description"),
-                                    task.getInt("userID"),
-                                    task.getInt("groupID")
-                            ));
-                        }
-                        if(category.equals("done")){
-                            task_todo.add(new Task(
-                                    Integer.valueOf(task.getInt("_id")),
-                                    task.getString("titile"),
-                                    task.getString("description"),
-                                    task.getInt("userID"),
-                                    task.getInt("groupID")
-                            ));
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
 
         initUI();
+
+
+
+
 
     }
 
@@ -161,11 +105,15 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         Log.d("item", "onContextItemSelected: "+item.getItemId());
         int position;
         switch (item.getItemId()) {//根据子菜单ID进行菜单选择判断
+
             case 1:
                 position = current_holder.getAdapterPosition();
 //                addTask(position, task_todo.get(position), task_doing, rec_adapters.get(1));
 //                removeTask(position, task_todo, rec_adapters.get(0));
-                task_doing.add(0, task_todo.get(position));
+                Task task1 = task_todo.get(position);
+                task1.changeStatus("doing");
+                task_doing.add(0, task1);
+
 //                rec_adapters.get(1).notifyItemInserted(-1);
                 if(task_doing.size()==1){
 
@@ -182,7 +130,11 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                 break;
             case 2:
                 position = current_holder.getAdapterPosition();
-                task_todo.add(0, task_doing.get(position));
+                Task task2 = task_doing.get(position);
+                task2.changeStatus("todo");
+
+                task_todo.add(0, task2);
+
                 if(task_todo.size()==1){
 
                     rec_adapters.get(0).notifyDataSetChanged();
@@ -196,7 +148,12 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                 rec_adapters.get(1).notifyItemRangeChanged(position,task_doing.size());
                 break;
             case 3:
+
                 position = current_holder.getAdapterPosition();
+
+                Task task3 = task_doing.get(position);
+                task3.changeStatus("done");
+
                 task_done.add(0, task_doing.get(position));
                 if(task_done.size()==1){
 
@@ -211,8 +168,12 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                 rec_adapters.get(1).notifyItemRangeChanged(position,task_doing.size());
                 break;
             default:
+
                 position = current_holder.getAdapterPosition();
-                task_doing.add(0, task_done.get(position));
+                Task task4 = task_done.get(position);
+                task4.changeStatus("doing");
+
+                task_doing.add(0, task4);
                 if(task_doing.size()==1){
 
                     rec_adapters.get(1).notifyDataSetChanged();
@@ -281,6 +242,8 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 
                 rec_adapter.setOnItemClickLitener(new RecycleAdapter.OnItemClickLitener() {
                     @Override
+
+
                     public void onItemClick(View view, int position) {
                         ///WWWWWWWW
                         Task task;
@@ -300,41 +263,16 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                                 break;
                         }
 
-                        String title = task.getTitle();
-                        String description = task.getDescription();
-                        String username = task.getUsername();
-                        String status = task.getStatus();
-                        String strDate = task.getCreateDate();
-                        String eduDate = task.getDueDate();
-                        String location = task.getlocation();
-                        String path = task.getPath();
 
-                        Boolean setCalender = task.setCal();
-
-
-                        // 传输 数据 让其展示
                         Intent intent = new Intent(HorizontalCoordinatorNtbActivity.this, ShowTaskActivity.class);
-
-                        // for position
-                        intent.putExtra("page_code", page_code);
-                        intent.putExtra("position", position);
-
-                        // for calender;
-                        intent.putExtra("setCalender", setCalender);
-
-                        // for task
-                        intent.putExtra("title", title);
-                        intent.putExtra("description", description);
-                        intent.putExtra("status", status);
-                        intent.putExtra("username", username);
-                        intent.putExtra("strDate", strDate);
-                        intent.putExtra("dueDate", eduDate);
-                        intent.putExtra("path", path);
-                        intent.putExtra("location", location);
+                        String taskID = task.getTaskID();
+                        intent.putExtra("taskID", taskID);
+                        intent.putExtra("groupID", groupID);
+                        intent.putExtra("token", token);
                         intent.putExtra("userID", userID);
-                        intent.putExtra("groupID", Integer.toString(groupID));
-
                         startActivityForResult(intent, 2);
+
+
                     }
                 });
 
@@ -440,8 +378,9 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                 /// wwww
 
                 Intent intent = new Intent(HorizontalCoordinatorNtbActivity.this, CreateButton.class);
-                intent.putExtra("userid", userID);
-                intent.putExtra("groupid", Integer.toString(groupID));
+                intent.putExtra("userID", userID);
+                intent.putExtra("token", token);
+                intent.putExtra("groupID", Integer.toString(groupID));
                 startActivityForResult(intent, 1);
                 Log.d("msg","in create");
 
@@ -453,7 +392,76 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         collapsingToolbarLayout.setExpandedTitleColor(Color.parseColor("#009F90AF"));
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.parseColor("#9f90af"));
 
+        /// ---- from service ----
 
+        RequestBody requestBody = new FormBody.Builder()
+                .add("userID", userID)
+                .add("token", token)
+                .add("groupID", String.valueOf(groupID))
+                .build();
+
+        Request request = new Request.Builder()
+                .url(getString(R.string.group_tasks))
+                .post(requestBody)
+                .build();
+
+        client = new OkHttpClient();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseData = response.body().string();
+                Log.d("get tasks", "onResponse: " + responseData);
+                try {
+                    JSONObject jsonResponse = new JSONObject(responseData);
+                    JSONArray tasks = jsonResponse.getJSONArray("tasks");
+
+                    for (int i = 0; i < tasks.length(); i++){
+                        JSONObject task = tasks.getJSONObject(i);
+
+                        String category = task.getString("status");
+                        if(category.equals("todo")){
+                            task_todo.add(0, new Task(
+                                    task.getString("_id"), //taskID
+                                    task.getInt("groupID"),
+                                    task.getString("title"), //title
+                                    category
+                            ));
+                            rec_adapters.get(0).notifyItemInserted(-1);
+                            rec_adapters.get(0).notifyDataSetChanged();
+                        }
+                        if(category.equals("doing")){
+                            task_doing.add(0, new Task(
+                                    task.getString("_id"), //taskID
+                                    task.getInt("groupID"),
+                                    task.getString("title"), //title
+                                    category
+                            ));
+                            rec_adapters.get(1).notifyItemInserted(-1);
+                            rec_adapters.get(1).notifyDataSetChanged();
+                        }
+                        if(category.equals("done")){
+                            task_done.add(0,new Task(
+                                    task.getString("_id"), //taskID
+                                    task.getInt("groupID"),
+                                    task.getString("title"), //title
+                                    category
+                            ));
+                            rec_adapters.get(2).notifyItemInserted(-1);
+                            rec_adapters.get(2).notifyDataSetChanged();
+                        }
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
     }
 
@@ -636,29 +644,48 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         if (requestCode == 1) {
             if(resultCode == RESULT_OK) {
 
+                String responseData = data.getStringExtra("responseData");
+                try {
+                    JSONObject jsonData = new JSONObject(responseData);
+                    JSONObject task = new JSONObject(jsonData.getString("task"));
+                    if (jsonData.getBoolean("result")){
+                        task_todo.add( new Task(
+                                task.getString("_id"),
+                                task.getInt("groupID"),
+                                task.getString("title"),
+                                "todo"
+                        ));
+//                        rec_adapters.get(0).notifyItemInserted(-1);
+                        rec_adapters.get(0).notifyDataSetChanged();
+
+                    }
+                    else{
+                        Toast.makeText(HorizontalCoordinatorNtbActivity.this,
+                                jsonData.getString("msg"), Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 // 接听数据
 
-                String title = data.getStringExtra("title");
-                String description = data.getStringExtra("description");
-                String username = data.getStringExtra("username");
-                String startDate = data.getStringExtra("startDate");
-                String dueDate = data.getStringExtra("dueDate");
-                String location = data.getStringExtra("location");
-                String path = data.getStringExtra("path");
-
-                Boolean setCalender = data.getBooleanExtra("setCalender", false);
+//                String title = data.getStringExtra("title");
+//
+//
+//                Boolean setCalender = data.getBooleanExtra("setCalender", false);
 
 //                Task newtask = new Task
 //                        (username, title, description, userID,
 //                                groupID, startDate, dueDate, path, location, "To-Do");
 
-               Task newtask = new Task
-                        (username, title, description, userID,
-                                groupID, startDate, dueDate, path, location, "To-Do", setCalender);
-
-
-                task_todo.add(0, newtask);
-                rec_adapters.get(0).notifyDataSetChanged();
+//               Task newtask = new Task
+//                        (username, title, description, userID,
+//                                groupID, startDate, dueDate, path, location, "To-Do", setCalender);
+//
+//
+//                Task newtask = new Task()
+//                task_todo.add(0, newtask);
+//                rec_adapters.get(0).notifyDataSetChanged();
 
 
 //                // 更新ADAPTER

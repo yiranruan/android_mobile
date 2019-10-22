@@ -98,6 +98,7 @@ public class ShowTaskActivity extends AppCompatActivity {
     private String startDate;
     private String dueDate;
     private String filepath;
+    private String token;
     private String iamge;
     private String userID;
     private int groupID;
@@ -129,6 +130,12 @@ public class ShowTaskActivity extends AppCompatActivity {
 
         //// --- 接收 数据 ---
         final Intent intent = getIntent();
+
+        userID = intent.getStringExtra("userID");
+        token = intent.getStringExtra("token");
+
+
+
 
         initial_C = intent.getBooleanExtra("setCalender", false);
         // positions

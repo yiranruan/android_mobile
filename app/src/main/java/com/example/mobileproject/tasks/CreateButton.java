@@ -46,6 +46,8 @@ import com.kyle.calendarprovider.calendar.CalendarEvent;
 import com.kyle.calendarprovider.calendar.CalendarProviderManager;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -79,7 +81,7 @@ public class CreateButton extends AppCompatActivity {
     private String startDate = "no start date";
     private String dueDate = "no due date";
     private String filePath;
-    private String iamge;
+    private String image = "";
     Bitmap bitmap = null;
     private String title = "no title ";
     private String description = "no note";
@@ -114,7 +116,9 @@ public class CreateButton extends AppCompatActivity {
     private ImageView mImageView;
     private Uri image_uri;
 
-
+    private String groupID;
+    private String userID;
+    private String token;
 
 
     private OkHttpClient client;
@@ -126,9 +130,9 @@ public class CreateButton extends AppCompatActivity {
 
         // 接收小组ID 和 USERID 的数据
         Intent intent_reci = getIntent();
-
-        int groupID = Integer.parseInt(intent_reci.getStringExtra("groupid"));
-        String userID = intent_reci.getStringExtra("userid");
+        userID = intent_reci.getStringExtra("userID");
+        token = intent_reci.getStringExtra("token");
+        groupID = intent_reci.getStringExtra("groupID");
 
 
         /// 这三个是 EDITTEXT 绑定ID即可
@@ -221,41 +225,82 @@ public class CreateButton extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Boolean send_calender = switch_calender.isChecked();
-                if (send_calender) {addCalender();}
 
                 title = input_title.getText().toString();
                 description = input_note.getText().toString();
                 username = input_member.getText().toString();
+                Log.d("create task data", "onClick: " + location );
+                Log.d("create task data", "onClick: " + image );
+                Log.d("create task data", "onClick: " + startDate );
 
                 if (title.length() > 0 && username.length() > 0) {
 
-                    Intent intent_put = new Intent();
+                    RequestBody requestBody = new FormBody.Builder()
+                            .add("userID", userID)
+                            .add("token", token)
+                            .add("groupID", groupID)
+                            .add("title", title)
+                            .add("location", location)
+                            .add("members", username)
+                            .add("startDate", startDate)
+                            .add("endData", dueDate)
+                            .add("description", description)
+                            .add("photo", image)
+                            .build();
 
-                    intent_put.putExtra("setCalender", send_calender);
-                    intent_put.putExtra("title", title);
-                    intent_put.putExtra("description", description);
-                    intent_put.putExtra("username", username);
-                    intent_put.putExtra("startDate", startDate);
-                    intent_put.putExtra("dueDate", dueDate);
-                    intent_put.putExtra("location", location);
+                    Request request = new Request.Builder()
+                            .url(getString(R.string.new_task))
+                            .post(requestBody)
+                            .build();
 
-                    ////
-//                    intent_put.putExtra("bitmap", bitmap);
+                    OkHttpClient client = new OkHttpClient();
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            Toast.makeText(CreateButton.this, "Network issue, try it later", Toast.LENGTH_SHORT).show();
+                        }
 
-                    //把图片地址放进去
-                    intent_put.putExtra("path",filePath);
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                            String responseData = response.body().string();
+                            Log.d("create task", "onResponse: " + responseData);
+                            Intent intent = new Intent();
+                            intent.putExtra("responseData", responseData);
+                            setResult(RESULT_OK, intent);
+                            finish();
 
-                    setResult(RESULT_OK, intent_put);
-
-                    finish();
-
-                }else{
-                    String msg = "Title and Member can't be empty!";
-                    Toast toast=Toast.makeText(getApplicationContext(), msg ,Toast.LENGTH_SHORT);
-                    toast.setMargin(50,50);
-                    toast.show();
+                        }
+                    });
                 }
+
+//                if (title.length() > 0 && username.length() > 0) {
+//
+//                    Intent intent_put = new Intent();
+//
+//                    intent_put.putExtra("setCalender", send_calender);
+//                    intent_put.putExtra("title", title);
+//                    intent_put.putExtra("description", description);
+//                    intent_put.putExtra("username", username);
+//                    intent_put.putExtra("startDate", startDate);
+//                    intent_put.putExtra("dueDate", dueDate);
+//                    intent_put.putExtra("location", location);
+//
+//                    ////
+////                    intent_put.putExtra("bitmap", bitmap);
+//
+//                    //把图片地址放进去
+//                    intent_put.putExtra("path",filePath);
+//
+//                    setResult(RESULT_OK, intent_put);
+//
+//                    finish();
+//
+//                }else{
+//                    String msg = "Title and Member can't be empty!";
+//                    Toast toast=Toast.makeText(getApplicationContext(), msg ,Toast.LENGTH_SHORT);
+//                    toast.setMargin(50,50);
+//                    toast.show();
+//                }
 
             }
         });
@@ -265,74 +310,6 @@ public class CreateButton extends AppCompatActivity {
         btn_cancel = findViewById(R.id.btn_cancel);
         btn_cancel.setOnClickListener(onClick);
 
-//        btn_add.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                title = input_title.getText().toString();
-//                descriprion = input_note.getText().toString();
-//                username = input_member.getText().toString();
-//
-//                RequestBody requestBody = new FormBody.Builder()
-//
-//                        .add("userID", "6")
-//                        .add("token","umeuuuufae")
-//                        .add("title", title)
-//                        .add("description",descriprion)
-//                        .add("username", username)
-//                        .add("startDate",startDate)
-//                        .add("dueDate",dueDate)
-//                        .build();
-//
-//                Request request = new Request.Builder()
-//                        .url("https://groupmonster.herokuapp.com/new/task")
-//                        .header("Content-Type","application/json")
-//                        .post(requestBody)
-//                        .build();
-//
-//
-//                client.newCall(request).enqueue(new Callback() {
-//
-//                    @Override
-//                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
-//                        Log.d("response", "failed");
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                Toast.makeText(CreateButton.this, "Network Issues", Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
-//                    }
-//
-//                    @Override
-//                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-//                        Log.d("code", String.valueOf(response.code()));
-//                        final String reponseData = response.body().string();
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                Toast.makeText(CreateButton.this, reponseData , Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
-//
-//                        Intent intent = new Intent();
-//                        intent.putExtra("title", title);
-//                        intent.putExtra("description", descriprion);
-//                        intent.putExtra("username", username);
-//                        intent.putExtra("startDate", startDate);
-//                        intent.putExtra("dueDate", dueDate);
-//                        setResult(RESULT_OK, intent);
-//
-//                        finish();
-//
-//                    }
-//                });
-//
-//
-//            }
-//        });
-
-
-        // ------添加时间的代码-----
 
         tv_startDate = findViewById(R.id.start_date_input);
         tv_endDate = findViewById(R.id.due_date_input);
@@ -517,7 +494,7 @@ public class CreateButton extends AppCompatActivity {
                     ByteArrayOutputStream bos = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
                     byte[] bb = bos.toByteArray();
-                    iamge = Base64.encodeToString(bb, 0);
+                    image = Base64.encodeToString(bb, 0);
                 }
             }
         }
@@ -538,7 +515,7 @@ public class CreateButton extends AppCompatActivity {
         OutputStream os;
         try {
             os = new FileOutputStream(imageFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 10, os);
             os.flush();
             os.close();
         } catch (Exception e) {
