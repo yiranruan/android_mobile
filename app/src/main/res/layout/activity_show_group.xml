@@ -51,24 +51,6 @@
             <!--android:src="@drawable/ic_menu_90" />-->
         </io.codetail.widget.RevealFrameLayout>
 
-        <ScrollView
-            android:id="@+id/scrollView"
-            android:layout_width="80dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="start|bottom"
-            android:scrollbarThumbVertical="@android:color/transparent">
-
-            <LinearLayout
-                android:id="@+id/left_drawer"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:divider="@android:color/transparent"
-                android:dividerHeight="0dp"
-                android:orientation="vertical">
-            </LinearLayout>
-        </ScrollView>
-
     </androidx.drawerlayout.widget.DrawerLayout>
 
     <include layout="@layout/item"/>

@@ -262,22 +262,59 @@
 
     </ScrollView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/photo"
-        style="@style/Widget.Design.FloatingActionButton"
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/multiple_actions_photo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="14dp"
+        android:layout_marginRight="14dp"
+        android:layout_marginBottom="18dp"
         android:layout_gravity="bottom|right"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_add_a_photo_white_24dp"/>
+        app:fab_addButtonColorNormal="@color/pink"
+        app:fab_addButtonColorPressed="@color/pink_pressed"
+        app:fab_labelStyle="@style/menu_labels_style"
+        
+        tools:ignore="RtlHardcoded">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/handwriting"
-        style="@style/Widget.Design.FloatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|left"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_add_a_photo_white_24dp"/>
+<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--            android:id="@+id/photo"-->
+<!--            style="@style/Widget.Design.FloatingActionButton"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+
+<!--            android:layout_margin="16dp"-->
+<!--            android:src="@drawable/ic_add_a_photo_white_24dp"/>-->
+
+<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--            android:id="@+id/handwriting"-->
+<!--            style="@style/Widget.Design.FloatingActionButton"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+
+<!--            android:layout_margin="16dp"-->
+<!--            android:src="@drawable/ic_add_a_photo_white_24dp"/>-->
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/white"
+            app:fab_colorPressed="@color/white_pressed"
+            app:fab_title="Take a photo" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/handwriting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/white"
+            app:fab_colorPressed="@color/white_pressed"
+            app:fab_title="Handwriting" />
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+
 
 </com.google.android.material.circularreveal.coordinatorlayout.CircularRevealCoordinatorLayout>

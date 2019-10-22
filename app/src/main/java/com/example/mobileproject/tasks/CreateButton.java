@@ -18,6 +18,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -38,7 +39,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -91,6 +93,7 @@ public class CreateButton extends AppCompatActivity {
     // 以下为 XML 服务
     private Button btn_add;
     private Button btn_cancel;
+    private FloatingActionButton mHandWriteBtn;
 
     private SwitchMaterial switch_calender;
     private Boolean send_calender = false;
@@ -273,35 +276,6 @@ public class CreateButton extends AppCompatActivity {
                     });
                 }
 
-//                if (title.length() > 0 && username.length() > 0) {
-//
-//                    Intent intent_put = new Intent();
-//
-//                    intent_put.putExtra("setCalender", send_calender);
-//                    intent_put.putExtra("title", title);
-//                    intent_put.putExtra("description", description);
-//                    intent_put.putExtra("username", username);
-//                    intent_put.putExtra("startDate", startDate);
-//                    intent_put.putExtra("dueDate", dueDate);
-//                    intent_put.putExtra("location", location);
-//
-//                    ////
-////                    intent_put.putExtra("bitmap", bitmap);
-//
-//                    //把图片地址放进去
-//                    intent_put.putExtra("path",filePath);
-//
-//                    setResult(RESULT_OK, intent_put);
-//
-//                    finish();
-//
-//                }else{
-//                    String msg = "Title and Member can't be empty!";
-//                    Toast toast=Toast.makeText(getApplicationContext(), msg ,Toast.LENGTH_SHORT);
-//                    toast.setMargin(50,50);
-//                    toast.show();
-//                }
-
             }
         });
 
@@ -431,6 +405,19 @@ public class CreateButton extends AppCompatActivity {
                     openCamera();
                 }
 
+            }
+        });
+
+        // 悬浮窗口
+        final FloatingActionsMenu menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions_photo);
+
+        mHandWriteBtn = findViewById(R.id.handwriting);
+        mHandWriteBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent intent= new Intent(CreateButton.this,drawLinesActivity.class);
+                startActivityForResult(intent, 40);
+                menuMultipleActions.collapseImmediately();
             }
         });
     }
