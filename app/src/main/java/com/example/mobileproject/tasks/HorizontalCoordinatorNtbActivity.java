@@ -31,6 +31,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.mobileproject.R;
 import com.example.mobileproject.group.ShowGroupActivity;
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -72,6 +74,9 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
     private int groupID;
     private String groupName;
     Intent intent;
+    private FloatingActionButton mNewTaskBtn;
+    private FloatingActionButton mProgressBtn;
+    private FloatingActionsMenu menuMultipleActions;
 
     OkHttpClient client;
 
@@ -95,12 +100,16 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         initUI();
 
 
+
+
+
     }
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         Log.d("item", "onContextItemSelected: "+item.getItemId());
         int position;
+        checkExpansion();
         switch (item.getItemId()) {//根据子菜单ID进行菜单选择判断
 
             case 1:
@@ -191,6 +200,8 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         populate();
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.vp_horizontal_ntb);
+        /// Menu
+        menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions_task);
         @SuppressLint("ResourceType")
         CollapsingToolbarLayout tb = findViewById(R.id.toolbar);
         Log.d("nameg", "initUI: "+groupName);
@@ -245,6 +256,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                         ///WWWWWWWW
                         Task task;
                         int page_code;
+                        checkExpansion();
                         switch (page_position) {
                             case 0:
                                 task = task_todo.get(position);
@@ -280,6 +292,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                 rec_adapter.setOnItemLongClickListener(new RecycleAdapter.OnItemLongClickListener() {
                     @Override
                     public void onItemLongClick(View view, int position, @NonNull RecycleAdapter.TaskHolder holder) {
+                        checkExpansion();
                         Log.d("task", "this is tasks"+position);
                         task_position = position;
                         current_holder = holder;
@@ -369,22 +382,32 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 
 
 
-        final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.parent);
+
+
 
         /// 点击 CREATE ACTIVITY
-        findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
+        mNewTaskBtn = findViewById(R.id.fab);
+        mNewTaskBtn.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick(final View v) {
-
-                /// wwww
-
+            public void onClick(View view) {
                 Intent intent = new Intent(HorizontalCoordinatorNtbActivity.this, CreateButton.class);
                 intent.putExtra("userID", userID);
                 intent.putExtra("token", token);
                 intent.putExtra("groupID", Integer.toString(groupID));
+                checkExpansion();
                 startActivityForResult(intent, 1);
                 Log.d("msg","in create");
+            }
+        });
 
+        mProgressBtn = findViewById(R.id.progress);
+        mProgressBtn.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                checkExpansion();
+                Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Progress", Toast.LENGTH_SHORT).show();
+                menuMultipleActions.collapseImmediately();
             }
         });
 
@@ -642,31 +665,33 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
 
         // 从CREATE ACTIVITY 里传回来的数据
-        if (requestCode == 1) {
-            if(resultCode == RESULT_OK) {
 
-                String responseData = data.getStringExtra("responseData");
-                try {
-                    JSONObject jsonData = new JSONObject(responseData);
-                    JSONObject task = new JSONObject(jsonData.getString("task"));
-                    if (jsonData.getBoolean("result")){
-                        task_todo.add( new Task(
-                                task.getString("_id"),
-                                task.getInt("groupID"),
-                                task.getString("title"),
-                                "todo"
-                        ));
+        switch (requestCode) {
+            case 1:
+                if(resultCode == RESULT_OK) {
+
+                    String responseData = data.getStringExtra("responseData");
+                    try {
+                        JSONObject jsonData = new JSONObject(responseData);
+                        JSONObject task = new JSONObject(jsonData.getString("task"));
+                        if (jsonData.getBoolean("result")){
+                            task_todo.add( new Task(
+                                    task.getString("_id"),
+                                    task.getInt("groupID"),
+                                    task.getString("title"),
+                                    "todo"
+                            ));
 //                        rec_adapters.get(0).notifyItemInserted(-1);
-                        rec_adapters.get(0).notifyDataSetChanged();
+                            rec_adapters.get(0).notifyDataSetChanged();
 
+                        }
+                        else{
+                            Toast.makeText(HorizontalCoordinatorNtbActivity.this,
+                                    jsonData.getString("msg"), Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                    else{
-                        Toast.makeText(HorizontalCoordinatorNtbActivity.this,
-                                jsonData.getString("msg"), Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
 
             }
         }

@@ -77,7 +77,9 @@ public class CreateButton extends AppCompatActivity {
     // 以下为 XML 服务
     private Button btn_add;
     private Button btn_cancel;
+    private FloatingActionsMenu menuMultipleActions;
     private FloatingActionButton mHandWriteBtn;
+    private FloatingActionButton mCaptureBtn;
 
     private SwitchMaterial switch_calender;
     private Boolean send_calender = false;
@@ -99,13 +101,14 @@ public class CreateButton extends AppCompatActivity {
     private int day_x,month_x,year_x,hour_x,minute_x;
     private int day_y,month_y,year_y,hour_y,minute_y;
 
-    private FloatingActionButton mCaptureBtn;
+
     private ImageView mImageView;
     private Uri image_uri;
 
     private String groupID;
     private String userID;
     private String token;
+
 
 
     private OkHttpClient client;
@@ -126,6 +129,7 @@ public class CreateButton extends AppCompatActivity {
         input_title = findViewById(R.id.input_title);
         input_note = findViewById(R.id.notes_input);
         input_member = findViewById(R.id.members_input);
+        menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions_photo);
 
         Log.d("msg","check 1");
 
@@ -361,14 +365,27 @@ public class CreateButton extends AppCompatActivity {
 
 
 
-        /// ------ 打开摄像机的代码 --------
 
+        // 悬浮窗口
+
+
+        mHandWriteBtn = findViewById(R.id.handwriting);
+        mHandWriteBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent intent= new Intent(CreateButton.this,drawLinesActivity.class);
+                startActivityForResult(intent, 40);
+                checkExpansion();
+            }
+        });
+        /// ------ 打开摄像机的代码 --------
         mCaptureBtn = findViewById(R.id.photo);
         mCaptureBtn.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View view) {
                 //if system os is>= marshmallow, request runtime permission
+                checkExpansion();
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
                     if(checkSelfPermission(Manifest.permission.CAMERA)==
                             PackageManager.PERMISSION_DENIED ||
@@ -392,18 +409,6 @@ public class CreateButton extends AppCompatActivity {
             }
         });
 
-        // 悬浮窗口
-        final FloatingActionsMenu menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions_photo);
-
-        mHandWriteBtn = findViewById(R.id.handwriting);
-        mHandWriteBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Intent intent= new Intent(CreateButton.this,drawLinesActivity.class);
-                startActivityForResult(intent, 40);
-                menuMultipleActions.collapseImmediately();
-            }
-        });
     }
 
     private void openCamera(){
@@ -563,6 +568,12 @@ public class CreateButton extends AppCompatActivity {
             Toast.makeText(CreateButton.this, "unsuccessfully insert", Toast.LENGTH_SHORT).show();
         } else if (result == -2) {
             Toast.makeText(CreateButton.this, "Do not have the permission", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void checkExpansion(){
+        if (menuMultipleActions.isExpanded()) {
+            menuMultipleActions.collapseImmediately();
         }
     }
 }

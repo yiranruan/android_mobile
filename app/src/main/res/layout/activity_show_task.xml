@@ -284,14 +284,42 @@
 
     </ScrollView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/photo"
-        style="@style/Widget.Design.FloatingActionButton"
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/multiple_actions_photo_task"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="14dp"
+        android:layout_marginRight="14dp"
+        android:layout_marginBottom="18dp"
         android:layout_gravity="bottom|right"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_add_a_photo_white_24dp"/>
+        app:fab_addButtonColorNormal="@color/pink"
+        app:fab_addButtonColorPressed="@color/pink_pressed"
+        app:fab_labelStyle="@style/menu_labels_style"
+
+        tools:ignore="RtlHardcoded">
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/photo_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add_a_photo_white_24dp"
+            app:fab_colorNormal="@color/blue_semi_transparent"
+            app:fab_colorPressed="@color/blue_semi_transparent_pressed"
+            app:fab_title="Take a photo" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/handwriting_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_format_paint_white_24dp"
+            app:fab_colorNormal="@color/blue_semi_transparent"
+            app:fab_colorPressed="@color/blue_semi_transparent_pressed"
+            app:fab_title="Handwriting" />
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
 </com.google.android.material.circularreveal.coordinatorlayout.CircularRevealCoordinatorLayout>
 

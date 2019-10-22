@@ -146,7 +146,7 @@ public class ShowGroupActivity extends AppCompatActivity {
                 Intent intent = new Intent(ShowGroupActivity.this, GroupCreateActivity.class);
                 intent.putExtra("userID", userID);
                 intent.putExtra("token", token);
-                menuMultipleActions.collapseImmediately();
+                checkExpansion();
                 startActivityForResult(intent, 2);
             }
         });
@@ -160,7 +160,7 @@ public class ShowGroupActivity extends AppCompatActivity {
                 Intent intent = new Intent(ShowGroupActivity.this, GroupJoinActivity.class);
                 intent.putExtra("userID", userID);
                 intent.putExtra("token", token);
-                menuMultipleActions.collapseImmediately();
+                checkExpansion();
                 startActivityForResult(intent, 1);
             }
         });
@@ -186,7 +186,7 @@ public class ShowGroupActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         Log.d("item", "onContextItemSelected: "+item.getItemId());
-        int position;
+        checkExpansion();
         switch (item.getItemId()) {//根据子菜单ID进行菜单选择判断
             case 1:
                 Log.d("hhh", "onLongClick: True");
@@ -196,9 +196,9 @@ public class ShowGroupActivity extends AppCompatActivity {
                 intent.putExtra("groupID",groupID);
                 intent.putExtra("userID", userID);
                 intent.putExtra("token", token);
+
                 startActivity(intent); // 获得position 得到特定页面
                 break;
-
                 // remove group item
             case 2:
                 Log.d("model_size1", "onContextItemSelected: "+models.size());
@@ -347,6 +347,12 @@ public class ShowGroupActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    public void checkExpansion(){
+        if (menuMultipleActions.isExpanded()) {
+            menuMultipleActions.collapseImmediately();
+        }
     }
 
 

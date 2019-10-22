@@ -1,6 +1,7 @@
 package com.example.mobileproject.tasks;
 import com.example.mobileproject.R;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.kyle.calendarprovider.calendar.CalendarEvent;
 import com.kyle.calendarprovider.calendar.CalendarProviderManager;
@@ -94,6 +95,7 @@ public class ShowTaskActivity extends AppCompatActivity {
     private ImageView mImageView;
     private Uri image_uri;
 
+    private FloatingActionsMenu menuMultipleActions;
     private FloatingActionButton mCaptureBtn;
     private FloatingActionButton mHandWriteBtn;
     private Button btn_add;
@@ -137,6 +139,7 @@ public class ShowTaskActivity extends AppCompatActivity {
         tv_title = findViewById(R.id.et_Title);
         et_note = findViewById(R.id.et_note);
         tv_member = findViewById(R.id.member);
+        menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions_photo_task);
         // tv_location = findViewById(R.id.tv_Location);
 
         //设置edittext是否可编辑
@@ -400,6 +403,7 @@ public class ShowTaskActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                checkExpansion();
                 Calendar c = Calendar.getInstance();
                 year = c.get(Calendar.YEAR);
                 month = c.get(Calendar.MONTH);
@@ -434,6 +438,7 @@ public class ShowTaskActivity extends AppCompatActivity {
         tv_endDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                checkExpansion();
                 Calendar c = Calendar.getInstance();
                 year = c.get(Calendar.YEAR);
                 month = c.get(Calendar.MONTH);
@@ -471,6 +476,7 @@ public class ShowTaskActivity extends AppCompatActivity {
         mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                checkExpansion();
                 AlertDialog.Builder builder = new AlertDialog.Builder(ShowTaskActivity.this);
                 builder.setTitle("Photo");
                 builder.setMessage("Do you want to remove this phote?");
@@ -487,7 +493,7 @@ public class ShowTaskActivity extends AppCompatActivity {
                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        checkExpansion();
                     }
                 });
 
@@ -505,13 +511,24 @@ public class ShowTaskActivity extends AppCompatActivity {
         });
 
 
-        /// ---- 照相机 功能
-        mCaptureBtn = findViewById(R.id.photo);
+        // 悬浮窗口
+        mHandWriteBtn = findViewById(R.id.handwriting_task);
+        mHandWriteBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent intent= new Intent(ShowTaskActivity.this,drawLinesActivity.class);
+                startActivityForResult(intent, 40);
+                checkExpansion();
+            }
+        });
+        /// ------ 打开摄像机的代码 --------
+        mCaptureBtn = findViewById(R.id.photo_task);
         mCaptureBtn.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View view) {
                 //if system os is>= marshmallow, request runtime permission
+                checkExpansion();
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
                     if(checkSelfPermission(Manifest.permission.CAMERA)==
                             PackageManager.PERMISSION_DENIED ||
@@ -638,6 +655,7 @@ public class ShowTaskActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
+            checkExpansion();
             Intent intent = null;
 
 
@@ -754,6 +772,12 @@ public class ShowTaskActivity extends AppCompatActivity {
 //            Toast.makeText(ShowTaskActivity.this, "查询失败", Toast.LENGTH_SHORT).show();
 //        }
 //    }
+
+    public void checkExpansion(){
+        if (menuMultipleActions.isExpanded()) {
+            menuMultipleActions.collapseImmediately();
+        }
+    }
 
 }
 
