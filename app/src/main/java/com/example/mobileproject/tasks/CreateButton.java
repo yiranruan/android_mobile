@@ -515,7 +515,7 @@ public class CreateButton extends AppCompatActivity {
         OutputStream os;
         try {
             os = new FileOutputStream(imageFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 10, os);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 1, os);
             os.flush();
             os.close();
         } catch (Exception e) {
