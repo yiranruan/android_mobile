@@ -1,24 +1,14 @@
 package com.example.mobileproject.group;
 
-import android.animation.Animator;
 import android.animation.ArgbEvaluator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewAnimationUtils;
-import android.view.animation.AccelerateInterpolator;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,14 +16,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
-
 import com.example.mobileproject.R;
-import com.example.mobileproject.fragment.ContentFragment;
 import com.example.mobileproject.tasks.HorizontalCoordinatorNtbActivity;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -61,15 +49,8 @@ public class ShowGroupActivity extends AppCompatActivity {
     List<Model> models;
     Integer[] colors = null;
     ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+    private FloatingActionsMenu menuMultipleActions;
 
-    Toolbar toolbar;
-    //    RelativeLayout root;
-//    View contentHamburger;
-    private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle drawerToggle;
-    //    private int res = R.drawable.content_music;
-    private LinearLayout linearLayout;
-    //    private LinearLayout linearLayout;
     private int res = R.drawable.content_music;
     private int page_position = 0;
     private String userID = "6";
@@ -83,6 +64,8 @@ public class ShowGroupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_show_group);
         models = new ArrayList<>();
         mContext = getApplicationContext();
+        menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions);
+
 
         /*
 
@@ -91,8 +74,6 @@ public class ShowGroupActivity extends AppCompatActivity {
          */
 
         Intent intent = getIntent();
-//        userID = intent.getStringExtra("userID");
-//        token = intent.getStringExtra("token");
 
         RequestBody requestBody = new FormBody.Builder()
                 .add("userID", userID)
@@ -161,36 +142,8 @@ public class ShowGroupActivity extends AppCompatActivity {
                 Intent intent = new Intent(ShowGroupActivity.this, GroupCreateActivity.class);
                 intent.putExtra("userID", userID);
                 intent.putExtra("token", token);
+                menuMultipleActions.collapseImmediately();
                 startActivityForResult(intent, 2);
-            }
-        });
-
-
-        toolbar = findViewById(R.id.toolbar);
-//        root = findViewById(R.id.root);
-//        contentHamburger = findViewById(R.id.content_hamburger);
-//
-//        View guillotineMenu = LayoutInflater.from(this).inflate(R.layout.guillotine, null);
-//        root.addView(guillotineMenu);
-//
-//        new GuillotineAnimation.GuillotineBuilder(guillotineMenu, guillotineMenu.findViewById(R.id.guillotine_hamburger), contentHamburger)
-//                .setStartDelay(RIPPLE_DURATION)
-//                .setActionBarViewForAnimation(toolbar)
-//                .setClosedOnStart(true)
-//                .build();
-
-
-        ContentFragment contentFragment = ContentFragment.newInstance(R.drawable.content_music);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, contentFragment)
-                .commit();
-        drawerLayout = findViewById(R.id.drawer_layout);
-//        drawerLayout.setScrimColor(Color.TRANSPARENT);
-        linearLayout = findViewById(R.id.left_drawer);
-        linearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawerLayout.closeDrawers();
             }
         });
 
@@ -203,6 +156,7 @@ public class ShowGroupActivity extends AppCompatActivity {
                 Intent intent = new Intent(ShowGroupActivity.this, GroupJoinActivity.class);
                 intent.putExtra("userID", userID);
                 intent.putExtra("token", token);
+                menuMultipleActions.collapseImmediately();
                 startActivityForResult(intent, 1);
             }
         });
@@ -221,11 +175,6 @@ public class ShowGroupActivity extends AppCompatActivity {
 
         Log.d("TEST", "onResponse: 2222");
         startDrawable();
-
-
-
-
-
 
     }
 
@@ -355,30 +304,6 @@ public class ShowGroupActivity extends AppCompatActivity {
     }
 
     protected void startDrawable(){
-        Log.d("TEST", "onResponse: 3333");
-//        drawables = getResources().obtainTypedArray(R.array.random_imgs);
-
-//        if (returnName != "private") {
-//            int count = adapter.getCount();
-//            switch (count%4){
-//                case 0:
-//                    models.add(new Model(1,R.drawable.brochure, returnName,"This is "+returnName));
-//                    break;
-//                case 1:
-//                    models.add(new Model(2,R.drawable.sticker, returnName,"This is "+returnName));
-//                    break;
-//                case 2:
-//                    models.add(new Model(3,R.drawable.poster, returnName,"This is "+returnName));
-//                    break;
-//                case 3:
-//                    models.add(new Model(4,R.drawable.namecard, returnName,"This is "+returnName));
-//                    break;
-//                default:
-//                    break;
-//            }
-//        }
-
-
         adapter = new Adapter(models, this);
         viewPager = findViewById(R.id.viewPager);
         viewPager.setOffscreenPageLimit(2);
@@ -393,7 +318,6 @@ public class ShowGroupActivity extends AppCompatActivity {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 position = position % colors.length;
-//                if (position < (adapter.getCount() - 1) && position < (colors.length - 1)){
                 if (position < (colors.length - 1)){
                     viewPager.setBackgroundColor(
                             (Integer) argbEvaluator.evaluate(
@@ -422,31 +346,31 @@ public class ShowGroupActivity extends AppCompatActivity {
 
 
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        drawerToggle.onConfigurationChanged(newConfig);
-    }
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//        drawerToggle.onConfigurationChanged(newConfig);
+//    }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return false;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+////        getMenuInflater().inflate(R.menu.menu_main, menu);
+//        return false;
+//    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (drawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Log.d("setting","yes");
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        if (drawerToggle.onOptionsItemSelected(item)) {
+//            return true;
+//        }
+//        switch (item.getItemId()) {
+//            case R.id.action_settings:
+//                Log.d("setting","yes");
+//                return true;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
 
 }

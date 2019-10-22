@@ -39,7 +39,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -458,12 +459,17 @@ public class CreateButton extends AppCompatActivity {
 
             }
         });
+
+        // 悬浮窗口
+        final FloatingActionsMenu menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions_photo);
+
         mHandWriteBtn = findViewById(R.id.handwriting);
         mHandWriteBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 Intent intent= new Intent(CreateButton.this,drawLinesActivity.class);
                 startActivityForResult(intent, 40);
+                menuMultipleActions.collapseImmediately();
             }
         });
     }
