@@ -258,28 +258,6 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-
-            <!--            <LinearLayout-->
-            <!--                android:layout_width="100dp"-->
-            <!--                android:layout_height="100dp"-->
-            <!--                android:layout_below="@+id/notes"-->
-            <!--                android:layout_margin="10dp"-->
-            <!--                >-->
-
-            <!--                -->
-
-            <!--            </LinearLayout>-->
-
-
-            <!--Button to capture image-->
-            <!--        <Button-->
-            <!--            android:id="@+id/capture_image_btn"-->
-            <!--            android:layout_below="@+id/image_view"-->
-            <!--            android:text="Capture Image"-->
-            <!--            android:layout_width="match_parent"-->
-            <!--            android:layout_height="wrap_content" />-->
-
-
         </RelativeLayout>
 
     </ScrollView>
@@ -290,6 +268,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add_a_photo_white_24dp"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/handwriting"
+        style="@style/Widget.Design.FloatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
         android:layout_margin="16dp"
         android:src="@drawable/ic_add_a_photo_white_24dp"/>
 

@@ -118,31 +118,31 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                         JSONObject task = tasks.getJSONObject(i);
                         String category = task.getString("status");
                         if(category.equals("todo")){
-                            task_todo.add(new Task(
-                                    Integer.valueOf(task.getInt("_id")),
-                                    task.getString("titile"),
-                                    task.getString("description"),
-                                    task.getInt("userID"),
-                                    task.getInt("groupID")
-                            ));
-                        }
-                        if(category.equals("doing")){
-                            task_todo.add(new Task(
-                                    Integer.valueOf(task.getInt("_id")),
-                                    task.getString("titile"),
-                                    task.getString("description"),
-                                    task.getInt("userID"),
-                                    task.getInt("groupID")
-                            ));
-                        }
-                        if(category.equals("done")){
-                            task_todo.add(new Task(
-                                    Integer.valueOf(task.getInt("_id")),
-                                    task.getString("titile"),
-                                    task.getString("description"),
-                                    task.getInt("userID"),
-                                    task.getInt("groupID")
-                            ));
+//                            task_todo.add(new Task(
+//                                    Integer.valueOf(task.getInt("_id")),
+//                                    task.getString("titile"),
+//                                    task.getString("description"),
+//                                    task.getInt("userID"),
+//                                    task.getInt("groupID")
+//                            ));
+//                        }
+//                        if(category.equals("doing")){
+//                            task_todo.add(new Task(
+//                                    Integer.valueOf(task.getInt("_id")),
+//                                    task.getString("titile"),
+//                                    task.getString("description"),
+//                                    task.getInt("userID"),
+//                                    task.getInt("groupID")
+//                            ));
+//                        }
+//                        if(category.equals("done")){
+//                            task_todo.add(new Task(
+//                                    Integer.valueOf(task.getInt("_id")),
+//                                    task.getString("titile"),
+//                                    task.getString("description"),
+//                                    task.getInt("userID"),
+//                                    task.getInt("groupID")
+//                            ));
                         }
                     }
                 } catch (JSONException e) {

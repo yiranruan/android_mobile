@@ -1,2 +1,2 @@
-include ':app', ':calendarprovider'
+include ':app',':calendarprovider'
 rootProject.name='MobileProject'

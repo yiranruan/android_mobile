@@ -80,8 +80,10 @@ public class ShowTaskActivity extends AppCompatActivity {
     private Uri image_uri;
 
     private FloatingActionButton mCaptureBtn;
+    private FloatingActionButton mHandWriteBtn;
     private Button btn_add;
     private Button btn_delete;
+    private ImageView imageview;
 
     /// ----
 
@@ -441,6 +443,9 @@ public class ShowTaskActivity extends AppCompatActivity {
             }
         });
 
+        /// ---- 手写 功能
+
+
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
@@ -495,29 +500,43 @@ public class ShowTaskActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         //called when image was captured from camera
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK){
-            //set the image captured to our Im
-            if(image_uri != null){
-                mImageView.setImageURI(image_uri);
-                //把image的string获得
-                ImageView iv1 = (ImageView) findViewById(R.id.image_view);
-                BitmapDrawable drawable = (BitmapDrawable) iv1.getDrawable();
-                Bitmap bitmap = drawable.getBitmap();
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG,100,bos);
-                byte[] bb = bos.toByteArray();
-                iamge = Base64.encodeToString(bb,0);
-            }else {
-                tv_location.setText(data.getStringExtra("data_return"));
-            }
+        switch (requestCode) {
+            case IMAGE_CAPTURE_CODE:
+                if(resultCode == RESULT_OK){
+                    //set the image captured to our Im
+                    if(image_uri != null){
+                        mImageView.setImageURI(image_uri);
+                        //把image的string获得
+                        ImageView iv1 = (ImageView) findViewById(R.id.image_view);
+                        BitmapDrawable drawable = (BitmapDrawable) iv1.getDrawable();
+                        Bitmap bitmap = drawable.getBitmap();
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG,100,bos);
+                        byte[] bb = bos.toByteArray();
+                        iamge = Base64.encodeToString(bb,0);
+                    }else {
+                        tv_location.setText(data.getStringExtra("data_return"));
+                    }
+                }
+                break;
+            case 30:
+                // ------ 接收 location 数据 --------
+                if(resultCode == RESULT_OK){
+                    Log.d("check:", "get location");
+                    location = data.getStringExtra("location");
+                    tv_location.setText(location);
+                }
+                break;
+            case 40:
+                imageview=(ImageView)findViewById(R.id.image_view);
+                Intent intent=getIntent();
+                if(intent!=null) {
+                    Bitmap bitmap = intent.getParcelableExtra("bitmap");
+                    imageview.setImageBitmap(bitmap);
+                }
+                break;
         }
-        // ------ 接收 location 数据 --------
-        else if (requestCode == 30) {
 
-            Log.d("check:", "get location");
-            location = data.getStringExtra("location");
-            tv_location.setText(location);
-        }
     }
 
 

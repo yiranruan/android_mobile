@@ -18,6 +18,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -89,6 +90,7 @@ public class CreateButton extends AppCompatActivity {
     // 以下为 XML 服务
     private Button btn_add;
     private Button btn_cancel;
+    private FloatingActionButton mHandWriteBtn;
 
     private SwitchMaterial switch_calender;
     private Boolean send_calender = false;
@@ -456,6 +458,14 @@ public class CreateButton extends AppCompatActivity {
 
             }
         });
+        mHandWriteBtn = findViewById(R.id.handwriting);
+        mHandWriteBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent intent= new Intent(CreateButton.this,drawLinesActivity.class);
+                startActivityForResult(intent, 40);
+            }
+        });
     }
 
     private void openCamera(){
@@ -501,32 +511,56 @@ public class CreateButton extends AppCompatActivity {
         //called when image was captured from camera
         // ------- 接收 照相机 数据 -------
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == IMAGE_CAPTURE_CODE) {
-            if (resultCode == RESULT_OK) {
-                //set the image captured to our Im
-                if (image_uri != null) {
-                    mImageView.setImageURI(image_uri);
-                    //把image的string获得
-                    ImageView iv1 = (ImageView) findViewById(R.id.image_view);
-                    BitmapDrawable drawable = (BitmapDrawable) iv1.getDrawable();
-                    bitmap = drawable.getBitmap();
+        switch (requestCode) {
+            case IMAGE_CAPTURE_CODE:
+                if (resultCode == RESULT_OK) {
+                    //set the image captured to our Im
+                    if (image_uri != null) {
+                        mImageView.setImageURI(image_uri);
+                        //把image的string获得
+                        ImageView iv1 = (ImageView) findViewById(R.id.image_view);
+                        BitmapDrawable drawable = (BitmapDrawable) iv1.getDrawable();
+                        bitmap = drawable.getBitmap();
 
-                    filePath = temFileImage(CreateButton.this,bitmap,"name");
+                        filePath = temFileImage(CreateButton.this,bitmap,"name");
 
 
-                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
-                    byte[] bb = bos.toByteArray();
-                    iamge = Base64.encodeToString(bb, 0);
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+                        byte[] bb = bos.toByteArray();
+                        iamge = Base64.encodeToString(bb, 0);
+                    }
                 }
-            }
-        }
-        // ------ 接收 location 数据 --------
-        else if (requestCode == 30) {
+                break;
+            case 30:
+                if (resultCode == RESULT_OK) {
+                    Log.d("check:", "get location");
+                    location = data.getStringExtra("location");
+                    tv_location.setText(location);
+                }
+                break;
+            case 40:
+                if (resultCode == RESULT_OK) {
+                    Log.d("saveScreenShot", "onActivityResult: true");
+                    ImageView imageview = (ImageView) findViewById(R.id.image_view);
+//                    Intent intent = getIntent();
+                    byte [] bis = data.getByteArrayExtra("bitmap");
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
 
-            Log.d("check:", "get location");
-            location = data.getStringExtra("location");
-            tv_location.setText(location);
+//                        bitmap = intent.getParcelableExtra("bitmap");
+                    imageview.setImageBitmap(bitmap);
+                    Log.d("saveScreenShot", "onActivityResult: ttt");
+//                    if (intent != null) {
+//                        byte [] bis = intent.getByteArrayExtra("bitmap");
+//                        Bitmap bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
+//
+////                        bitmap = intent.getParcelableExtra("bitmap");
+//                        imageview.setImageBitmap(bitmap);
+//                        Log.d("saveScreenShot", "onActivityResult: ttt");
+//
+//                    }
+                }
+                break;
         }
     }
 
