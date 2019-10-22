@@ -80,6 +80,7 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
     private int page_position = 0;
     private String userID = "6";
     private String token = "umeuuuufae";
+    private String taskID;
     private OkHttpClient client;
     private Context mContext;
 
@@ -96,7 +97,7 @@ public class ShowGroupActivity extends AppCompatActivity implements ViewAnimator
 
          */
 
-        Intent intent = getIntent();
+//        Intent intent = getIntent();
 //        userID = intent.getStringExtra("userID");
 //        token = intent.getStringExtra("token");
 

@@ -44,10 +44,25 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 //import com.kyle.calendarprovider.calendar.CalendarEvent;
 //import com.kyle.calendarprovider.calendar.CalendarProviderManager;
@@ -100,9 +115,11 @@ public class ShowTaskActivity extends AppCompatActivity {
     private String startDate;
     private String dueDate;
     private String filepath;
+    private int groupID;
+    private String token;
     private String iamge;
     private String userID;
-    private int groupID;
+    private String taskID;
     private String title;
     private String description;
     private String username;
@@ -132,49 +149,92 @@ public class ShowTaskActivity extends AppCompatActivity {
         //// --- 接收 数据 ---
         final Intent intent = getIntent();
 
-        initial_C = intent.getBooleanExtra("setCalender", false);
-        // positions
-        page_code = intent.getIntExtra("page_code",99);
-        position = intent.getIntExtra("position", 99);
-
-        // tasks
-        title = intent.getStringExtra("title");
-        description = intent.getStringExtra("description");
-        username = intent.getStringExtra("username");
-        startDate = intent.getStringExtra("strDate");
-        dueDate = intent.getStringExtra("dueDate");
-        status = intent.getStringExtra("status");
-        userID= intent.getStringExtra("userID");
-        groupID = Integer.parseInt(intent.getStringExtra("groupID"));
-        location = intent.getStringExtra("location");
-        filepath = intent.getStringExtra("path");
-
-        /////----------- SET INITIAL TEXT -----------
+        userID = intent.getStringExtra("userID");
+        token = intent.getStringExtra("token");
+        taskID = intent.getStringExtra("taskID");
 
 
         // --- 展示 TITLE -----
         tv_title = findViewById(R.id.et_Title);
-        tv_title.setText(title);
-
-        // --- 展示 TASK 描述 -----
         et_note = findViewById(R.id.et_note);
-        et_note.setText(description);
-
-        // --- 展示 TASK 成员 -----
         tv_member = findViewById(R.id.member);
-        tv_member.setText(username);
-
-
-        // ------ 展示 LOCATION --------
         tv_location = findViewById(R.id.tv_Location);
-        tv_location.setText(location);
+        tv_startDate = findViewById(R.id.tv_startdate);
+        tv_endDate = findViewById(R.id.tv_enddate);
+        mImageView = findViewById(R.id.image_view);
+
+        //-------
+
+        RequestBody requestBody = new FormBody.Builder()
+                .add("userID", userID)
+                .add("token", token)
+                .add("taskID", taskID)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(getString(R.string.get_task))
+                .post(requestBody)
+                .build();
+        OkHttpClient client = new OkHttpClient();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Toast.makeText(ShowTaskActivity.this, "Network issue", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseData = response.body().string();
+                Log.d("show task activity", "onResponse: " + responseData);
+                try {
+                    JSONObject jsonData = new JSONObject(responseData);
+                    JSONObject task = new JSONObject(jsonData.getString("task"));
+                    if (jsonData.getBoolean("result")){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    tv_title.setText(task.getString("title"));
+                                    tv_member.setText(task.getString("members"));
+                                    et_note.setText(task.getString("description"));
+                                    if(task.has("startDate")){
+                                        tv_startDate.setText(task.getString("startDate"));
+                                    }
+                                    if(task.has("endDate")){
+                                        tv_endDate.setText(task.getString("endDate"));
+                                    }
+                                    if(task.has("location")){
+                                        tv_location.setText(task.getString("location"));
+                                    }
+                                    if(task.has("photo")){
+                                        String image = task.getString("photo");
+                                        Bitmap photo = stringToImage(image);
+                                        mImageView.setImageBitmap(photo);
+                                    }
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+        /////----------- SET INITIAL TEXT -----------
 
 
 
-        // calender
-        switch_calender = findViewById(R.id.switchBtn);
-        if (initial_C) {switch_calender.setChecked(true);}
-
+//
+//
+//        // calender
+//        switch_calender = findViewById(R.id.switchBtn);
+//        if (initial_C) {switch_calender.setChecked(true);}
+//
 
         // ---- 加入日志 ----
        /*btn_add = findViewById(R.id.btn_addCalender);
@@ -284,11 +344,6 @@ public class ShowTaskActivity extends AppCompatActivity {
         // --------日期--------
 
 
-        // 展示日期
-        tv_startDate = findViewById(R.id.tv_startdate);
-        tv_startDate.setText(startDate);
-        tv_endDate = findViewById(R.id.tv_enddate);
-        tv_endDate.setText(dueDate);
 
         // 修改日期按钮功能
         tv_startDate.setOnClickListener(new View.OnClickListener() {
@@ -361,19 +416,6 @@ public class ShowTaskActivity extends AppCompatActivity {
         });
 
 
-
-
-
-        // ---  relateve to iamge ---
-
-        mImageView = findViewById(R.id.image_view);
-
-        // --- 展示 图片 （有问题）------
-        if(filepath != null){
-            File file = new File(filepath);
-            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-            mImageView.setImageBitmap(bitmap);
-        }
 
         // ---  点击图片弹窗 是否删除 ---
         mImageView.setOnClickListener(new View.OnClickListener() {
@@ -626,6 +668,21 @@ public class ShowTaskActivity extends AppCompatActivity {
         } else if (result == -2) {
             Toast.makeText(ShowTaskActivity.this, "Do not have the permission", Toast.LENGTH_SHORT).show();
         }
+    }
+
+
+    private Bitmap stringToImage(String image){
+
+        try{
+            byte [] encodeByte=Base64.decode(image,Base64.DEFAULT);
+            InputStream inputStream  = new ByteArrayInputStream(encodeByte);
+            Bitmap bitmap  = BitmapFactory.decodeStream(inputStream);
+            return bitmap;
+        }catch(Exception e){
+            e.getMessage();
+            return null;
+        }
+
     }
 
 //    public void delCalender(){

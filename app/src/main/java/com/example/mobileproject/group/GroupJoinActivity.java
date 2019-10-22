@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.textclassifier.ConversationActions;
 import android.widget.Button;
@@ -44,15 +45,17 @@ public class GroupJoinActivity extends AppCompatActivity {
         Intent intent = getIntent();
         userID = intent.getStringExtra("userID");
         token = intent.getStringExtra("token");
-
         code = findViewById(R.id.join_code_tf);
         joinBtn = findViewById(R.id.join_group_btn);
-        String groupCode = code.getText().toString();
+
+        client = new OkHttpClient();
+
 
         joinBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                String groupCode = code.getText().toString();
+                Log.d("join group", "onClick: "+ groupCode);
                 RequestBody requestBody = new FormBody.Builder()
                         .add("userID", userID)
                         .add("token", token)
@@ -73,6 +76,7 @@ public class GroupJoinActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                         String responseData = response.body().string();
+                        Log.d("join group page", "onResponse: " + responseData);
                         try {
                             JSONObject jsonData = new JSONObject(responseData);
                             Boolean result = jsonData.getBoolean("result");
