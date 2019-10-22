@@ -221,6 +221,7 @@ public class ShowGroupActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                         String responseData = response.body().string();
+                        
                         try {
                             JSONObject jsonData = new JSONObject(responseData);
                             Boolean result = jsonData.getBoolean("result");

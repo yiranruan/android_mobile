@@ -95,9 +95,6 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         initUI();
 
 
-
-
-
     }
 
     @Override
@@ -266,6 +263,10 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 
                         Intent intent = new Intent(HorizontalCoordinatorNtbActivity.this, ShowTaskActivity.class);
                         String taskID = task.getTaskID();
+
+                        intent.putExtra("position", position);
+                        intent.putExtra("page_position", page_position);
+
                         intent.putExtra("taskID", taskID);
                         intent.putExtra("groupID", groupID);
                         intent.putExtra("token", token);
@@ -667,93 +668,54 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                     e.printStackTrace();
                 }
 
-                // 接听数据
-
-//                String title = data.getStringExtra("title");
-//
-//
-//                Boolean setCalender = data.getBooleanExtra("setCalender", false);
-
-//                Task newtask = new Task
-//                        (username, title, description, userID,
-//                                groupID, startDate, dueDate, path, location, "To-Do");
-
-//               Task newtask = new Task
-//                        (username, title, description, userID,
-//                                groupID, startDate, dueDate, path, location, "To-Do", setCalender);
-//
-//
-//                Task newtask = new Task()
-//                task_todo.add(0, newtask);
-//                rec_adapters.get(0).notifyDataSetChanged();
-
-
-//                // 更新ADAPTER
-//                list.add(title);
-//                adapter.setData(list);
-
-
             }
         }
         // 从 SHOW TASK ACTIVITY 里传回来的数据
         else if (requestCode == 2){
-//            if(resultCode == RESULT_OK) {
-//                int position = data.getIntExtra("posotion", 999);
-//                int page_code = data.getIntExtra("page_code", 999);
-//                int delete = data.getIntExtra("detele", 3);
-//
-//                if (delete == 0) {
-//                    //改变
-//
-//                    String title = data.getStringExtra("title");
-//                    String description = data.getStringExtra("description");
-//                    String username = data.getStringExtra("username");
-//                    String startDate = data.getStringExtra("startDate");
-//                    String dueDate = data.getStringExtra("dueDate");
-//                    String location = data.getStringExtra("location");
-//                    String path = data.getStringExtra("path");
-//
-//                    Task newtask = new Task
-//                            (username, title, description, userID,
-//                                    groupID, startDate, dueDate, path, location, "To-Do");
-//
-//                    switch (page_code){
-//                        case 0:
-//                            task_todo.set(position, newtask);
-//                            break;
-//                        case 1:
-//                            task_doing.set(position, newtask);
-//                            break;
-//                        case 2:
-//                            task_done.set(position, newtask);
-//                            break;
-//                    }
-//
-//                    if(page_code != 99){
-//                        rec_adapters.get(page_code).notifyDataSetChanged();
-//                    }
-//                }
-//                else{
-//                    switch (page_code){
-//                        case 0:
-//                            task_todo.remove(position);
-//                            rec_adapters.get(0).notifyItemRemoved(position);
-//                            rec_adapters.get(0).notifyItemRangeChanged(position,task_todo.size());
-//                            break;
-//                        case 1:
-//                            task_doing.remove(position);
-//                            rec_adapters.get(1).notifyItemRemoved(position);
-//                            rec_adapters.get(1).notifyItemRangeChanged(position,task_doing.size());
-//
-//                            break;
-//                        case 2:
-//                            task_doing.remove(position);
-//                            rec_adapters.get(2).notifyItemRemoved(position);
-//                            rec_adapters.get(2).notifyItemRangeChanged(position,task_doing.size());
-//                            break;
-//                    }
-//                }
-//            }
+            if(resultCode == RESULT_OK) {
+                int position = data.getIntExtra("position", 999);
+                int page_code = data.getIntExtra("page_code", 999);
+                int delete = data.getIntExtra("delete", 3);
+                boolean result = data.getBooleanExtra("result", false);
+                Log.d("delete", "onActivityResult: " + delete);
+                if (delete == 0) {
+                    //改变
+                    if (result){
+                        Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Update task successed!", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Fail to update the task!", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+                else if (delete == 1){
+                    if(result){
+                        switch (page_code){
+                            case 0:
+                                task_todo.remove(position);
+                                rec_adapters.get(0).notifyItemRemoved(position);
+                                rec_adapters.get(0).notifyItemRangeChanged(position,task_todo.size());
+                                break;
+                            case 1:
+                                task_doing.remove(position);
+                                rec_adapters.get(1).notifyItemRemoved(position);
+                                rec_adapters.get(1).notifyItemRangeChanged(position,task_doing.size());
+
+                                break;
+                            case 2:
+                                task_doing.remove(position);
+                                rec_adapters.get(2).notifyItemRemoved(position);
+                                rec_adapters.get(2).notifyItemRangeChanged(position,task_doing.size());
+                                break;
+                        }
+                        Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Delete task successed!", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Fail to delete the task!", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            }
         }
     }
 }

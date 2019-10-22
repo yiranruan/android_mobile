@@ -117,7 +117,7 @@ public class ShowTaskActivity extends AppCompatActivity {
     private String filepath;
     private int groupID;
     private String token;
-    private String iamge;
+    private String image;
     private String userID;
     private String taskID;
     private String title;
@@ -152,6 +152,10 @@ public class ShowTaskActivity extends AppCompatActivity {
         userID = intent.getStringExtra("userID");
         token = intent.getStringExtra("token");
         taskID = intent.getStringExtra("taskID");
+        groupID = intent.getIntExtra("groupID",0);
+
+        page_code = intent.getIntExtra("page_position", 999);
+        position = intent.getIntExtra("position", 999);
 
 
         // --- 展示 TITLE -----
@@ -207,7 +211,7 @@ public class ShowTaskActivity extends AppCompatActivity {
                                         tv_location.setText(task.getString("location"));
                                     }
                                     if(task.has("photo")){
-                                        String image = task.getString("photo");
+                                        image = task.getString("photo");
                                         Bitmap photo = stringToImage(image);
                                         mImageView.setImageBitmap(photo);
                                     }
@@ -247,69 +251,115 @@ public class ShowTaskActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-//                if (initial_C == true){
-//                    delCalender();
-//                }
+                RequestBody requestBody = new FormBody.Builder()
+                        .add("userID", userID)
+                        .add("token", token)
+                        .add("taskID", taskID)
+                        .build();
 
-                Intent intent_put = new Intent();
+                Request request = new Request.Builder()
+                        .url(getString(R.string.delete_task))
+                        .post(requestBody)
+                        .build();
+                OkHttpClient client = new OkHttpClient();
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        Toast.makeText(ShowTaskActivity.this, "Network issue", Toast.LENGTH_SHORT).show();
+                    }
 
-                intent_put.putExtra("page_code", page_code);
-                intent_put.putExtra("position", position);
-                intent_put.putExtra("delete", 1);
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        String responseData = response.body().string();
+                        Log.d("show task activity", "onResponse: " + responseData);
+                        try {
+                            JSONObject jsonData = new JSONObject(responseData);
+                            Boolean result = jsonData.getBoolean("result");
+                            Intent intent_put = new Intent();
+                            intent_put.putExtra("result",result);
+                            intent_put.putExtra("page_code", page_code);
+                            intent_put.putExtra("position", position);
+                            intent_put.putExtra("delete", 1);
+                            setResult(RESULT_OK, intent_put);
+                            finish();
 
-                // for task
-                intent_put.putExtra("title", title);
-                intent_put.putExtra("description", description);
-                intent_put.putExtra("username", username);
-                intent_put.putExtra("startDate", startDate);
-                intent_put.putExtra("dueDate", dueDate);
-                intent_put.putExtra("location", location);
-                intent_put.putExtra("path", filepath);
-                intent_put.putExtra("status", status);
-
-                setResult(RESULT_OK, intent_put);
-
-                finish();
-
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
             }
         });
 
         // --------确认修改--------
-        btn_comfirm = findViewById(R.id.btn_ok);
+        btn_comfirm = findViewById(R.id.btn_confirm);
         btn_comfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                send_calender = switch_calender.isChecked();
-
-                if (initial_C == false && send_calender == true )
-                {
-                    addCalender();
-                }
-
-
+//                if (initial_C == false && send_calender == true )
+//                {
+//                    addCalender();
+//                }
 
 
                 description = et_note.getText().toString();
-                Intent intent_put = new Intent();
+                username = tv_member.getText().toString();
+                startDate = tv_startDate.getText().toString();
+                dueDate = tv_endDate.getText().toString();
 
-                intent_put.putExtra("page_code", page_code);
-                intent_put.putExtra("position", position);
-                intent_put.putExtra("detele", 0);
 
-                // for task
-                intent_put.putExtra("title", title);
-                intent_put.putExtra("description", description);
-                intent_put.putExtra("username", username);
-                intent_put.putExtra("startDate", startDate);
-                intent_put.putExtra("dueDate", dueDate);
-                intent_put.putExtra("location", location);
-                intent_put.putExtra("path", filepath);
-                intent_put.putExtra("status", status);
+//                Log.d("create task data", "onClick: " + location );
+//                Log.d("create task data", "onClick: " + image );
+//                Log.d("create task data", "onClick: " + startDate );
 
-                setResult(RESULT_OK, intent_put);
+                if (title.length() > 0 && username.length() > 0) {
 
-                finish();
+                    RequestBody requestBody = new FormBody.Builder()
+                            .add("userID", userID)
+                            .add("token", token)
+                            .add("groupID", String.valueOf(groupID))
+                            .add("location", location)
+                            .add("members", username)
+                            .add("startDate", startDate)
+                            .add("endData", dueDate)
+                            .add("description", description)
+                            .add("photo", image)
+                            .build();
+
+                    Request request = new Request.Builder()
+                            .url(getString(R.string.update_task))
+                            .post(requestBody)
+                            .build();
+
+                    OkHttpClient client = new OkHttpClient();
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            Toast.makeText(ShowTaskActivity.this, "Network issue, try it later", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                            String responseData = response.body().string();
+                            Log.d("update task", "onResponse: " +responseData);
+                            try {
+                                JSONObject jsonData = new JSONObject(responseData);
+                                boolean result = jsonData.getBoolean("result");
+                                Intent intent = new Intent();
+                                intent.putExtra("result", result);
+                                intent.putExtra("delete", 0);
+                                setResult(RESULT_OK, intent);
+                                finish();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+                        }
+                    });
+                }
+
             }
         });
 
@@ -555,7 +605,7 @@ public class ShowTaskActivity extends AppCompatActivity {
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();
                         bitmap.compress(Bitmap.CompressFormat.PNG,100,bos);
                         byte[] bb = bos.toByteArray();
-                        iamge = Base64.encodeToString(bb,0);
+                        image = Base64.encodeToString(bb,0);
                     }else {
                         tv_location.setText(data.getStringExtra("data_return"));
                     }

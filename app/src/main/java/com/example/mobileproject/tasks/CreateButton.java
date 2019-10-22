@@ -230,7 +230,7 @@ public class CreateButton extends AppCompatActivity {
                             .add("location", location)
                             .add("members", username)
                             .add("startDate", startDate)
-                            .add("endData", dueDate)
+                            .add("endDate", dueDate)
                             .add("description", description)
                             .add("photo", image)
                             .build();
