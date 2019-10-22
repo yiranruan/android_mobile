@@ -15,5 +15,6 @@
     <string name="join_group">https://groupmonster.herokuapp.com/new/join</string>
     <string name="create_group">https://groupmonster.herokuapp.com/new/group</string>
     <string name="group_tasks">https://groupmonster.herokuapp.com/get/group/tasks</string>
+    <string name="delete_group">https://groupmonster.herokuapp.com/delete/group</string>
     
 </resources>

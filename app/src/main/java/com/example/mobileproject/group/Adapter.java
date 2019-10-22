@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -30,13 +31,27 @@ public class Adapter extends PagerAdapter implements View.OnCreateContextMenuLis
 
     @Override
     public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+
         contextMenu.setHeaderTitle("Menu");//上下文菜单的标题
-//                      menu.setHeaderIcon(android.R.drawable.ic_btn_speak_now); //上下文菜单图标
+//        contextMenu.setHeaderIcon(android.R.drawable.ic_delete); //上下文菜单图标
         contextMenu.add(Menu.NONE, 1, 1, "Enter the group");
 ////                      menu.add(Menu.NONE, 2, 2, "Done");
         contextMenu.add(Menu.NONE, 2, 2, "Delete");
 //                      menu.add(Menu.NONE, 2, 2, "Done");
+
     }
+
+
+//    @Override
+//    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+////        onCreateContextMenu(menu, v, menuInfo);
+////        View v2 =
+////        MenuInflater inflater = getMenuInflater();
+////        inflater.inflate(R.menu.group_menu, menu);
+//        menu.setHeaderTitle("Menu");
+//    }
+
+
 
     public interface OnItemLongClickListener {
         void onItemLongClick(View view, int position);
