@@ -284,19 +284,19 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                     public void onItemClick(View view, int position) {
                         ///WWWWWWWW
                         Task task;
-                        int RequestCode;
+                        int page_code;
                         switch (page_position) {
                             case 0:
                                 task = task_todo.get(position);
-                                RequestCode = 11;
+                                page_code = 0;
                                 break;
                             case 1:
                                 task = task_doing.get(position);
-                                RequestCode = 22;
+                                page_code = 1;
                                 break;
                             default:
                                 task = task_done.get(position);
-                                RequestCode = 33;
+                                page_code = 2;
                                 break;
                         }
 
@@ -309,9 +309,20 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                         String location = task.getlocation();
                         String path = task.getPath();
 
+                        Boolean setCalender = task.setCal();
+
 
                         // 传输 数据 让其展示
                         Intent intent = new Intent(HorizontalCoordinatorNtbActivity.this, ShowTaskActivity.class);
+
+                        // for position
+                        intent.putExtra("page_code", page_code);
+                        intent.putExtra("position", position);
+
+                        // for calender;
+                        intent.putExtra("setCalender", setCalender);
+
+                        // for task
                         intent.putExtra("title", title);
                         intent.putExtra("description", description);
                         intent.putExtra("status", status);
@@ -323,7 +334,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                         intent.putExtra("userID", userID);
                         intent.putExtra("groupID", Integer.toString(groupID));
 
-                        startActivityForResult(intent, RequestCode);
+                        startActivityForResult(intent, 2);
                     }
                 });
 
@@ -421,41 +432,19 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 
         final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.parent);
 
+        /// 点击 CREATE ACTIVITY
         findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
+
+                /// wwww
 
                 Intent intent = new Intent(HorizontalCoordinatorNtbActivity.this, CreateButton.class);
                 intent.putExtra("userid", userID);
                 intent.putExtra("groupid", Integer.toString(groupID));
                 startActivityForResult(intent, 1);
+                Log.d("msg","in create");
 
-
-
-//                for (int i = 0; i < navigationTabBar.getModels().size(); i++) {
-//                    final NavigationTabBar.Model model = navigationTabBar.getModels().get(i);
-//                    navigationTabBar.postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            final String title = String.valueOf(new Random().nextInt(15));
-//                            if (!model.isBadgeShowed()) {
-//                                model.setBadgeTitle(title);
-//                                model.showBadge();
-//                            } else model.updateBadgeTitle(title);
-//                        }
-//                    }, i * 100);
-//                }
-
-//                coordinatorLayout.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        final Snackbar snackbar = Snackbar.make(navigationTabBar, "Coordinator NTB", Snackbar.LENGTH_SHORT);
-//                        snackbar.getView().setBackgroundColor(Color.parseColor("#9b92b3"));
-//                        ((TextView) snackbar.getView().findViewById(R.id.snackbar_text))
-//                                .setTextColor(Color.parseColor("#423752"));
-//                        snackbar.show();
-//                    }
-//                }, 1000);
             }
         });
 
@@ -655,20 +644,23 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                 String startDate = data.getStringExtra("startDate");
                 String dueDate = data.getStringExtra("dueDate");
                 String location = data.getStringExtra("location");
-//                Bitmap bitmap = data.getParcelableExtra("bitmap");
                 String path = data.getStringExtra("path");
 
+                Boolean setCalender = data.getBooleanExtra("setCalender", false);
 
-                Task newtask = new Task
+//                Task newtask = new Task
+//                        (username, title, description, userID,
+//                                groupID, startDate, dueDate, path, location, "To-Do");
+
+               Task newtask = new Task
                         (username, title, description, userID,
-                                groupID, startDate, dueDate, path, location, "To-Do");
+                                groupID, startDate, dueDate, path, location, "To-Do", setCalender);
 
 
                 task_todo.add(0, newtask);
                 rec_adapters.get(0).notifyDataSetChanged();
 
-//                dic.put(title, newtask);
-//
+
 //                // 更新ADAPTER
 //                list.add(title);
 //                adapter.setData(list);
@@ -679,18 +671,61 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         // 从 SHOW TASK ACTIVITY 里传回来的数据
         else if (requestCode == 2){
 //            if(resultCode == RESULT_OK) {
-//                String title = data.getStringExtra("title");
-//                String description = data.getStringExtra("description");
-//                String username = data.getStringExtra("username");
-//                String startDate = data.getStringExtra("startDate");
-//                String dueDate = data.getStringExtra("dueDate");
-//                String bitmap = data.getParcelableExtra("bitmap");
-//                String location = data.getStringExtra("location");
-//                String status = data.getStringExtra("status");
-//                Task newtask = new Task
-//                        (username, title, description, userID,
-//                                groupID, startDate, dueDate, path, location, status);
+//                int position = data.getIntExtra("posotion", 999);
+//                int page_code = data.getIntExtra("page_code", 999);
+//                int delete = data.getIntExtra("detele", 3);
 //
+//                if (delete == 0) {
+//                    //改变
+//
+//                    String title = data.getStringExtra("title");
+//                    String description = data.getStringExtra("description");
+//                    String username = data.getStringExtra("username");
+//                    String startDate = data.getStringExtra("startDate");
+//                    String dueDate = data.getStringExtra("dueDate");
+//                    String location = data.getStringExtra("location");
+//                    String path = data.getStringExtra("path");
+//
+//                    Task newtask = new Task
+//                            (username, title, description, userID,
+//                                    groupID, startDate, dueDate, path, location, "To-Do");
+//
+//                    switch (page_code){
+//                        case 0:
+//                            task_todo.set(position, newtask);
+//                            break;
+//                        case 1:
+//                            task_doing.set(position, newtask);
+//                            break;
+//                        case 2:
+//                            task_done.set(position, newtask);
+//                            break;
+//                    }
+//
+//                    if(page_code != 99){
+//                        rec_adapters.get(page_code).notifyDataSetChanged();
+//                    }
+//                }
+//                else{
+//                    switch (page_code){
+//                        case 0:
+//                            task_todo.remove(position);
+//                            rec_adapters.get(0).notifyItemRemoved(position);
+//                            rec_adapters.get(0).notifyItemRangeChanged(position,task_todo.size());
+//                            break;
+//                        case 1:
+//                            task_doing.remove(position);
+//                            rec_adapters.get(1).notifyItemRemoved(position);
+//                            rec_adapters.get(1).notifyItemRangeChanged(position,task_doing.size());
+//
+//                            break;
+//                        case 2:
+//                            task_doing.remove(position);
+//                            rec_adapters.get(2).notifyItemRemoved(position);
+//                            rec_adapters.get(2).notifyItemRangeChanged(position,task_doing.size());
+//                            break;
+//                    }
+//                }
 //            }
         }
     }
