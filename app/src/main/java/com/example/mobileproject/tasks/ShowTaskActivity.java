@@ -3,6 +3,7 @@ import com.example.mobileproject.R;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.kaopiz.kprogresshud.KProgressHUD;
 import com.kyle.calendarprovider.calendar.CalendarEvent;
 import com.kyle.calendarprovider.calendar.CalendarProviderManager;
 
@@ -126,7 +127,7 @@ public class ShowTaskActivity extends AppCompatActivity {
     private String description;
     private String username;
     private String status;
-
+    private KProgressHUD hud;
 
 
     @Override
@@ -134,7 +135,10 @@ public class ShowTaskActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_task);
 
-
+        hud = KProgressHUD.create(this)
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel("Loading...");
+        hud.show();
 
         tv_title = findViewById(R.id.et_Title);
         et_note = findViewById(R.id.et_note);
@@ -186,6 +190,7 @@ public class ShowTaskActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                hud.dismiss();
                 Toast.makeText(ShowTaskActivity.this, "Network issue", Toast.LENGTH_SHORT).show();
             }
 
@@ -225,6 +230,7 @@ public class ShowTaskActivity extends AppCompatActivity {
                             }
                         });
                     }
+                    hud.dismiss();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -253,7 +259,7 @@ public class ShowTaskActivity extends AppCompatActivity {
         btn_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                hud.show();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("userID", userID)
                         .add("token", token)
@@ -269,6 +275,7 @@ public class ShowTaskActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NotNull Call call, @NotNull IOException e) {
                         Toast.makeText(ShowTaskActivity.this, "Network issue", Toast.LENGTH_SHORT).show();
+                        hud.dismiss();
                     }
 
                     @Override
@@ -299,7 +306,7 @@ public class ShowTaskActivity extends AppCompatActivity {
         btn_comfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                    hud.show();
 //                if (initial_C == false && send_calender == true )
 //                {
 //                    addCalender();

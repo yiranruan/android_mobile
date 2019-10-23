@@ -65,6 +65,7 @@ dependencies {
     implementation 'com.github.mancj:MaterialSearchBar:0.8.2'
     implementation 'com.google.android.libraries.places:places:2.0.0'
     implementation project(':calendarprovider')
+    implementation 'com.kaopiz:kprogresshud:1.2.0'
 }
 
 dependencies {

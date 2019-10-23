@@ -22,6 +22,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.example.mobileproject.R;
 import com.example.mobileproject.tasks.HorizontalCoordinatorNtbActivity;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -58,6 +59,7 @@ public class ShowGroupActivity extends AppCompatActivity {
     private String taskID;
     private OkHttpClient client;
     private Context mContext;
+    private KProgressHUD hud;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +68,10 @@ public class ShowGroupActivity extends AppCompatActivity {
         models = new ArrayList<>();
         mContext = getApplicationContext();
         menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions);
-
+        hud = KProgressHUD.create(this)
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel("Loading...");
+        hud.show();
 
         /*
 
@@ -93,7 +98,7 @@ public class ShowGroupActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
+                hud.dismiss();
             }
 
             @Override
@@ -126,7 +131,9 @@ public class ShowGroupActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+
                             adapter.notifyDataSetChanged();
+                            hud.dismiss();
                         }
                     });
 

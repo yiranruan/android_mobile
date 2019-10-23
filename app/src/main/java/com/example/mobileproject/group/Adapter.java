@@ -86,9 +86,9 @@ public class Adapter extends PagerAdapter implements View.OnCreateContextMenuLis
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         layoutInflater = LayoutInflater.from(context);
         view = layoutInflater.inflate(R.layout.item, container, false);
-
+        ImageView imageView = view.findViewById(R.id.image_item);
         TextView groupName, countMembers, subjectName, inviteCode, description;
-
+        imageView.setImageResource(R.drawable.sticker);
         groupName = view.findViewById(R.id.group_name);
         countMembers = view.findViewById(R.id.count_member);
         subjectName = view.findViewById(R.id.subject_name);

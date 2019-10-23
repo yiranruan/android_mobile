@@ -35,6 +35,7 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
+import com.kaopiz.kprogresshud.KProgressHUD;
 import com.kyle.calendarprovider.calendar.CalendarEvent;
 import com.kyle.calendarprovider.calendar.CalendarProviderManager;
 
@@ -104,6 +105,7 @@ public class CreateButton extends AppCompatActivity {
 
     private ImageView mImageView;
     private Uri image_uri;
+    private KProgressHUD hud;
 
     private String groupID;
     private String userID;
@@ -124,6 +126,9 @@ public class CreateButton extends AppCompatActivity {
         token = intent_reci.getStringExtra("token");
         groupID = intent_reci.getStringExtra("groupID");
 
+        hud = KProgressHUD.create(this)
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel("Loading...");
 
         /// 这三个是 EDITTEXT 绑定ID即可
         input_title = findViewById(R.id.input_title);
@@ -216,7 +221,7 @@ public class CreateButton extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-
+                hud.show();
                 title = input_title.getText().toString();
                 description = input_note.getText().toString();
                 username = input_member.getText().toString();
@@ -248,6 +253,7 @@ public class CreateButton extends AppCompatActivity {
                     client.newCall(request).enqueue(new Callback() {
                         @Override
                         public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            hud.dismiss();
                             Toast.makeText(CreateButton.this, "Network issue, try it later", Toast.LENGTH_SHORT).show();
                         }
 
@@ -259,7 +265,7 @@ public class CreateButton extends AppCompatActivity {
                             intent.putExtra("responseData", responseData);
                             setResult(RESULT_OK, intent);
                             finish();
-
+                            hud.dismiss();
                         }
                     });
                 }

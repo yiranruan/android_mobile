@@ -35,6 +35,7 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -77,6 +78,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
     private FloatingActionButton mNewTaskBtn;
     private FloatingActionButton mProgressBtn;
     private FloatingActionsMenu menuMultipleActions;
+    private KProgressHUD hud;
 
     OkHttpClient client;
 
@@ -91,6 +93,10 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         token = intent.getStringExtra("token");
         groupID = intent.getIntExtra("groupID", Integer.valueOf(userID));
         groupName = intent.getStringExtra("groupName");
+        hud = KProgressHUD.create(this)
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel("Loading...");
+        hud.show();
         /*
 
             fetch task data from server
@@ -406,9 +412,9 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
             public void onClick(View view) {
                 checkExpansion();
                 Intent intent = new Intent(HorizontalCoordinatorNtbActivity.this, ProgressActivity.class);
-//                intent.putExtra("userID", userID);
-//                intent.putExtra("token", token);
-//                intent.putExtra("groupID", Integer.toString(groupID));
+                intent.putExtra("todo", task_todo.size());
+                intent.putExtra("doing", task_doing.size());
+                intent.putExtra("done", task_done.size());
                 checkExpansion();
                 startActivity(intent);
                 Log.d("msg","in create");
@@ -439,7 +445,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
+                hud.dismiss();
             }
 
             @Override
@@ -486,6 +492,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                         }
 
                     }
+                    hud.dismiss();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
