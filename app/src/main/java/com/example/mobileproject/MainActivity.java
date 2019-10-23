@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 email = emailTextInput.getText().toString();
+
                 RequestBody requestBody = new FormBody.Builder()
                         .add("userEmail", email)
                         .build();
@@ -80,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
 
 
                 if (isEmail(email)){
-
 
                     client.newCall(request).enqueue(new Callback() {
                         @Override
