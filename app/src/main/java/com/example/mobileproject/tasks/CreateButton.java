@@ -461,8 +461,8 @@ public class CreateButton extends AppCompatActivity {
                     if (image_uri != null) {
                         mImageView.setImageURI(image_uri);
                         //把image的string获得
-                        ImageView iv1 = (ImageView) findViewById(R.id.image_view);
-                        BitmapDrawable drawable = (BitmapDrawable) iv1.getDrawable();
+//                        mImageview = (ImageView) findViewById(R.id.image_view);
+                        BitmapDrawable drawable = (BitmapDrawable) mImageView.getDrawable();
                         bitmap = drawable.getBitmap();
 
                         filePath = temFileImage(CreateButton.this,bitmap,"name");
@@ -485,13 +485,13 @@ public class CreateButton extends AppCompatActivity {
             case 40:
                 if (resultCode == RESULT_OK) {
                     Log.d("saveScreenShot", "onActivityResult: true");
-                    ImageView imageview = (ImageView) findViewById(R.id.image_view);
+                    mImageView = (ImageView) findViewById(R.id.image_view);
 //                    Intent intent = getIntent();
                     byte [] bis = data.getByteArrayExtra("bitmap");
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
 
 //                        bitmap = intent.getParcelableExtra("bitmap");
-                    imageview.setImageBitmap(bitmap);
+                    mImageView.setImageBitmap(bitmap);
                     Log.d("saveScreenShot", "onActivityResult: ttt");
 //                    if (intent != null) {
 //                        byte [] bis = intent.getByteArrayExtra("bitmap");

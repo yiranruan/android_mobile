@@ -168,7 +168,7 @@ public class ShowTaskActivity extends AppCompatActivity {
         tv_location = findViewById(R.id.tv_Location);
         tv_startDate = findViewById(R.id.tv_startdate);
         tv_endDate = findViewById(R.id.tv_enddate);
-        mImageView = findViewById(R.id.image_view);
+        mImageView = findViewById(R.id.image_view_task);
 
         //-------
 
@@ -616,7 +616,7 @@ public class ShowTaskActivity extends AppCompatActivity {
                     if(image_uri != null){
                         mImageView.setImageURI(image_uri);
                         //把image的string获得
-                        ImageView iv1 = (ImageView) findViewById(R.id.image_view);
+                        ImageView iv1 = (ImageView) findViewById(R.id.image_view_task);
                         BitmapDrawable drawable = (BitmapDrawable) iv1.getDrawable();
                         Bitmap bitmap = drawable.getBitmap();
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -637,12 +637,10 @@ public class ShowTaskActivity extends AppCompatActivity {
                 }
                 break;
             case 40:
-                imageview=(ImageView)findViewById(R.id.image_view);
-                Intent intent=getIntent();
-                if(intent!=null) {
-                    Bitmap bitmap = intent.getParcelableExtra("bitmap");
-                    imageview.setImageBitmap(bitmap);
-                }
+//                mImageView = (ImageView) findViewById(R.id.image_view);
+                byte [] bis = data.getByteArrayExtra("bitmap");
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
+                mImageView.setImageBitmap(bitmap);
                 break;
         }
 

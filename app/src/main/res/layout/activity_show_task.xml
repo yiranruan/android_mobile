@@ -246,12 +246,13 @@
                     android:maxLines="5" />
 
                 <ImageView
-                    android:id="@+id/image_view"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:id="@+id/image_view_task"
+                    android:layout_width="360dp"
+                    android:layout_height="360dp"
                     android:layout_below="@+id/notes"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
+                    android:layout_gravity="center"
                     android:maxWidth="100dp"
                     android:maxHeight="10dp"
                     android:scaleType="fitXY" />
