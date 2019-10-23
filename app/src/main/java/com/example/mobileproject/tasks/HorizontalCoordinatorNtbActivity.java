@@ -411,14 +411,18 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
             @Override
             public void onClick(View view) {
                 checkExpansion();
-                Intent intent = new Intent(HorizontalCoordinatorNtbActivity.this, ProgressActivity.class);
-                intent.putExtra("todo", task_todo.size());
-                intent.putExtra("doing", task_doing.size());
-                intent.putExtra("done", task_done.size());
-                checkExpansion();
-                startActivity(intent);
-                Log.d("msg","in create");
-                Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Progress", Toast.LENGTH_SHORT).show();
+                if (task_todo.size() != 0 || task_doing.size()!=0 || task_done.size() !=0 ) {
+                    Intent intent = new Intent(HorizontalCoordinatorNtbActivity.this, ProgressActivity.class);
+                    intent.putExtra("todo", task_todo.size());
+                    intent.putExtra("doing", task_doing.size());
+                    intent.putExtra("done", task_done.size());
+                    checkExpansion();
+                    startActivity(intent);
+                    Log.d("msg", "in create");
+                    Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Progress", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(HorizontalCoordinatorNtbActivity.this, "This is not data for progress", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

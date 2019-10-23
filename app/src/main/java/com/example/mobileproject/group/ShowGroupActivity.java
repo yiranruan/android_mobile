@@ -208,6 +208,7 @@ public class ShowGroupActivity extends AppCompatActivity {
                 break;
                 // remove group item
             case 2:
+                hud.show();
                 Log.d("model_size1", "onContextItemSelected: "+models.size());
                 RequestBody requestBody = new FormBody.Builder()
                         .add("userID", userID)
@@ -222,6 +223,7 @@ public class ShowGroupActivity extends AppCompatActivity {
                 client.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        hud.dismiss();
                         Toast.makeText(ShowGroupActivity.this, "Netweotk issue, try it later", Toast.LENGTH_SHORT).show();
                     }
 
@@ -244,6 +246,7 @@ public class ShowGroupActivity extends AppCompatActivity {
                             }else{
                                 Toast.makeText(ShowGroupActivity.this, "Your are not the creator, you cannot delete this group", Toast.LENGTH_SHORT).show();
                             }
+                            hud.dismiss();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
