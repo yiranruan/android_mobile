@@ -116,6 +116,8 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         Log.d("item", "onContextItemSelected: "+item.getItemId());
         int position;
         checkExpansion();
+        String modifyingTaskID = "";
+        String changingStatus = "todo";
         switch (item.getItemId()) {//根据子菜单ID进行菜单选择判断
 
             case 1:
@@ -124,6 +126,8 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 //                removeTask(position, task_todo, rec_adapters.get(0));
                 Task task1 = task_todo.get(position);
                 task1.changeStatus("doing");
+                changingStatus = "doing";
+                modifyingTaskID = task1.getTaskID();
                 task_doing.add(0, task1);
 
 //                rec_adapters.get(1).notifyItemInserted(-1);
@@ -139,11 +143,14 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                 task_todo.remove(position);
                 rec_adapters.get(0).notifyItemRemoved(position);
                 rec_adapters.get(0).notifyItemRangeChanged(position,task_todo.size());
+
                 break;
             case 2:
                 position = current_holder.getAdapterPosition();
                 Task task2 = task_doing.get(position);
                 task2.changeStatus("todo");
+                changingStatus = "todo";
+                modifyingTaskID = task2.getTaskID();
 
                 task_todo.add(0, task2);
 
@@ -165,6 +172,8 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 
                 Task task3 = task_doing.get(position);
                 task3.changeStatus("done");
+                changingStatus = "done";
+                modifyingTaskID = task3.getTaskID();
 
                 task_done.add(0, task_doing.get(position));
                 if(task_done.size()==1){
@@ -198,6 +207,49 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                 rec_adapters.get(2).notifyItemRemoved(position);
                 rec_adapters.get(2).notifyItemRangeChanged(position,task_done.size());
         }
+        OkHttpClient client = new OkHttpClient();
+        RequestBody requestBody = new FormBody.Builder()
+                .add("userID", userID)
+                .add("token", token)
+                .add("taskID", modifyingTaskID)
+                .add("status", changingStatus)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(getString(R.string.update_task_status))
+                .post(requestBody)
+                .build();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(HorizontalCoordinatorNtbActivity.this,"Network Issue", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Change status successfully", Toast.LENGTH_SHORT ).show();
+                            }
+                        });
+
+                    }
+                });
+            }
+        }).start();
+
+
         return super.onContextItemSelected(item);
     }
 
@@ -328,23 +380,23 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
         models.add(
                 new NavigationTabBar.Model.Builder(
-                        getResources().getDrawable(R.drawable.ic_first),
+                        getResources().getDrawable(R.drawable.ic_todo),
                         Color.parseColor(colors[0]))
-                        .title("ToDoList")
+                        .title("Todo")
                         .build()
         );
         models.add(
                 new NavigationTabBar.Model.Builder(
-                        getResources().getDrawable(R.drawable.ic_second),
+                        getResources().getDrawable(R.drawable.ic_doing),
                         Color.parseColor(colors[3]))
-                        .title("DoingList")
+                        .title("Doing")
                         .build()
         );
         models.add(
                 new NavigationTabBar.Model.Builder(
-                        getResources().getDrawable(R.drawable.ic_third),
+                        getResources().getDrawable(R.drawable.ic_done),
                         Color.parseColor(colors[1]))
-                        .title("DoneList")
+                        .title("Done")
                         .build()
         );
 

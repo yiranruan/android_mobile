@@ -20,6 +20,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.mobileproject.R;
+import com.example.mobileproject.UserSetting;
 import com.example.mobileproject.tasks.HorizontalCoordinatorNtbActivity;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.kaopiz.kprogresshud.KProgressHUD;
@@ -80,9 +81,8 @@ public class ShowGroupActivity extends AppCompatActivity {
          */
 
         Intent intent = getIntent();
-//        Intent intent = getIntent();
-//        userID = intent.getStringExtra("userID");
-//        token = intent.getStringExtra("token");
+        userID = intent.getStringExtra("userID");
+        token = intent.getStringExtra("token");
 
         RequestBody requestBody = new FormBody.Builder()
                 .add("userID", userID)
@@ -169,6 +169,21 @@ public class ShowGroupActivity extends AppCompatActivity {
                 intent.putExtra("token", token);
                 checkExpansion();
                 startActivityForResult(intent, 1);
+            }
+        });
+
+
+        final View userSetting = findViewById(R.id.user_setting);
+        joinG.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(ShowGroupActivity.this, "You clicked",
+                        Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(ShowGroupActivity.this, UserSetting.class);
+                intent.putExtra("userID", userID);
+                intent.putExtra("token", token);
+                checkExpansion();
+                startActivityForResult(intent, 3);
             }
         });
 
@@ -307,6 +322,17 @@ public class ShowGroupActivity extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                     } catch (JSONException e) {
                         e.printStackTrace();
+                    }
+                }
+
+            case 3:
+                if(resultCode == RESULT_OK){
+                    Boolean result = data.getBooleanExtra("result", false);
+                    if (result){
+                        Toast.makeText(ShowGroupActivity.this, "Change user name successfully", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Toast.makeText(ShowGroupActivity.this, "Change user name failed", Toast.LENGTH_SHORT).show();
                     }
                 }
                 else{

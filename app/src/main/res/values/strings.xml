@@ -20,5 +20,7 @@
     <string name="get_task">https://groupmonster.herokuapp.com/get/task</string>
     <string name="delete_task">https://groupmonster.herokuapp.com/delete/task</string>
     <string name="update_task">https://groupmonster.herokuapp.com/update/task</string>
+    <string name="update_task_status">https://groupmonster.herokuapp.com/update/status</string>
+    <string name="user_update">https://groupmonster.herokuapp.com/update/user</string>
 
 </resources>

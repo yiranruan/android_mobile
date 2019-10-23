@@ -14,6 +14,7 @@ import com.example.mobileproject.group.ShowGroupActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private TextInputEditText verifyCodeTextInput;
     private OkHttpClient client;
     private String email;
+    private KProgressHUD hud;
 
 
     @Override
@@ -53,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
         verifyInputLayout = findViewById(R.id.verifyInputLayout);
         verifyCodeTextInput = findViewById(R.id.verifyCodeTextInput);
         client = new OkHttpClient();
+        hud = KProgressHUD.create(this)
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel("Loading...");
 
         /*
 
@@ -81,10 +86,11 @@ public class MainActivity extends AppCompatActivity {
 
                 if (isEmail(email)){
 
-
+                    hud.show();
                     client.newCall(request).enqueue(new Callback() {
                         @Override
                         public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            hud.dismiss();
                             Log.d("fail to send", "onFailure: ");
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -97,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                            hud.dismiss();
                             String responseData = response.body().string();
                             Log.d("response message", "onResponse: "+ responseData);
                             try {
@@ -158,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hud.show();
                 String code = verifyCodeTextInput.getText().toString();
                 Log.d("login", "onClick: " + code);
                 RequestBody requestBody = new FormBody.Builder()
@@ -176,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                hud.dismiss();
                                 Toast.makeText(MainActivity.this, "Log in failed, try it later", Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -195,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
                             Intent intent = new Intent(MainActivity.this, ShowGroupActivity.class);
                             intent.putExtra("userID",userID);
                             intent.putExtra("token", token);
-
+                            hud.dismiss();
                             if (result){
                                 startActivity(intent);
                                 finish();

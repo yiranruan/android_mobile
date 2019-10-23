@@ -32,7 +32,7 @@
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
                 android:background="#605271"
-                android:src="@drawable/ic_sixth"
+                android:src="@drawable/ic_third"
                 android:tint="#9f90af"
                 android:padding="32dp"
                 app:layout_collapseMode="pin"/>
