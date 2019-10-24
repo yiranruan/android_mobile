@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.example.mobileproject.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -37,6 +38,7 @@ public class GroupJoinActivity extends AppCompatActivity {
     private String userID;
     private String token;
     OkHttpClient client;
+    KProgressHUD hud;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,10 @@ public class GroupJoinActivity extends AppCompatActivity {
         token = intent.getStringExtra("token");
         code = findViewById(R.id.join_code_tf);
         joinBtn = findViewById(R.id.join_group_btn);
+        hud = KProgressHUD.create(this)
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel("Loading...");
+
 
         client = new OkHttpClient();
 
@@ -54,6 +60,7 @@ public class GroupJoinActivity extends AppCompatActivity {
         joinBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hud.show();
                 String groupCode = code.getText().toString();
                 Log.d("join group", "onClick: "+ groupCode);
                 RequestBody requestBody = new FormBody.Builder()
@@ -70,11 +77,13 @@ public class GroupJoinActivity extends AppCompatActivity {
                 client.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        hud.dismiss();
                         Toast.makeText(GroupJoinActivity.this, "Network issue, Please check your network", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        hud.dismiss();
                         String responseData = response.body().string();
                         Log.d("join group page", "onResponse: " + responseData);
                         try {

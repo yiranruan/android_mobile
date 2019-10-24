@@ -29,6 +29,7 @@ public class UserSetting extends AppCompatActivity {
 
     private String userID;
     private String token;
+    private String userName;
     private KProgressHUD hud;
 
     @Override
@@ -40,6 +41,9 @@ public class UserSetting extends AppCompatActivity {
         Intent intent = getIntent();
         userID = intent.getStringExtra("userID");
         token = intent.getStringExtra("token");
+        userName = intent.getStringExtra("userName");
+//        newUserName.setText(userName);
+
         hud = KProgressHUD.create(this)
                 .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
                 .setLabel("Loading...");

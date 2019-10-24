@@ -216,7 +216,7 @@
             </LinearLayout>
 
             <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/switchBtn"
+                android:id="@+id/calendar_status"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="false"
@@ -234,7 +234,7 @@
                 android:layout_height="wrap_content"
                 android:hint="Description"
                 android:layout_margin="10dp"
-                android:layout_below="@id/switchBtn"
+                android:layout_below="@id/calendar_status"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 >
 

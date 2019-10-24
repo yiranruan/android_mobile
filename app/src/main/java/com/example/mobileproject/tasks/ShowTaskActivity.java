@@ -93,7 +93,6 @@ public class ShowTaskActivity extends AppCompatActivity {
 
 
 
-    private Bitmap bitmap = null;
     private Button btn_cancel;
     private Button btn_confirm;
 
@@ -139,25 +138,28 @@ public class ShowTaskActivity extends AppCompatActivity {
     private String status;
     private KProgressHUD hud;
 
+    private Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_task);
-
+        switch_calender = findViewById(R.id.calendar_status);
         hud = KProgressHUD.create(this)
                 .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
                 .setLabel("Loading...");
         hud.show();
+
 
         tv_title = findViewById(R.id.et_Title);
         et_note = findViewById(R.id.et_note);
         tv_member = findViewById(R.id.member);
         menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions_photo_task);
         // tv_location = findViewById(R.id.tv_Location);
+        Log.d("show task test", "onCreate: ");
 
         //设置edittext是否可编辑
-        setEditTextEnable(tv_member,false);
+//        setEditTextEnable(tv_member,false);
         setEditTextEnable(tv_title,false);
         // setEditTextEnable(tv_location,false);
 
@@ -260,59 +262,62 @@ public class ShowTaskActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                    hud.show();
-                    description = et_note.getText().toString();
-                    username = tv_member.getText().toString();
+                hud.show();
+                description = et_note.getText().toString();
+                username = tv_member.getText().toString();
 
+                Log.d("image", image);
 
-                    RequestBody requestBody = new FormBody.Builder()
-                            .add("taskID", taskID)
-                            .add("title", title)
-                            .add("userID", userID)
-                            .add("token", token)
-                            .add("location", location)
-                            .add("members", username)
-                            .add("startDate", startDate)
-                            .add("endDate", dueDate)
-                            .add("description", description)
-                            .add("photo", image)
-                            .build();
+                RequestBody requestBody = new FormBody.Builder()
+                        .add("taskID", taskID)
+                        .add("title", title)
+                        .add("userID", userID)
+                        .add("groupID", String.valueOf(groupID))
+                        .add("token", token)
+                        .add("location", location)
+                        .add("members", username)
+                        .add("startDate", startDate)
+                        .add("endDate", dueDate)
+                        .add("description", description)
+                        .add("photo", image)
+                        .build();
 
-                    Request request = new Request.Builder()
-                            .url(getString(R.string.update_task))
-                            .post(requestBody)
-                            .build();
-                    Log.d("update", "onClick: " + request.body().toString());
-                    OkHttpClient client = new OkHttpClient();
-                    client.newCall(request).enqueue(new Callback() {
-                        @Override
-                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                            Toast.makeText(ShowTaskActivity.this, "Network issue, try it later", Toast.LENGTH_SHORT).show();
-                        }
+                Request request = new Request.Builder()
+                        .url(getString(R.string.update_task))
+                        .post(requestBody)
+                        .build();
+                Log.d("update", "onClick: " + request.body().toString());
+                OkHttpClient client = new OkHttpClient();
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        Toast.makeText(ShowTaskActivity.this, "Network issue, try it later", Toast.LENGTH_SHORT).show();
+                    }
 
-                        @Override
-                        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                            String responseData = response.body().string();
-                            Log.d("update task", "onResponse: " + responseData);
-                            try {
-                                JSONObject jsonData = new JSONObject(responseData);
-                                boolean result = jsonData.getBoolean("result");
-                                Intent intent = new Intent();
-                                intent.putExtra("result", result);
-                                intent.putExtra("delete", 0);
-                                setResult(RESULT_OK, intent);
-                                hud.dismiss();
-                                if (switch_calender.isChecked() && result){
-                                    addCalender();
-                                }
-                                finish();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        String responseData = response.body().string();
+
+                        Log.d("update task", "onResponse: " + responseData);
+                        try {
+                            JSONObject jsonData = new JSONObject(responseData);
+                            boolean result = jsonData.getBoolean("result");
+                            Intent intent = new Intent();
+                            intent.putExtra("result", result);
+                            intent.putExtra("delete", 0);
+                            setResult(RESULT_OK, intent);
+                            hud.dismiss();
+                            if (switch_calender.isChecked() && result){
+                                addCalender();
                             }
-
-
+                            finish();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    });
+
+
+                    }
+                });
 
             }
         });
@@ -508,6 +513,7 @@ public class ShowTaskActivity extends AppCompatActivity {
                         mImageView.setImageBitmap(null);
                         mImageView.setImageURI(null);
                         image = "";
+                        bitmap = null;
                     }
                 });
 
@@ -628,23 +634,24 @@ public class ShowTaskActivity extends AppCompatActivity {
     ///  接收数据的代码---
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        //called when image was captured from camera
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case IMAGE_CAPTURE_CODE:
-                if (resultCode == RESULT_OK) {
+                if(resultCode == RESULT_OK){
                     //set the image captured to our Im
-
                     mImageView.setImageBitmap(null);
                     mImageView.setImageURI(null);
+                    bitmap = null;
 
 
                     mImageView.setImageURI(image_uri);
 
-                    ImageView iv1 = (ImageView) findViewById(R.id.image_view);
-                    bitmap = Bitmap.createBitmap(iv1.getWidth(),
-                            iv1.getHeight(), Bitmap.Config.ARGB_8888);
+                    //ImageView iv1 = (ImageView) findViewById(R.id.image_view);
+                    bitmap = Bitmap.createBitmap(mImageView.getWidth(),
+                            mImageView.getHeight(), Bitmap.Config.ARGB_8888);
                     Canvas canvas = new Canvas(bitmap);
-                    iv1.draw(canvas);
+                    mImageView.draw(canvas);
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 
@@ -660,46 +667,31 @@ public class ShowTaskActivity extends AppCompatActivity {
                 }
                 break;
             case 30:
-                if (resultCode == RESULT_OK) {
+                // ------ 接收 location 数据 --------
+                if(resultCode == RESULT_OK){
                     Log.d("check:", "get location");
                     location = data.getStringExtra("location");
                     tv_location.setText(location);
                 }
                 break;
             case 40:
-                if (resultCode == RESULT_OK) {
-
+                if(resultCode == RESULT_OK) {
                     mImageView.setImageBitmap(null);
                     mImageView.setImageURI(null);
+                    bitmap = null;
 
-                    Log.d("saveScreenShot", "onActivityResult: true");
-                    mImageView = (ImageView) findViewById(R.id.image_view);
-                    byte [] bis = data.getByteArrayExtra("bitmap");
+//                mImageView = (ImageView) findViewById(R.id.image_view);
+                    byte[] bis = data.getByteArrayExtra("bitmap");
                     bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
                     mImageView.setImageBitmap(bitmap);
-
-//                        bitmap = intent.getParcelableExtra("bitmap");
-
-                    //ImageView iv2 = (ImageView) findViewById(R.id.image_view);
-                    BitmapDrawable drawable1 = (BitmapDrawable) mImageView.getDrawable();
-                    bitmap = drawable1.getBitmap();
-
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-                    int options = 90;
-                    while (baos.toByteArray().length / 1024 > 60) { // 循环判断如果压缩后图片是否大于100kb,大于继续压缩
-                        baos.reset(); // 重置baos即清空baos
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
-                        options -= 10;// 每次都减少10
-                    }
-                    Log.d("bao", String.valueOf(baos.toByteArray().length));
-                    image = Base64.encodeToString(baos.toByteArray(),0);
-
-
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    image = Base64.encodeToString(baos.toByteArray(), 0);
 
                 }
                 break;
         }
+
     }
 
 
@@ -723,24 +715,13 @@ public class ShowTaskActivity extends AppCompatActivity {
 
             Log.d("cal:", "" + result);
             if (result == 0) {
-                Toast.makeText(ShowTaskActivity.this, "successfully insert", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(ShowTaskActivity.this, "successfully insert", Toast.LENGTH_SHORT).show();
             } else {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ShowTaskActivity.this);
-                builder.setTitle("Calender");
-                builder.setMessage("invalid added Calender");
-                builder.setCancelable(false);
-                AlertDialog alert =builder.create();
-                alert.show();
+                //Toast.makeText(ShowTaskActivity.this, "successfully insert", Toast.LENGTH_SHORT).show();
             }
         }catch (Exception e){
-            AlertDialog.Builder builder = new AlertDialog.Builder(ShowTaskActivity.this);
-            builder.setTitle("Calender");
-            builder.setMessage("invalid added Calender");
-            builder.setCancelable(false);
-            AlertDialog alert =builder.create();
-            alert.show();
+            //Toast.makeText(ShowTaskActivity.this, "invalid insert", Toast.LENGTH_SHORT).show();
         }
-
 
     }
 
@@ -749,7 +730,7 @@ public class ShowTaskActivity extends AppCompatActivity {
         try{
             byte [] encodeByte=Base64.decode(image,Base64.DEFAULT);
             InputStream inputStream  = new ByteArrayInputStream(encodeByte);
-            Bitmap bitmap  = BitmapFactory.decodeStream(inputStream);
+            bitmap = BitmapFactory.decodeStream(inputStream);
             return bitmap;
         }catch(Exception e){
             e.getMessage();

@@ -22,6 +22,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.example.mobileproject.R;
 import com.example.mobileproject.UserSetting;
 import com.example.mobileproject.tasks.HorizontalCoordinatorNtbActivity;
+import com.example.mobileproject.tasks.ShowTaskActivity;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.kaopiz.kprogresshud.KProgressHUD;
 
@@ -61,6 +62,7 @@ public class ShowGroupActivity extends AppCompatActivity {
     private OkHttpClient client;
     private Context mContext;
     private KProgressHUD hud;
+    private String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +85,7 @@ public class ShowGroupActivity extends AppCompatActivity {
         Intent intent = getIntent();
         userID = intent.getStringExtra("userID");
         token = intent.getStringExtra("token");
+        userName = intent.getStringExtra("userName");
 
         RequestBody requestBody = new FormBody.Builder()
                 .add("userID", userID)
@@ -106,6 +109,8 @@ public class ShowGroupActivity extends AppCompatActivity {
                 String responseData = response.body().string();
                 try {
                     JSONObject jsonData = new JSONObject(responseData);
+//                    userName = jsonData.getString("userName");
+
                     JSONArray jsonArray = jsonData.getJSONArray("list");
                     Log.d("group list", "onResponse: " + jsonArray.length());
                     for (int i = 0 ; i < jsonArray.length(); i++) {
@@ -147,9 +152,6 @@ public class ShowGroupActivity extends AppCompatActivity {
         createG.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(ShowGroupActivity.this, "You clicked",
-                        Toast.LENGTH_SHORT).show();
-
                 Intent intent = new Intent(ShowGroupActivity.this, GroupCreateActivity.class);
                 intent.putExtra("userID", userID);
                 intent.putExtra("token", token);
@@ -162,8 +164,6 @@ public class ShowGroupActivity extends AppCompatActivity {
         joinG.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(ShowGroupActivity.this, "You clicked",
-                        Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(ShowGroupActivity.this, GroupJoinActivity.class);
                 intent.putExtra("userID", userID);
                 intent.putExtra("token", token);
@@ -177,11 +177,10 @@ public class ShowGroupActivity extends AppCompatActivity {
         userSettingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(ShowGroupActivity.this, "You clicked",
-                        Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(ShowGroupActivity.this, UserSetting.class);
                 intent.putExtra("userID", userID);
                 intent.putExtra("token", token);
+                intent.putExtra("userName", userName);
                 checkExpansion();
                 startActivityForResult(intent, 3);
             }
@@ -223,6 +222,10 @@ public class ShowGroupActivity extends AppCompatActivity {
                 break;
                 // remove group item
             case 2:
+                if (models.get(page_position).getGroupID() == 0){
+                    Toast.makeText(ShowGroupActivity.this, "You cannot delete this group", Toast.LENGTH_SHORT).show();
+                    break;
+                }
                 hud.show();
                 Log.d("model_size1", "onContextItemSelected: "+models.size());
                 RequestBody requestBody = new FormBody.Builder()

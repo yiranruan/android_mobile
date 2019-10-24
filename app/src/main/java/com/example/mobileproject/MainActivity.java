@@ -1,9 +1,15 @@
 package com.example.mobileproject;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -11,6 +17,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.mobileproject.group.ShowGroupActivity;
+import com.example.mobileproject.ui.login.LoginFormState;
+import com.example.mobileproject.ui.login.LoginViewModel;
+import com.example.mobileproject.ui.login.LoginViewModelFactory;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -42,12 +51,14 @@ public class MainActivity extends AppCompatActivity {
     private OkHttpClient client;
     private String email;
     private KProgressHUD hud;
+    private LoginViewModel loginViewModel;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+
         verifyBtn = findViewById(R.id.verify_btn);
         loginBtn = findViewById(R.id.login_btn);
         loginBtn.setEnabled(false);
@@ -142,20 +153,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        verifyCodeTextInput.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if (loginBtn.isEnabled()){
-                    verifyInputLayout.setError(null);
-                }
-                else{
-                    verifyInputLayout.setError("Please verify your Email first!");
-                }
-                return false;
-            }
-
-        });
-
         /*
 
             Log in Button click listener
@@ -181,10 +178,11 @@ public class MainActivity extends AppCompatActivity {
                 client.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        hud.dismiss();
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                hud.dismiss();
+
                                 Toast.makeText(MainActivity.this, "Log in failed, try it later", Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -192,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-//
+                        hud.dismiss();
                         String responseData =response.body().string();
                         Log.d("response", "login response: "+ responseData);
                         try {
@@ -204,12 +202,22 @@ public class MainActivity extends AppCompatActivity {
                             Intent intent = new Intent(MainActivity.this, ShowGroupActivity.class);
                             intent.putExtra("userID",userID);
                             intent.putExtra("token", token);
-                            hud.dismiss();
+                            intent.putExtra("userName", jsonData.getString("userName"));
+
                             if (result){
                                 startActivity(intent);
                                 finish();
-                            }else{
+                            }
+                            else{
                                 Toast.makeText(MainActivity.this, "Failed, please verify your code", Toast.LENGTH_SHORT).show();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        Toast.makeText(MainActivity.this, "Failed, please verify your code", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
                             }
 
                         } catch (JSONException e) {
@@ -220,6 +228,46 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+
+        loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
+                .get(LoginViewModel.class);
+
+        loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
+            @Override
+            public void onChanged(@Nullable LoginFormState loginFormState) {
+                if (loginFormState == null) {
+                    return;
+                }
+                loginBtn.setEnabled(loginFormState.isDataValid());
+                if (loginFormState.getUsernameError() != null) {
+                    emailTextInput.setError(getString(loginFormState.getUsernameError()));
+                }
+                if (loginFormState.getPasswordError() != null) {
+                    verifyCodeTextInput.setError(getString(loginFormState.getPasswordError()));
+                }
+            }
+        });
+
+        TextWatcher afterTextChangedListener = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // ignore
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // ignore
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                loginViewModel.loginDataChanged(emailTextInput.getText().toString(),
+                        verifyCodeTextInput.getText().toString());
+            }
+        };
+
+        emailTextInput.addTextChangedListener(afterTextChangedListener);
+        verifyCodeTextInput.addTextChangedListener(afterTextChangedListener);
 
 
 

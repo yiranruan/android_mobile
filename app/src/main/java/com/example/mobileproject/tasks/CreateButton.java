@@ -171,6 +171,7 @@ public class CreateButton extends AppCompatActivity {
                         mImageView.setImageBitmap(null);
                         mImageView.setImageURI(null);
                         image = "";
+                        bitmap = null;
                     }
                 });
 
@@ -223,7 +224,7 @@ public class CreateButton extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                hud.show();
+
                 title = input_title.getText().toString();
                 description = input_note.getText().toString();
 
@@ -232,8 +233,9 @@ public class CreateButton extends AppCompatActivity {
                 Log.d("create task data", "onClick: " + image );
                 Log.d("create task data", "onClick: " + startDate );
 
-                if (title.length() > 0 && username.length() > 0) {
+                if (title.length() > 0) {
 
+                    hud.show();
                     RequestBody requestBody = new FormBody.Builder()
                             .add("userID", userID)
                             .add("token", token)
@@ -277,7 +279,7 @@ public class CreateButton extends AppCompatActivity {
 
                             hud.dismiss();
 
-                            if (switch_calender.isChecked()){
+                            if (switch_calender.isChecked() && result){
                                 addCalender();
                             }
                             finish();
@@ -497,8 +499,7 @@ public class CreateButton extends AppCompatActivity {
 
                     mImageView.setImageBitmap(null);
                     mImageView.setImageURI(null);
-
-
+                    bitmap = null;
                     mImageView.setImageURI(image_uri);
 
                     ImageView iv1 = (ImageView) findViewById(R.id.image_view);
@@ -532,6 +533,9 @@ public class CreateButton extends AppCompatActivity {
 
                     mImageView.setImageBitmap(null);
                     mImageView.setImageURI(null);
+
+                    bitmap = null;
+
 
                     Log.d("saveScreenShot", "onActivityResult: true");
                     mImageView = (ImageView) findViewById(R.id.image_view);
@@ -618,24 +622,13 @@ public class CreateButton extends AppCompatActivity {
 
             Log.d("cal:", "" + result);
             if (result == 0) {
-                Toast.makeText(CreateButton.this, "successfully insert", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(CreateButton.this, "successfully insert", Toast.LENGTH_SHORT).show();
             } else {
-                AlertDialog.Builder builder = new AlertDialog.Builder(CreateButton.this);
-                builder.setTitle("Calender");
-                builder.setMessage("invalid added Calender");
-                builder.setCancelable(false);
-                AlertDialog alert =builder.create();
-                alert.show();
+                //Toast.makeText(CreateButton.this, "successfully insert", Toast.LENGTH_SHORT).show();
             }
         }catch (Exception e){
-            AlertDialog.Builder builder = new AlertDialog.Builder(CreateButton.this);
-            builder.setTitle("Calender");
-            builder.setMessage("invalid added Calender");
-            builder.setCancelable(false);
-            AlertDialog alert =builder.create();
-            alert.show();
+            //Toast.makeText(CreateButton.this, "invalid insert", Toast.LENGTH_SHORT).show();
         }
-
 
     }
 

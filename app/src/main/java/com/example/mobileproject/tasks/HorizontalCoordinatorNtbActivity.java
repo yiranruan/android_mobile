@@ -632,7 +632,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
             if (holder instanceof TaskHolder) {
                 ((TaskHolder) holder).txt.setText(
                         "Task: "+ tasks.get(position).getTitle() +
-                                "| Members: " + tasks.get(position).getMembers()
+                                " | Members: " + tasks.get(position).getMembers()
                 );
 
                 if (mOnItemClickLitener != null) {

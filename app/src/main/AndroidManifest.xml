@@ -22,7 +22,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme">
-        <activity android:name=".UserSetting"></activity>
+
+        <activity android:name=".UserSetting" />
         <activity android:name=".tasks.ProgressActivity" />
         <activity android:name=".tasks.drawLinesActivity" />
         <activity android:name=".tasks.ShowTaskActivity" />
@@ -37,7 +38,7 @@
         <activity android:name=".tasks.HorizontalCoordinatorNtbActivity" />
         <activity android:name=".group.GroupCreateActivity" />
         <activity android:name=".group.GroupJoinActivity" />
-        <activity android:name=".group.ShowGroupActivity"/>
+        <activity android:name=".group.ShowGroupActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
