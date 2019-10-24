@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.example.mobileproject.R;
 import com.google.android.material.textfield.TextInputEditText;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -37,6 +38,7 @@ public class GroupCreateActivity extends AppCompatActivity {
     private TextInputEditText groupName;
     private TextInputEditText subjectName;
     private TextInputEditText description;
+    private KProgressHUD hud;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +52,14 @@ public class GroupCreateActivity extends AppCompatActivity {
         groupName = findViewById(R.id.create_group_name_tf);
         subjectName = findViewById(R.id.create_subj_nm_tf);
         description = findViewById(R.id.create_desc_tf);
+        hud = KProgressHUD.create(this)
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel("Loading...");
 
         createGroup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hud.show();
                 String createdGroupName = groupName.getText().toString();
                 String createdSubjectName = subjectName.getText().toString();
                 String createdDescription = description.getText().toString();
@@ -77,6 +83,7 @@ public class GroupCreateActivity extends AppCompatActivity {
                 client.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        hud.dismiss();
                         Toast.makeText(GroupCreateActivity.this, "Network issue, try it later", Toast.LENGTH_SHORT).show();
                     }
 
@@ -93,6 +100,7 @@ public class GroupCreateActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         setResult(RESULT_OK, intent);
+                        hud.dismiss();
                         finish();
                     }
                 });

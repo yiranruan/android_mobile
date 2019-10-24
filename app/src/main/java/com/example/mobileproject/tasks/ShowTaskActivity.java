@@ -1,8 +1,10 @@
 package com.example.mobileproject.tasks;
 import com.example.mobileproject.R;
+import com.example.mobileproject.group.ShowGroupActivity;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.kaopiz.kprogresshud.KProgressHUD;
 import com.kyle.calendarprovider.calendar.CalendarEvent;
 import com.kyle.calendarprovider.calendar.CalendarProviderManager;
 
@@ -26,6 +28,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -54,6 +57,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
@@ -80,10 +85,16 @@ public class ShowTaskActivity extends AppCompatActivity {
     private EditText tv_member;
 
 
+    //为了时间数据转化为Long类型
+    private String startDateInitial;
+    private String endDateInitial;
+    private long  sDate;
+    private long eDate;
+
+
 
     private Button btn_cancel;
-    private ImageView showimg;
-    private Button btn_comfirm;
+    private Button btn_confirm;
 
     private EditText et_note;
 
@@ -98,7 +109,6 @@ public class ShowTaskActivity extends AppCompatActivity {
     private FloatingActionsMenu menuMultipleActions;
     private FloatingActionButton mCaptureBtn;
     private FloatingActionButton mHandWriteBtn;
-    private Button btn_add;
     private Button btn_delete;
     private ImageView imageview;
 
@@ -126,14 +136,19 @@ public class ShowTaskActivity extends AppCompatActivity {
     private String description;
     private String username;
     private String status;
+    private KProgressHUD hud;
 
-
+    private Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_task);
-
+        switch_calender = findViewById(R.id.calendar_status);
+        hud = KProgressHUD.create(this)
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel("Loading...");
+        hud.show();
 
 
         tv_title = findViewById(R.id.et_Title);
@@ -141,9 +156,10 @@ public class ShowTaskActivity extends AppCompatActivity {
         tv_member = findViewById(R.id.member);
         menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions_photo_task);
         // tv_location = findViewById(R.id.tv_Location);
+        Log.d("show task test", "onCreate: ");
 
         //设置edittext是否可编辑
-        setEditTextEnable(tv_member,false);
+//        setEditTextEnable(tv_member,false);
         setEditTextEnable(tv_title,false);
         // setEditTextEnable(tv_location,false);
 
@@ -168,7 +184,7 @@ public class ShowTaskActivity extends AppCompatActivity {
         tv_location = findViewById(R.id.tv_Location);
         tv_startDate = findViewById(R.id.tv_startdate);
         tv_endDate = findViewById(R.id.tv_enddate);
-        mImageView = findViewById(R.id.image_view);
+        mImageView = findViewById(R.id.image_view_task);
 
         //-------
 
@@ -186,6 +202,7 @@ public class ShowTaskActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                hud.dismiss();
                 Toast.makeText(ShowTaskActivity.this, "Network issue", Toast.LENGTH_SHORT).show();
             }
 
@@ -201,17 +218,21 @@ public class ShowTaskActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 try {
-                                    tv_title.setText(task.getString("title"));
+                                    title = task.getString("title");
+                                    tv_title.setText(title);
                                     tv_member.setText(task.getString("members"));
                                     et_note.setText(task.getString("description"));
                                     if(task.has("startDate")){
-                                        tv_startDate.setText(task.getString("startDate"));
+                                        startDate = task.getString("startDate");
+                                        tv_startDate.setText(startDate);
                                     }
                                     if(task.has("endDate")){
-                                        tv_endDate.setText(task.getString("endDate"));
+                                        dueDate = task.getString("endDate");
+                                        tv_endDate.setText(dueDate);
                                     }
                                     if(task.has("location")){
-                                        tv_location.setText(task.getString("location"));
+                                        location = task.getString("location");
+                                        tv_location.setText(location);
                                     }
                                     if(task.has("photo")){
                                         image = task.getString("photo");
@@ -225,6 +246,7 @@ public class ShowTaskActivity extends AppCompatActivity {
                             }
                         });
                     }
+                    hud.dismiss();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -235,25 +257,80 @@ public class ShowTaskActivity extends AppCompatActivity {
         /////----------- SET INITIAL TEXT -----------
 
 
+        btn_confirm = findViewById(R.id.confirm_btn);
+        btn_confirm.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
 
-//
-//
-//        // calender
-//        switch_calender = findViewById(R.id.switchBtn);
-//        if (initial_C) {switch_calender.setChecked(true);}
-//
+                hud.show();
+                description = et_note.getText().toString();
+                username = tv_member.getText().toString();
 
-        // ---- 加入日志 ----
-       /*btn_add = findViewById(R.id.btn_addCalender);
-        OnClick onClick = new OnClick();
-        btn_add.setOnClickListener(onClick);*/
+                Log.d("image", image);
+
+                RequestBody requestBody = new FormBody.Builder()
+                        .add("taskID", taskID)
+                        .add("title", title)
+                        .add("userID", userID)
+                        .add("groupID", String.valueOf(groupID))
+                        .add("token", token)
+                        .add("location", location)
+                        .add("members", username)
+                        .add("startDate", startDate)
+                        .add("endDate", dueDate)
+                        .add("description", description)
+                        .add("photo", image)
+                        .build();
+
+                Request request = new Request.Builder()
+                        .url(getString(R.string.update_task))
+                        .post(requestBody)
+                        .build();
+                Log.d("update", "onClick: " + request.body().toString());
+                OkHttpClient client = new OkHttpClient();
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        Toast.makeText(ShowTaskActivity.this, "Network issue, try it later", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        String responseData = response.body().string();
+
+                        Log.d("update task", "onResponse: " + responseData);
+                        try {
+                            JSONObject jsonData = new JSONObject(responseData);
+                            boolean result = jsonData.getBoolean("result");
+                            Intent intent = new Intent();
+                            intent.putExtra("result", result);
+                            intent.putExtra("delete", 0);
+                            setResult(RESULT_OK, intent);
+                            hud.dismiss();
+                            if (switch_calender.isChecked() && result){
+                                addCalender();
+                            }
+                            finish();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }
+                });
+
+            }
+        });
+
+
+
 
         // -- 删除 按钮 ----
         btn_delete = findViewById(R.id.det_button);
         btn_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                hud.show();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("userID", userID)
                         .add("token", token)
@@ -269,6 +346,7 @@ public class ShowTaskActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NotNull Call call, @NotNull IOException e) {
                         Toast.makeText(ShowTaskActivity.this, "Network issue", Toast.LENGTH_SHORT).show();
+                        hud.dismiss();
                     }
 
                     @Override
@@ -294,91 +372,23 @@ public class ShowTaskActivity extends AppCompatActivity {
             }
         });
 
-        // --------确认修改--------
-        btn_comfirm = findViewById(R.id.btn_confirm);
-        btn_comfirm.setOnClickListener(new View.OnClickListener() {
+
+
+        btn_cancel = findViewById(R.id.btn_cancel);
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-//                if (initial_C == false && send_calender == true )
-//                {
-//                    addCalender();
-//                }
-
-
-                description = et_note.getText().toString();
-                username = tv_member.getText().toString();
-                startDate = tv_startDate.getText().toString();
-                dueDate = tv_endDate.getText().toString();
-
-
-//                Log.d("create task data", "onClick: " + location );
-//                Log.d("create task data", "onClick: " + image );
-//                Log.d("create task data", "onClick: " + startDate );
-
-                if (title.length() > 0 && username.length() > 0) {
-
-                    RequestBody requestBody = new FormBody.Builder()
-                            .add("userID", userID)
-                            .add("token", token)
-                            .add("groupID", String.valueOf(groupID))
-                            .add("location", location)
-                            .add("members", username)
-                            .add("startDate", startDate)
-                            .add("endData", dueDate)
-                            .add("description", description)
-                            .add("photo", image)
-                            .build();
-
-                    Request request = new Request.Builder()
-                            .url(getString(R.string.update_task))
-                            .post(requestBody)
-                            .build();
-
-                    OkHttpClient client = new OkHttpClient();
-                    client.newCall(request).enqueue(new Callback() {
-                        @Override
-                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                            Toast.makeText(ShowTaskActivity.this, "Network issue, try it later", Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                            String responseData = response.body().string();
-                            Log.d("update task", "onResponse: " +responseData);
-                            try {
-                                JSONObject jsonData = new JSONObject(responseData);
-                                boolean result = jsonData.getBoolean("result");
-                                Intent intent = new Intent();
-                                intent.putExtra("result", result);
-                                intent.putExtra("delete", 0);
-                                setResult(RESULT_OK, intent);
-                                finish();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-
-                        }
-                    });
-                }
-
+                Intent returnIntent = new Intent();
+                setResult(RESULT_CANCELED, returnIntent);
+                finish();
             }
         });
-
-
-        // --------取消修改--------
-        OnClick onClick = new OnClick();
-        btn_cancel = findViewById(R.id.btn_cancel);
-        btn_cancel.setOnClickListener(onClick);
 
 
 
 
         /// ------ 设置 LOCATION BUTTION
 
-//        OnClick onClick1 = new OnClick();
-//        tv_location.setOnClickListener(onClick1);
 
         tv_location = findViewById(R.id.tv_Location);
         tv_location.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -426,6 +436,14 @@ public class ShowTaskActivity extends AppCompatActivity {
                                         minute_x = i1;
                                         tv_startDate.setText(year_x + "/" + (month_x + 1) + "/" + day_x + " " + hour_x + ":" + minute_x);
                                         startDate = year_x + "/" + (month_x + 1) + "/" + day_x + " " + hour_x + ":" + minute_x;
+                                        startDateInitial = year_x+"-"+(month_x+1)+"-"+day_x+" "+hour_x+":"+minute_x;
+                                        SimpleDateFormat dataformat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+                                        try {
+                                            sDate = dataformat.parse(startDateInitial).getTime();
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
                                 }, hour, minute, true);
                                 timePickerDialog.show();
@@ -461,6 +479,14 @@ public class ShowTaskActivity extends AppCompatActivity {
                                         minute_y = i1;
                                         tv_endDate.setText(year_y + "/" + (month_y + 1) + "/" + day_y + " " + hour_y + ":" + minute_y);
                                         dueDate = year_y + "/" + (month_y + 1) + "/" + day_y + " " + hour_y + ":" + minute_y;
+                                        dueDate = day_y+"/"+(month_y+1)+"/"+year_y+" "+hour_y+":"+minute_y;
+                                        endDateInitial = year_x+"-"+(month_x+1)+"-"+day_x+" "+hour_x+":"+minute_x;
+                                        SimpleDateFormat dataformat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                                        try {
+                                            eDate = dataformat.parse(endDateInitial).getTime();
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
                                 }, hour, minute, true);
                                 timePickerDialog.show();
@@ -486,7 +512,8 @@ public class ShowTaskActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         mImageView.setImageBitmap(null);
                         mImageView.setImageURI(null);
-                        filepath = null;
+                        image = "";
+                        bitmap = null;
                     }
                 });
 
@@ -604,7 +631,7 @@ public class ShowTaskActivity extends AppCompatActivity {
     }
 
 
-    /// 接听地图数数据；
+    ///  接收数据的代码---
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         //called when image was captured from camera
@@ -613,19 +640,30 @@ public class ShowTaskActivity extends AppCompatActivity {
             case IMAGE_CAPTURE_CODE:
                 if(resultCode == RESULT_OK){
                     //set the image captured to our Im
-                    if(image_uri != null){
-                        mImageView.setImageURI(image_uri);
-                        //把image的string获得
-                        ImageView iv1 = (ImageView) findViewById(R.id.image_view);
-                        BitmapDrawable drawable = (BitmapDrawable) iv1.getDrawable();
-                        Bitmap bitmap = drawable.getBitmap();
-                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.PNG,100,bos);
-                        byte[] bb = bos.toByteArray();
-                        image = Base64.encodeToString(bb,0);
-                    }else {
-                        tv_location.setText(data.getStringExtra("data_return"));
+                    mImageView.setImageBitmap(null);
+                    mImageView.setImageURI(null);
+                    bitmap = null;
+
+
+                    mImageView.setImageURI(image_uri);
+
+                    //ImageView iv1 = (ImageView) findViewById(R.id.image_view);
+                    bitmap = Bitmap.createBitmap(mImageView.getWidth(),
+                            mImageView.getHeight(), Bitmap.Config.ARGB_8888);
+                    Canvas canvas = new Canvas(bitmap);
+                    mImageView.draw(canvas);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
+                    int options = 90;
+                    while (baos.toByteArray().length / 1024 > 60) { // 循环判断如果压缩后图片是否大于100kb,大于继续压缩
+                        baos.reset(); // 重置baos即清空baos
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
+                        options -= 10;// 每次都减少10
+                        Log.d("size", String.valueOf(baos.toByteArray().length));
                     }
+
+                    image = Base64.encodeToString(baos.toByteArray(), 0);
                 }
                 break;
             case 30:
@@ -637,11 +675,19 @@ public class ShowTaskActivity extends AppCompatActivity {
                 }
                 break;
             case 40:
-                imageview=(ImageView)findViewById(R.id.image_view);
-                Intent intent=getIntent();
-                if(intent!=null) {
-                    Bitmap bitmap = intent.getParcelableExtra("bitmap");
-                    imageview.setImageBitmap(bitmap);
+                if(resultCode == RESULT_OK) {
+                    mImageView.setImageBitmap(null);
+                    mImageView.setImageURI(null);
+                    bitmap = null;
+
+//                mImageView = (ImageView) findViewById(R.id.image_view);
+                    byte[] bis = data.getByteArrayExtra("bitmap");
+                    bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
+                    mImageView.setImageBitmap(bitmap);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    image = Base64.encodeToString(baos.toByteArray(), 0);
+
                 }
                 break;
         }
@@ -650,101 +696,41 @@ public class ShowTaskActivity extends AppCompatActivity {
 
 
 
-    /////-------- onclick
-    class OnClick implements View.OnClickListener {
-
-        @Override
-        public void onClick(View view) {
-            checkExpansion();
-            Intent intent = null;
-
-
-            //设置跳转
-            switch (view.getId()) {
-                /*case R.id.btn_addCalender:
-                    CalendarEvent calendarEvent = new CalendarEvent(
-                            "马上吃饭",
-                            "吃好吃的",
-                            "南信院二食堂",
-                            System.currentTimeMillis(),
-                            System.currentTimeMillis() + 60000,
-                            0, null
-                    );
-
-                    // 添加事件
-                    int result = CalendarProviderManager.addCalendarEvent(ShowTaskActivity.this, calendarEvent);
-                    if (result == 0) {
-                        Toast.makeText(ShowTaskActivity.this, "successfully insert", Toast.LENGTH_SHORT).show();
-                    } else if (result == -1) {
-                        Toast.makeText(ShowTaskActivity.this, "unsuccessfully insert", Toast.LENGTH_SHORT).show();
-                    } else if (result == -2) {
-                        Toast.makeText(ShowTaskActivity.this, "Do not have the permission", Toast.LENGTH_SHORT).show();
-                    }
-                    break;
-
-                case R.id.btn_deleteCalendar:
-                    long calID2 = CalendarProviderManager.obtainCalendarAccountID(ShowTaskActivity.this);
-                    List<CalendarEvent> events2 = CalendarProviderManager.queryAccountEvent(ShowTaskActivity.this, calID2);
-                    if (null != events2) {
-                        if (events2.size() == 0) {
-                            Toast.makeText(ShowTaskActivity.this, "没有事件可以删除", Toast.LENGTH_SHORT).show();
-                        } else {
-                            long eventID = events2.get(0).getId();
-                            int result2 = CalendarProviderManager.deleteCalendarEvent(ShowTaskActivity.this, eventID);
-                            if (result2 == -2) {
-                                Toast.makeText(ShowTaskActivity.this, "没有权限", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(ShowTaskActivity.this, "删除成功", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    } else {
-                        Toast.makeText(ShowTaskActivity.this, "查询失败", Toast.LENGTH_SHORT).show();
-                    }
-                    break;*/
-
-
-                case R.id.btn_cancel:
-                    Intent returnIntent = new Intent();
-                    setResult(RESULT_CANCELED, returnIntent);
-                    finish();
-                    break;
-
-            }
-        }
-    }
-
 
     public void addCalender(){
-        CalendarEvent calendarEvent = new CalendarEvent(
-                "马上吃饭",
-                "吃好吃的",
-                "南信院二食堂",
-                System.currentTimeMillis()+10000,
-                System.currentTimeMillis() + 60000,
-                0, null
-        );
+        try {
+            CalendarEvent calendarEvent = new CalendarEvent(
+                    title,
+                    description,
+                    location,
+                    sDate,
+                    eDate,
+                    0, null
+            );
 
-        Log.d("time", Long.toString(System.currentTimeMillis()));
+            Log.d("msg:", "" + sDate);
 
-        // 添加事件
-        int result = CalendarProviderManager.addCalendarEvent(ShowTaskActivity.this, calendarEvent);
+            // 添加事件
+            int result = CalendarProviderManager.addCalendarEvent(ShowTaskActivity.this, calendarEvent);
 
-        if (result == 0) {
-            Toast.makeText(ShowTaskActivity.this, "successfully insert", Toast.LENGTH_SHORT).show();
-        } else if (result == -1) {
-            Toast.makeText(ShowTaskActivity.this, "unsuccessfully insert", Toast.LENGTH_SHORT).show();
-        } else if (result == -2) {
-            Toast.makeText(ShowTaskActivity.this, "Do not have the permission", Toast.LENGTH_SHORT).show();
+            Log.d("cal:", "" + result);
+            if (result == 0) {
+                //Toast.makeText(ShowTaskActivity.this, "successfully insert", Toast.LENGTH_SHORT).show();
+            } else {
+                //Toast.makeText(ShowTaskActivity.this, "successfully insert", Toast.LENGTH_SHORT).show();
+            }
+        }catch (Exception e){
+            //Toast.makeText(ShowTaskActivity.this, "invalid insert", Toast.LENGTH_SHORT).show();
         }
-    }
 
+    }
 
     private Bitmap stringToImage(String image){
 
         try{
             byte [] encodeByte=Base64.decode(image,Base64.DEFAULT);
             InputStream inputStream  = new ByteArrayInputStream(encodeByte);
-            Bitmap bitmap  = BitmapFactory.decodeStream(inputStream);
+            bitmap = BitmapFactory.decodeStream(inputStream);
             return bitmap;
         }catch(Exception e){
             e.getMessage();
@@ -753,25 +739,7 @@ public class ShowTaskActivity extends AppCompatActivity {
 
     }
 
-//    public void delCalender(){
-//        long calID2 = CalendarProviderManager.obtainCalendarAccountID(ShowTaskActivity.this);
-//        List<CalendarEvent> events2 = CalendarProviderManager.queryAccountEvent(ShowTaskActivity.this, calID2);
-//        if (null != events2) {
-//            if (events2.size() == 0) {
-//                Toast.makeText(ShowTaskActivity.this, "没有事件可以删除", Toast.LENGTH_SHORT).show();
-//            } else {
-//                long eventID = events2.get(0).getId();
-//                int result2 = CalendarProviderManager.deleteCalendarEvent(ShowTaskActivity.this, eventID);
-//                if (result2 == -2) {
-//                    Toast.makeText(ShowTaskActivity.this, "没有权限", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    Toast.makeText(ShowTaskActivity.this, "删除成功", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        } else {
-//            Toast.makeText(ShowTaskActivity.this, "查询失败", Toast.LENGTH_SHORT).show();
-//        }
-//    }
+
 
     public void checkExpansion(){
         if (menuMultipleActions.isExpanded()) {

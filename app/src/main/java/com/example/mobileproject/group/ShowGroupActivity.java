@@ -20,8 +20,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.mobileproject.R;
+import com.example.mobileproject.UserSetting;
 import com.example.mobileproject.tasks.HorizontalCoordinatorNtbActivity;
+import com.example.mobileproject.tasks.ShowTaskActivity;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -58,6 +61,8 @@ public class ShowGroupActivity extends AppCompatActivity {
     private String taskID;
     private OkHttpClient client;
     private Context mContext;
+    private KProgressHUD hud;
+    private String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +71,10 @@ public class ShowGroupActivity extends AppCompatActivity {
         models = new ArrayList<>();
         mContext = getApplicationContext();
         menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions);
-
+        hud = KProgressHUD.create(this)
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel("Loading...");
+        hud.show();
 
         /*
 
@@ -75,9 +83,9 @@ public class ShowGroupActivity extends AppCompatActivity {
          */
 
         Intent intent = getIntent();
-//        Intent intent = getIntent();
-//        userID = intent.getStringExtra("userID");
-//        token = intent.getStringExtra("token");
+        userID = intent.getStringExtra("userID");
+        token = intent.getStringExtra("token");
+        userName = intent.getStringExtra("userName");
 
         RequestBody requestBody = new FormBody.Builder()
                 .add("userID", userID)
@@ -93,7 +101,7 @@ public class ShowGroupActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
+                hud.dismiss();
             }
 
             @Override
@@ -101,6 +109,8 @@ public class ShowGroupActivity extends AppCompatActivity {
                 String responseData = response.body().string();
                 try {
                     JSONObject jsonData = new JSONObject(responseData);
+//                    userName = jsonData.getString("userName");
+
                     JSONArray jsonArray = jsonData.getJSONArray("list");
                     Log.d("group list", "onResponse: " + jsonArray.length());
                     for (int i = 0 ; i < jsonArray.length(); i++) {
@@ -122,11 +132,13 @@ public class ShowGroupActivity extends AppCompatActivity {
                         });
 
                     }
-                    models.add(new Model(0,  1, "Personal Tasks", " ","", "This is a personal task"));
+                    models.add(new Model(0,  1, "Personal", " ","", "This is a personal task"));
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+
                             adapter.notifyDataSetChanged();
+                            hud.dismiss();
                         }
                     });
 
@@ -140,9 +152,6 @@ public class ShowGroupActivity extends AppCompatActivity {
         createG.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(ShowGroupActivity.this, "You clicked",
-                        Toast.LENGTH_SHORT).show();
-
                 Intent intent = new Intent(ShowGroupActivity.this, GroupCreateActivity.class);
                 intent.putExtra("userID", userID);
                 intent.putExtra("token", token);
@@ -155,13 +164,25 @@ public class ShowGroupActivity extends AppCompatActivity {
         joinG.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(ShowGroupActivity.this, "You clicked",
-                        Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(ShowGroupActivity.this, GroupJoinActivity.class);
                 intent.putExtra("userID", userID);
                 intent.putExtra("token", token);
                 checkExpansion();
                 startActivityForResult(intent, 1);
+            }
+        });
+
+
+        final View userSettingBtn = findViewById(R.id.user_setting);
+        userSettingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ShowGroupActivity.this, UserSetting.class);
+                intent.putExtra("userID", userID);
+                intent.putExtra("token", token);
+                intent.putExtra("userName", userName);
+                checkExpansion();
+                startActivityForResult(intent, 3);
             }
         });
 
@@ -201,6 +222,11 @@ public class ShowGroupActivity extends AppCompatActivity {
                 break;
                 // remove group item
             case 2:
+                if (models.get(page_position).getGroupID() == 0){
+                    Toast.makeText(ShowGroupActivity.this, "You cannot delete this group", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+                hud.show();
                 Log.d("model_size1", "onContextItemSelected: "+models.size());
                 RequestBody requestBody = new FormBody.Builder()
                         .add("userID", userID)
@@ -215,7 +241,8 @@ public class ShowGroupActivity extends AppCompatActivity {
                 client.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                        Toast.makeText(ShowGroupActivity.this, "Netweotk issue, try it later", Toast.LENGTH_SHORT).show();
+                        hud.dismiss();
+                        Toast.makeText(ShowGroupActivity.this, "Network issue, try it later", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -237,6 +264,7 @@ public class ShowGroupActivity extends AppCompatActivity {
                             }else{
                                 Toast.makeText(ShowGroupActivity.this, "Your are not the creator, you cannot delete this group", Toast.LENGTH_SHORT).show();
                             }
+                            hud.dismiss();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -299,6 +327,17 @@ public class ShowGroupActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
+
+            case 3:
+                if(resultCode == RESULT_OK){
+                    Boolean result = data.getBooleanExtra("result", false);
+                    if (result){
+                        Toast.makeText(ShowGroupActivity.this, "Change user name successfully", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Toast.makeText(ShowGroupActivity.this, "Change user name failed", Toast.LENGTH_SHORT).show();
+                    }
+                }
                 else{
                     Toast.makeText(ShowGroupActivity.this, "Fail to create a new group, try it later", Toast.LENGTH_SHORT).show();
                 }
@@ -314,7 +353,7 @@ public class ShowGroupActivity extends AppCompatActivity {
         viewPager.setOffscreenPageLimit(2);
 
         viewPager.setAdapter(adapter);
-        viewPager.setPadding(130, 0,130,0);
+        viewPager.setPadding(100, 0,100,0);
 
 
 

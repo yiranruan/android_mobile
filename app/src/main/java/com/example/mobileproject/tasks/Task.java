@@ -20,15 +20,26 @@ public class Task extends Object{
     private String img;
 
 
-    public Task(String taskID, int groupID, String title, String status){
+
+    private String members;
+
+
+    public Task(String taskID, int groupID, String title, String members, String status){
         this.groupID = groupID;
         this.taskID = taskID;
         this.title = title;
         this.status = status;
+        this.members = members;
     }
 
 
+    public String getMembers() {
+        return members;
+    }
 
+    public void setMembers(String members) {
+        this.members = members;
+    }
 
     public String getTaskID() {
         return taskID;

@@ -14,10 +14,9 @@
         android:layout_margin="8dp">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="350dp">
+            android:layout_height="400dp">
             <ImageView
                 android:id="@+id/image_item"
-                android:src="@drawable/brochure"
                 android:scaleType="centerCrop"
                 android:layout_width="match_parent"
                 android:layout_height="200dp" />
@@ -35,7 +34,6 @@
                     android:id="@+id/group_name"
                     android:textColor="#262626"
                     android:layout_below="@+id/image_item"
-                    android:text="Group Name"
                     android:textSize="16sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
@@ -55,7 +53,6 @@
                     android:id="@+id/count_member"
                     android:textColor="#262626"
                     android:layout_below="@+id/image_item"
-                    android:text="member count"
                     android:textSize="16sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
@@ -66,8 +63,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Subject Name"
                 android:id="@+id/subject_name"
+                android:textColor="#262626"
                 android:layout_below="@id/group_info"
                 android:textSize="16sp"
                 android:layout_marginTop="10dp"
@@ -76,10 +73,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Invitation Code"
                 android:id="@+id/invite_code"
                 android:layout_below="@id/subject_name"
-                android:textSize="16sp"
+                android:textSize="12sp"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="16dp"/>
 
@@ -92,7 +88,7 @@
                 android:maxLines="3"
                 android:drawablePadding="10dp"
                 android:ellipsize="end"
-                android:text="Description"
+                android:textSize="12sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </RelativeLayout>

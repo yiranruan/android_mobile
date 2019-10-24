@@ -41,7 +41,7 @@
                 </LinearLayout>
 
                 <Button
-                    android:id="@+id/btn_confirm"
+                    android:id="@+id/confirm_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Confirm"
@@ -216,7 +216,7 @@
             </LinearLayout>
 
             <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/switchBtn"
+                android:id="@+id/calendar_status"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="false"
@@ -234,7 +234,7 @@
                 android:layout_height="wrap_content"
                 android:hint="Description"
                 android:layout_margin="10dp"
-                android:layout_below="@id/switchBtn"
+                android:layout_below="@id/calendar_status"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 >
 
@@ -246,12 +246,13 @@
                     android:maxLines="5" />
 
                 <ImageView
-                    android:id="@+id/image_view"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:id="@+id/image_view_task"
+                    android:layout_width="360dp"
+                    android:layout_height="360dp"
                     android:layout_below="@+id/notes"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
+                    android:layout_gravity="center"
                     android:maxWidth="100dp"
                     android:maxHeight="10dp"
                     android:scaleType="fitXY" />

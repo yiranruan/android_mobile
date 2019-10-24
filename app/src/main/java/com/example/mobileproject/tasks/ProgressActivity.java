@@ -2,7 +2,9 @@ package com.example.mobileproject.tasks;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.mobileproject.R;
 import com.github.mikephil.charting.charts.PieChart;
@@ -12,20 +14,23 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ProgressActivity extends AppCompatActivity {
 
-    float testdata[] = {0.3f, 0.3f, 0.3f, 0.6f, 0.2f};
-
-    String users[] = {"user1", "user2", "user3", "user4", "user5"};
-
+    HashMap<String, Integer> data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_progress);
-
+        Intent intent = getIntent();
+        Log.d("intent data, ","onCreate: " + intent.getIntExtra("todo",0));
+        data = new HashMap<>();
+        data.put("todo", intent.getIntExtra("todo",0));
+        data.put("doing", intent.getIntExtra("doing",0));
+        data.put("done", intent.getIntExtra("done",0));
         setupPieChart();
     }
 
@@ -33,12 +38,21 @@ public class ProgressActivity extends AppCompatActivity {
         // Populating a list of pieEntries:
         List<PieEntry> pieEntryList = new ArrayList<>();
 
-        for (int i = 0; i < testdata.length; i++){
-            pieEntryList.add(new PieEntry(testdata[i],users[i]));
+        float todo = data.get("todo").floatValue();
+        float doing =data.get("doing").floatValue();
+        float done = data.get("done").floatValue();
 
+        if(todo != 0) {
+            pieEntryList.add(new PieEntry(data.get("todo").floatValue(), "Todo"));
+        }
+        if(doing != 0) {
+            pieEntryList.add(new PieEntry(data.get("doing").floatValue(), "Doing"));
+        }
+        if(done != 0) {
+            pieEntryList.add(new PieEntry(data.get("done").floatValue(), "Done"));
         }
 
-        PieDataSet dataSet = new PieDataSet(pieEntryList, "Users");
+        PieDataSet dataSet = new PieDataSet(pieEntryList, "Work loads");
         PieData data = new PieData(dataSet);
 
         PieChart chart = (PieChart) findViewById(R.id.PieChart);

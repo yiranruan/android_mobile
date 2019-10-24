@@ -19,6 +19,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import com.example.mobileproject.R;
 
 import java.util.List;
+import java.util.Random;
 
 public class Adapter extends PagerAdapter implements View.OnCreateContextMenuListener{
 
@@ -28,6 +29,7 @@ public class Adapter extends PagerAdapter implements View.OnCreateContextMenuLis
     public CardView cardView;
     public View view;
     private OnItemLongClickListener mOnItemLongClickListener;
+    int pickedimg = -1;
 
     @Override
     public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
@@ -84,21 +86,29 @@ public class Adapter extends PagerAdapter implements View.OnCreateContextMenuLis
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
+
+        int[] images = {R.drawable.group_cover1, R.drawable.group_cover2, R.drawable.group_cover3, R.drawable.group_cover4,
+                R.drawable.group_cover5, R.drawable.group_cover6, R.drawable.group_cover7};
+        Random random = new Random();
+        int image =  images[random.nextInt(images.length)];
+        while (pickedimg == image){
+            image =  images[random.nextInt(images.length)];
+        }
         layoutInflater = LayoutInflater.from(context);
         view = layoutInflater.inflate(R.layout.item, container, false);
-
+        ImageView imageView = view.findViewById(R.id.image_item);
         TextView groupName, countMembers, subjectName, inviteCode, description;
-
+        imageView.setImageResource(image);
         groupName = view.findViewById(R.id.group_name);
         countMembers = view.findViewById(R.id.count_member);
         subjectName = view.findViewById(R.id.subject_name);
         inviteCode = view.findViewById(R.id.invite_code);
         description = view.findViewById(R.id.desc);
 
-        groupName.setText(models.get(position).getGroupName());
-        countMembers.setText(Integer.toString(models.get(position).getUserCount()));
-        subjectName.setText((models.get(position).getSubjectName()));
-        inviteCode.setText(models.get(position).getInviteCode());
+        groupName.setText("Group: " + models.get(position).getGroupName());
+        countMembers.setText(Integer.toString(models.get(position).getUserCount()) + " members");
+        subjectName.setText("Subject: " + (models.get(position).getSubjectName()));
+        inviteCode.setText("Code: " + models.get(position).getInviteCode());
         description.setText(models.get(position).getDescription());
 
         //        final View card = findViewById(R.id.my_card);

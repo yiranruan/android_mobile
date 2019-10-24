@@ -35,6 +35,7 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -77,6 +78,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
     private FloatingActionButton mNewTaskBtn;
     private FloatingActionButton mProgressBtn;
     private FloatingActionsMenu menuMultipleActions;
+    private KProgressHUD hud;
 
     OkHttpClient client;
 
@@ -91,6 +93,10 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         token = intent.getStringExtra("token");
         groupID = intent.getIntExtra("groupID", Integer.valueOf(userID));
         groupName = intent.getStringExtra("groupName");
+        hud = KProgressHUD.create(this)
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel("Loading...");
+        hud.show();
         /*
 
             fetch task data from server
@@ -110,6 +116,8 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         Log.d("item", "onContextItemSelected: "+item.getItemId());
         int position;
         checkExpansion();
+        String modifyingTaskID = "";
+        String changingStatus = "todo";
         switch (item.getItemId()) {//根据子菜单ID进行菜单选择判断
 
             case 1:
@@ -118,6 +126,8 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 //                removeTask(position, task_todo, rec_adapters.get(0));
                 Task task1 = task_todo.get(position);
                 task1.changeStatus("doing");
+                changingStatus = "doing";
+                modifyingTaskID = task1.getTaskID();
                 task_doing.add(0, task1);
 
 //                rec_adapters.get(1).notifyItemInserted(-1);
@@ -133,11 +143,14 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                 task_todo.remove(position);
                 rec_adapters.get(0).notifyItemRemoved(position);
                 rec_adapters.get(0).notifyItemRangeChanged(position,task_todo.size());
+
                 break;
             case 2:
                 position = current_holder.getAdapterPosition();
                 Task task2 = task_doing.get(position);
                 task2.changeStatus("todo");
+                changingStatus = "todo";
+                modifyingTaskID = task2.getTaskID();
 
                 task_todo.add(0, task2);
 
@@ -159,6 +172,8 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 
                 Task task3 = task_doing.get(position);
                 task3.changeStatus("done");
+                changingStatus = "done";
+                modifyingTaskID = task3.getTaskID();
 
                 task_done.add(0, task_doing.get(position));
                 if(task_done.size()==1){
@@ -192,6 +207,49 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                 rec_adapters.get(2).notifyItemRemoved(position);
                 rec_adapters.get(2).notifyItemRangeChanged(position,task_done.size());
         }
+        OkHttpClient client = new OkHttpClient();
+        RequestBody requestBody = new FormBody.Builder()
+                .add("userID", userID)
+                .add("token", token)
+                .add("taskID", modifyingTaskID)
+                .add("status", changingStatus)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(getString(R.string.update_task_status))
+                .post(requestBody)
+                .build();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(HorizontalCoordinatorNtbActivity.this,"Network Issue", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Change status successfully", Toast.LENGTH_SHORT ).show();
+                            }
+                        });
+
+                    }
+                });
+            }
+        }).start();
+
+
         return super.onContextItemSelected(item);
     }
 
@@ -322,23 +380,23 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
         models.add(
                 new NavigationTabBar.Model.Builder(
-                        getResources().getDrawable(R.drawable.ic_first),
+                        getResources().getDrawable(R.drawable.ic_todo),
                         Color.parseColor(colors[0]))
-                        .title("ToDoList")
+                        .title("Todo")
                         .build()
         );
         models.add(
                 new NavigationTabBar.Model.Builder(
-                        getResources().getDrawable(R.drawable.ic_second),
+                        getResources().getDrawable(R.drawable.ic_doing),
                         Color.parseColor(colors[3]))
-                        .title("DoingList")
+                        .title("Doing")
                         .build()
         );
         models.add(
                 new NavigationTabBar.Model.Builder(
-                        getResources().getDrawable(R.drawable.ic_third),
+                        getResources().getDrawable(R.drawable.ic_done),
                         Color.parseColor(colors[1]))
-                        .title("DoneList")
+                        .title("Done")
                         .build()
         );
 
@@ -405,14 +463,18 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
             @Override
             public void onClick(View view) {
                 checkExpansion();
-                Intent intent = new Intent(HorizontalCoordinatorNtbActivity.this, ProgressActivity.class);
-//                intent.putExtra("userID", userID);
-//                intent.putExtra("token", token);
-//                intent.putExtra("groupID", Integer.toString(groupID));
-                checkExpansion();
-                startActivity(intent);
-                Log.d("msg","in create");
-                Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Progress", Toast.LENGTH_SHORT).show();
+                if (task_todo.size() != 0 || task_doing.size()!=0 || task_done.size() !=0 ) {
+                    Intent intent = new Intent(HorizontalCoordinatorNtbActivity.this, ProgressActivity.class);
+                    intent.putExtra("todo", task_todo.size());
+                    intent.putExtra("doing", task_doing.size());
+                    intent.putExtra("done", task_done.size());
+                    checkExpansion();
+                    startActivity(intent);
+                    Log.d("msg", "in create");
+                    Toast.makeText(HorizontalCoordinatorNtbActivity.this, "Progress", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(HorizontalCoordinatorNtbActivity.this, "This is not data for progress", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -439,7 +501,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
+                hud.dismiss();
             }
 
             @Override
@@ -454,11 +516,16 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                         JSONObject task = tasks.getJSONObject(i);
 
                         String category = task.getString("status");
+                        String members = "";
+                        if (task.has("members")){
+                            members = task.getString("members");
+                        }
                         if(category.equals("todo")){
                             task_todo.add(0, new Task(
                                     task.getString("_id"), //taskID
                                     task.getInt("groupID"),
                                     task.getString("title"), //title
+                                    members,
                                     category
                             ));
                             rec_adapters.get(0).notifyItemInserted(-1);
@@ -469,6 +536,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                                     task.getString("_id"), //taskID
                                     task.getInt("groupID"),
                                     task.getString("title"), //title
+                                    members,
                                     category
                             ));
                             rec_adapters.get(1).notifyItemInserted(-1);
@@ -479,6 +547,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                                     task.getString("_id"), //taskID
                                     task.getInt("groupID"),
                                     task.getString("title"), //title
+                                    members,
                                     category
                             ));
                             rec_adapters.get(2).notifyItemInserted(-1);
@@ -486,6 +555,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                         }
 
                     }
+                    hud.dismiss();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -560,7 +630,10 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof TaskHolder) {
-                ((TaskHolder) holder).txt.setText(tasks.get(position).getTitle());
+                ((TaskHolder) holder).txt.setText(
+                        "Task: "+ tasks.get(position).getTitle() +
+                                " | Members: " + tasks.get(position).getMembers()
+                );
 
                 if (mOnItemClickLitener != null) {
                     ((TaskHolder) holder).txt.setOnClickListener(new View.OnClickListener() {
@@ -602,7 +675,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 
         public class TaskHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
-            public TextView txt;
+            public TextView txt, txt_member;
             FrameLayout itemLayout;
             int viewType;
 
@@ -659,11 +732,16 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                     try {
                         JSONObject jsonData = new JSONObject(responseData);
                         JSONObject task = new JSONObject(jsonData.getString("task"));
+                        String members = "";
+                        if(task.has("members")){
+                            members = task.getString("members");
+                        }
                         if (jsonData.getBoolean("result")){
                             task_todo.add( new Task(
                                     task.getString("_id"),
                                     task.getInt("groupID"),
                                     task.getString("title"),
+                                    members,
                                     "todo"
                             ));
 //                        rec_adapters.get(0).notifyItemInserted(-1);

@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -35,16 +36,21 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
+import com.kaopiz.kprogresshud.KProgressHUD;
 import com.kyle.calendarprovider.calendar.CalendarEvent;
 import com.kyle.calendarprovider.calendar.CalendarProviderManager;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import okhttp3.Call;
@@ -101,9 +107,16 @@ public class CreateButton extends AppCompatActivity {
     private int day_x,month_x,year_x,hour_x,minute_x;
     private int day_y,month_y,year_y,hour_y,minute_y;
 
+    //为了时间数据转化为Long类型
+    private String startDateInitial;
+    private String endDateInitial;
+    private long  sDate;
+    private long eDate;
+
 
     private ImageView mImageView;
     private Uri image_uri;
+    private KProgressHUD hud;
 
     private String groupID;
     private String userID;
@@ -124,6 +137,12 @@ public class CreateButton extends AppCompatActivity {
         token = intent_reci.getStringExtra("token");
         groupID = intent_reci.getStringExtra("groupID");
 
+        hud = KProgressHUD.create(this)
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel("Loading...");
+
+        // switch bar;
+        switch_calender = findViewById(R.id.switchBtn);
 
         /// 这三个是 EDITTEXT 绑定ID即可
         input_title = findViewById(R.id.input_title);
@@ -149,8 +168,10 @@ public class CreateButton extends AppCompatActivity {
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        mImageView.setImageBitmap(null);
                         mImageView.setImageURI(null);
-                        filePath = null;
+                        image = "";
+                        bitmap = null;
                     }
                 });
 
@@ -195,19 +216,6 @@ public class CreateButton extends AppCompatActivity {
         });
 
 
-        // switch bar;
-        switch_calender = findViewById(R.id.switchBtn);
-        switch_calender.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(switch_calender.isChecked()){
-                    send_calender = true;
-                }else{
-                    send_calender = false;
-                }
-            }
-        });
-
         Log.d("msg","check 3");
 
         // ADD BUTTON 的代码 -- 确认信息
@@ -219,13 +227,15 @@ public class CreateButton extends AppCompatActivity {
 
                 title = input_title.getText().toString();
                 description = input_note.getText().toString();
+
                 username = input_member.getText().toString();
-                Log.d("create task data", "onClick: " + location );
+                Log.d("create task data", "onClick: " + description );
                 Log.d("create task data", "onClick: " + image );
                 Log.d("create task data", "onClick: " + startDate );
 
-                if (title.length() > 0 && username.length() > 0) {
+                if (title.length() > 0) {
 
+                    hud.show();
                     RequestBody requestBody = new FormBody.Builder()
                             .add("userID", userID)
                             .add("token", token)
@@ -248,20 +258,35 @@ public class CreateButton extends AppCompatActivity {
                     client.newCall(request).enqueue(new Callback() {
                         @Override
                         public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            hud.dismiss();
                             Toast.makeText(CreateButton.this, "Network issue, try it later", Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
                         public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                             String responseData = response.body().string();
+                            Boolean result = false;
+                            try {
+                                JSONObject jsonData = new JSONObject(responseData);
+                                result = jsonData.getBoolean("result");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                             Log.d("create task", "onResponse: " + responseData);
                             Intent intent = new Intent();
                             intent.putExtra("responseData", responseData);
                             setResult(RESULT_OK, intent);
-                            finish();
 
+                            hud.dismiss();
+
+                            if (switch_calender.isChecked() && result){
+                                addCalender();
+                            }
+                            finish();
                         }
                     });
+                }else {
+                    Toast.makeText(CreateButton.this, "must have the title", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -301,6 +326,15 @@ public class CreateButton extends AppCompatActivity {
                                         minute_x =i1;
                                         tv_startDate.setText(day_x+"/"+(month_x+1)+"/"+year_x+" "+hour_x+":"+minute_x);
                                         startDate = day_x+"/"+(month_x+1)+"/"+year_x+" "+hour_x+":"+minute_x;
+                                        //startDate = day_x+"/"+(month_x+1)+"/"+year_x+" "+hour_x+":"+minute_x;
+                                        startDateInitial = year_x+"-"+(month_x+1)+"-"+day_x+" "+hour_x+":"+minute_x;
+                                        SimpleDateFormat dataformat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+                                        try {
+                                            sDate = dataformat.parse(startDateInitial).getTime();
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
                                 }, hour, minute, true);
                                 timePickerDialog.show();
@@ -341,7 +375,15 @@ public class CreateButton extends AppCompatActivity {
                                         hour_y =i;
                                         minute_y =i1;
                                         tv_endDate.setText(day_y+"/"+(month_y+1)+"/"+year_y+" "+hour_y+":"+minute_y);
+                                       // dueDate = day_y+"/"+(month_y+1)+"/"+year_y+" "+hour_y+":"+minute_y;
                                         dueDate = day_y+"/"+(month_y+1)+"/"+year_y+" "+hour_y+":"+minute_y;
+                                        endDateInitial = year_x+"-"+(month_x+1)+"-"+day_x+" "+hour_x+":"+minute_x;
+                                        SimpleDateFormat dataformat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                                        try {
+                                            eDate = dataformat.parse(endDateInitial).getTime();
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
                                 }, hour, minute, true);
                                 timePickerDialog.show();
@@ -449,30 +491,34 @@ public class CreateButton extends AppCompatActivity {
     ///  接收数据的代码---
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-
-
-        //called when image was captured from camera
-        // ------- 接收 照相机 数据 -------
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case IMAGE_CAPTURE_CODE:
                 if (resultCode == RESULT_OK) {
                     //set the image captured to our Im
-                    if (image_uri != null) {
-                        mImageView.setImageURI(image_uri);
-                        //把image的string获得
-                        ImageView iv1 = (ImageView) findViewById(R.id.image_view);
-                        BitmapDrawable drawable = (BitmapDrawable) iv1.getDrawable();
-                        bitmap = drawable.getBitmap();
 
-                        filePath = temFileImage(CreateButton.this,bitmap,"name");
+                    mImageView.setImageBitmap(null);
+                    mImageView.setImageURI(null);
+                    bitmap = null;
+                    mImageView.setImageURI(image_uri);
 
+                    ImageView iv1 = (ImageView) findViewById(R.id.image_view);
+                    bitmap = Bitmap.createBitmap(iv1.getWidth(),
+                            iv1.getHeight(), Bitmap.Config.ARGB_8888);
+                    Canvas canvas = new Canvas(bitmap);
+                    iv1.draw(canvas);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 
-                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
-                        byte[] bb = bos.toByteArray();
-                        image = Base64.encodeToString(bb, 0);
+                    int options = 90;
+                    while (baos.toByteArray().length / 1024 > 60) { // 循环判断如果压缩后图片是否大于100kb,大于继续压缩
+                        baos.reset(); // 重置baos即清空baos
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
+                        options -= 10;// 每次都减少10
+                        Log.d("size", String.valueOf(baos.toByteArray().length));
                     }
+
+                    image = Base64.encodeToString(baos.toByteArray(), 0);
                 }
                 break;
             case 30:
@@ -484,24 +530,38 @@ public class CreateButton extends AppCompatActivity {
                 break;
             case 40:
                 if (resultCode == RESULT_OK) {
+
+                    mImageView.setImageBitmap(null);
+                    mImageView.setImageURI(null);
+
+                    bitmap = null;
+
+
                     Log.d("saveScreenShot", "onActivityResult: true");
-                    ImageView imageview = (ImageView) findViewById(R.id.image_view);
-//                    Intent intent = getIntent();
+                    mImageView = (ImageView) findViewById(R.id.image_view);
                     byte [] bis = data.getByteArrayExtra("bitmap");
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
+                    bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
+                    mImageView.setImageBitmap(bitmap);
 
 //                        bitmap = intent.getParcelableExtra("bitmap");
-                    imageview.setImageBitmap(bitmap);
-                    Log.d("saveScreenShot", "onActivityResult: ttt");
-//                    if (intent != null) {
-//                        byte [] bis = intent.getByteArrayExtra("bitmap");
-//                        Bitmap bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
-//
-////                        bitmap = intent.getParcelableExtra("bitmap");
-//                        imageview.setImageBitmap(bitmap);
-//                        Log.d("saveScreenShot", "onActivityResult: ttt");
-//
-//                    }
+
+                    //ImageView iv2 = (ImageView) findViewById(R.id.image_view);
+                    BitmapDrawable drawable1 = (BitmapDrawable) mImageView.getDrawable();
+                    bitmap = drawable1.getBitmap();
+
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+                    int options = 90;
+                    while (baos.toByteArray().length / 1024 > 60) { // 循环判断如果压缩后图片是否大于100kb,大于继续压缩
+                        baos.reset(); // 重置baos即清空baos
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
+                        options -= 10;// 每次都减少10
+                    }
+                    Log.d("bao", String.valueOf(baos.toByteArray().length));
+                    image = Base64.encodeToString(baos.toByteArray(),0);
+
+
+
                 }
                 break;
         }
@@ -539,36 +599,37 @@ public class CreateButton extends AppCompatActivity {
                     setResult(RESULT_CANCELED, returnIntent);
                     finish();
                     break;
-//                case R.id.tv_Location:
-//                    intent = new Intent(CreateButton.this, LocationActivity.class);
-//                    startActivityForResult(intent,30);
-//                    break;
+
             }
         }
     }
 
     public void addCalender(){
-        CalendarEvent calendarEvent = new CalendarEvent(
-                "马上吃饭",
-                "吃好吃的",
-                "南信院二食堂",
-                System.currentTimeMillis(),
-                System.currentTimeMillis() + 60000,
-                0, null
-        );
+        try {
+            CalendarEvent calendarEvent = new CalendarEvent(
+                    title,
+                    description,
+                    location,
+                    sDate,
+                    eDate,
+                    0, null
+            );
 
-        Log.d("msg:", Long.toString(System.currentTimeMillis()));
+            Log.d("msg:", "" + sDate);
 
-        // 添加事件
-        int result = CalendarProviderManager.addCalendarEvent(CreateButton.this, calendarEvent);
+            // 添加事件
+            int result = CalendarProviderManager.addCalendarEvent(CreateButton.this, calendarEvent);
 
-        if (result == 0) {
-            Toast.makeText(CreateButton.this, "successfully insert", Toast.LENGTH_SHORT).show();
-        } else if (result == -1) {
-            Toast.makeText(CreateButton.this, "unsuccessfully insert", Toast.LENGTH_SHORT).show();
-        } else if (result == -2) {
-            Toast.makeText(CreateButton.this, "Do not have the permission", Toast.LENGTH_SHORT).show();
+            Log.d("cal:", "" + result);
+            if (result == 0) {
+                //Toast.makeText(CreateButton.this, "successfully insert", Toast.LENGTH_SHORT).show();
+            } else {
+                //Toast.makeText(CreateButton.this, "successfully insert", Toast.LENGTH_SHORT).show();
+            }
+        }catch (Exception e){
+            //Toast.makeText(CreateButton.this, "invalid insert", Toast.LENGTH_SHORT).show();
         }
+
     }
 
     public void checkExpansion(){
