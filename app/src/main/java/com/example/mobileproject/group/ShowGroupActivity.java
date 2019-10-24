@@ -127,7 +127,7 @@ public class ShowGroupActivity extends AppCompatActivity {
                         });
 
                     }
-                    models.add(new Model(0,  1, "Personal Tasks", " ","", "This is a personal task"));
+                    models.add(new Model(0,  1, "Personal", " ","", "This is a personal task"));
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -173,8 +173,8 @@ public class ShowGroupActivity extends AppCompatActivity {
         });
 
 
-        final View userSetting = findViewById(R.id.user_setting);
-        joinG.setOnClickListener(new View.OnClickListener() {
+        final View userSettingBtn = findViewById(R.id.user_setting);
+        userSettingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(ShowGroupActivity.this, "You clicked",
@@ -239,7 +239,7 @@ public class ShowGroupActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NotNull Call call, @NotNull IOException e) {
                         hud.dismiss();
-                        Toast.makeText(ShowGroupActivity.this, "Netweotk issue, try it later", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ShowGroupActivity.this, "Network issue, try it later", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -350,7 +350,7 @@ public class ShowGroupActivity extends AppCompatActivity {
         viewPager.setOffscreenPageLimit(2);
 
         viewPager.setAdapter(adapter);
-        viewPager.setPadding(130, 0,130,0);
+        viewPager.setPadding(100, 0,100,0);
 
 
 

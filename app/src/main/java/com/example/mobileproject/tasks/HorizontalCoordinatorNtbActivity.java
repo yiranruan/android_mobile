@@ -516,11 +516,16 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                         JSONObject task = tasks.getJSONObject(i);
 
                         String category = task.getString("status");
+                        String members = "";
+                        if (task.has("members")){
+                            members = task.getString("members");
+                        }
                         if(category.equals("todo")){
                             task_todo.add(0, new Task(
                                     task.getString("_id"), //taskID
                                     task.getInt("groupID"),
                                     task.getString("title"), //title
+                                    members,
                                     category
                             ));
                             rec_adapters.get(0).notifyItemInserted(-1);
@@ -531,6 +536,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                                     task.getString("_id"), //taskID
                                     task.getInt("groupID"),
                                     task.getString("title"), //title
+                                    members,
                                     category
                             ));
                             rec_adapters.get(1).notifyItemInserted(-1);
@@ -541,6 +547,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                                     task.getString("_id"), //taskID
                                     task.getInt("groupID"),
                                     task.getString("title"), //title
+                                    members,
                                     category
                             ));
                             rec_adapters.get(2).notifyItemInserted(-1);
@@ -623,7 +630,10 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof TaskHolder) {
-                ((TaskHolder) holder).txt.setText(tasks.get(position).getTitle());
+                ((TaskHolder) holder).txt.setText(
+                        "Task: "+ tasks.get(position).getTitle() +
+                                "| Members: " + tasks.get(position).getMembers()
+                );
 
                 if (mOnItemClickLitener != null) {
                     ((TaskHolder) holder).txt.setOnClickListener(new View.OnClickListener() {
@@ -665,7 +675,7 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
 
         public class TaskHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
-            public TextView txt;
+            public TextView txt, txt_member;
             FrameLayout itemLayout;
             int viewType;
 
@@ -722,11 +732,16 @@ public class HorizontalCoordinatorNtbActivity extends Activity {
                     try {
                         JSONObject jsonData = new JSONObject(responseData);
                         JSONObject task = new JSONObject(jsonData.getString("task"));
+                        String members = "";
+                        if(task.has("members")){
+                            members = task.getString("members");
+                        }
                         if (jsonData.getBoolean("result")){
                             task_todo.add( new Task(
                                     task.getString("_id"),
                                     task.getInt("groupID"),
                                     task.getString("title"),
+                                    members,
                                     "todo"
                             ));
 //                        rec_adapters.get(0).notifyItemInserted(-1);

@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -167,8 +168,9 @@ public class CreateButton extends AppCompatActivity {
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        mImageView.setImageBitmap(null);
                         mImageView.setImageURI(null);
-                        filePath = null;
+                        image = "";
                     }
                 });
 
@@ -273,13 +275,16 @@ public class CreateButton extends AppCompatActivity {
                             intent.putExtra("responseData", responseData);
                             setResult(RESULT_OK, intent);
 
-                            if (switch_calender.isChecked() && result){
+                            hud.dismiss();
+
+                            if (switch_calender.isChecked()){
                                 addCalender();
                             }
-                            hud.dismiss();
                             finish();
                         }
                     });
+                }else {
+                    Toast.makeText(CreateButton.this, "must have the title", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -484,47 +489,35 @@ public class CreateButton extends AppCompatActivity {
     ///  接收数据的代码---
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-
-
-        //called when image was captured from camera
-        // ------- 接收 照相机 数据 -------
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case IMAGE_CAPTURE_CODE:
                 if (resultCode == RESULT_OK) {
                     //set the image captured to our Im
-                    if (image_uri != null) {
-                        mImageView.setImageURI(image_uri);
-                        //把image的string获得
-//                        mImageview = (ImageView) findViewById(R.id.image_view);
-//                        BitmapDrawable drawable = (BitmapDrawable) mImageView.getDrawable();
-//                        bitmap = drawable.getBitmap();
-//
-//                        filePath = temFileImage(CreateButton.this,bitmap,"name");
-//
-//
-//                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
-//                        byte[] bb = bos.toByteArray();
-//                        image = Base64.encodeToString(bb, 0);
 
-                        //第二次修改
-                        //把image的string获得
-                        BitmapDrawable drawable = (BitmapDrawable) mImageView.getDrawable();
-                        bitmap = drawable.getBitmap();
-                        //压缩图片
+                    mImageView.setImageBitmap(null);
+                    mImageView.setImageURI(null);
 
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-                        int options = 150;
-                        while (baos.toByteArray().length / 1024 > 80) { // 循环判断如果压缩后图片是否大于100kb,大于继续压缩
-                            baos.reset(); // 重置baos即清空baos
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
-                            options = options/2;// 每次都减少10
-                        }
-                        Log.d("bao", String.valueOf(baos.toByteArray().length));
-                        image = Base64.encodeToString(baos.toByteArray(),0);
+
+                    mImageView.setImageURI(image_uri);
+
+                    ImageView iv1 = (ImageView) findViewById(R.id.image_view);
+                    bitmap = Bitmap.createBitmap(iv1.getWidth(),
+                            iv1.getHeight(), Bitmap.Config.ARGB_8888);
+                    Canvas canvas = new Canvas(bitmap);
+                    iv1.draw(canvas);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
+                    int options = 90;
+                    while (baos.toByteArray().length / 1024 > 60) { // 循环判断如果压缩后图片是否大于100kb,大于继续压缩
+                        baos.reset(); // 重置baos即清空baos
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
+                        options -= 10;// 每次都减少10
+                        Log.d("size", String.valueOf(baos.toByteArray().length));
                     }
+
+                    image = Base64.encodeToString(baos.toByteArray(), 0);
                 }
                 break;
             case 30:
@@ -536,6 +529,10 @@ public class CreateButton extends AppCompatActivity {
                 break;
             case 40:
                 if (resultCode == RESULT_OK) {
+
+                    mImageView.setImageBitmap(null);
+                    mImageView.setImageURI(null);
+
                     Log.d("saveScreenShot", "onActivityResult: true");
                     mImageView = (ImageView) findViewById(R.id.image_view);
                     byte [] bis = data.getByteArrayExtra("bitmap");
@@ -551,29 +548,16 @@ public class CreateButton extends AppCompatActivity {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
                     int options = 90;
-                    while (baos.toByteArray().length / 1024 > 80) { // 循环判断如果压缩后图片是否大于100kb,大于继续压缩
+                    while (baos.toByteArray().length / 1024 > 60) { // 循环判断如果压缩后图片是否大于100kb,大于继续压缩
                         baos.reset(); // 重置baos即清空baos
                         bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
                         options -= 10;// 每次都减少10
                     }
                     Log.d("bao", String.valueOf(baos.toByteArray().length));
                     image = Base64.encodeToString(baos.toByteArray(),0);
-//                    Intent intent = getIntent();
-//                    byte [] bis = data.getByteArrayExtra("bitmap");
-//                    Bitmap bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
 
-//                        bitmap = intent.getParcelableExtra("bitmap");
 
-                    Log.d("saveScreenShot", "onActivityResult: ttt");
-//                    if (intent != null) {
-//                        byte [] bis = intent.getByteArrayExtra("bitmap");
-//                        Bitmap bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
-//
-////                        bitmap = intent.getParcelableExtra("bitmap");
-//                        imageview.setImageBitmap(bitmap);
-//                        Log.d("saveScreenShot", "onActivityResult: ttt");
-//
-//                    }
+
                 }
                 break;
         }
@@ -611,10 +595,7 @@ public class CreateButton extends AppCompatActivity {
                     setResult(RESULT_CANCELED, returnIntent);
                     finish();
                     break;
-//                case R.id.tv_Location:
-//                    intent = new Intent(CreateButton.this, LocationActivity.class);
-//                    startActivityForResult(intent,30);
-//                    break;
+
             }
         }
     }
@@ -638,13 +619,21 @@ public class CreateButton extends AppCompatActivity {
             Log.d("cal:", "" + result);
             if (result == 0) {
                 Toast.makeText(CreateButton.this, "successfully insert", Toast.LENGTH_SHORT).show();
-            } else if (result == -1) {
-                Toast.makeText(CreateButton.this, "unsuccessfully insert", Toast.LENGTH_SHORT).show();
-            } else if (result == -2) {
-                Toast.makeText(CreateButton.this, "Do not have the permission", Toast.LENGTH_SHORT).show();
+            } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(CreateButton.this);
+                builder.setTitle("Calender");
+                builder.setMessage("invalid added Calender");
+                builder.setCancelable(false);
+                AlertDialog alert =builder.create();
+                alert.show();
             }
         }catch (Exception e){
-            Toast.makeText(CreateButton.this, "invalid add to calender", Toast.LENGTH_SHORT).show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(CreateButton.this);
+            builder.setTitle("Calender");
+            builder.setMessage("invalid added Calender");
+            builder.setCancelable(false);
+            AlertDialog alert =builder.create();
+            alert.show();
         }
 
 

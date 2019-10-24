@@ -105,10 +105,10 @@ public class Adapter extends PagerAdapter implements View.OnCreateContextMenuLis
         inviteCode = view.findViewById(R.id.invite_code);
         description = view.findViewById(R.id.desc);
 
-        groupName.setText(models.get(position).getGroupName());
-        countMembers.setText(Integer.toString(models.get(position).getUserCount()));
-        subjectName.setText((models.get(position).getSubjectName()));
-        inviteCode.setText(models.get(position).getInviteCode());
+        groupName.setText("Group: " + models.get(position).getGroupName());
+        countMembers.setText(Integer.toString(models.get(position).getUserCount()) + " members");
+        subjectName.setText("Subject: " + (models.get(position).getSubjectName()));
+        inviteCode.setText("Code: " + models.get(position).getInviteCode());
         description.setText(models.get(position).getDescription());
 
         //        final View card = findViewById(R.id.my_card);
